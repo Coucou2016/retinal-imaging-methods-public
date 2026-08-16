@@ -125,7 +125,7 @@ a { color: var(--accent); }
       <li>仓库基线核对；按用户授权准备<strong>公开</strong> GitHub 代码+文档快照（排除 data/ckpt/results 大缓存与密钥）。</li>
       <li>安装/确认 SciencePlots；运行 <code>scripts/plot_paper_figures.py</code>（Times New Roman + science 样式；中文说明放图注）重绘结果图。</li>
       <li>nature-writing（methods）升级论文稿与本报告；图注按「问什么 / 怎么读 / 含义 / 结论 / 待补充」加深。</li>
-      <li>ChatGPT：粘贴文本简报 + 公开仓库 URL（启用 web search）；顾问建议经独立核实后才采纳。</li>
+      <li>ChatGPT：粘贴文本简报 + 公开仓库 URL（启用 web search）；本会话 MCP 缺失且 Playwright 遇 Cloudflare，见 <code>docs/chatgpt-runs/2026-08-16-gh-consult/</code>；顾问建议经独立核实后才采纳。</li>
     </ol>
   </section>
 
@@ -183,6 +183,7 @@ a { color: var(--accent); }
     <h2>6. 讨论</h2>
     <p>方法学创新点 I–III 与仓库实现一致，具备可投稿叙事潜力；但<strong>证据强度</strong>目前停在工程与合成自检层。公开队列一旦接入，应优先报告：相对 Reti-Pioneer-clone 的同数据提升、校准改善、跨库落差与亚组公平性，而不是与 UKB 内部 AUROC 硬比。</p>
     <p>诚实措辞优先使用 “unfreeze quality routing initialized at fixed weights + multi-label + calibration/DCA on public cohorts”，避免在无 UKB 终点时声称 “outperform Reti-Pioneer”。</p>
+    <p><strong>当前稿件风险（独立审计）：</strong> Results 仍为待补充；勿把 SYNTHETIC 图当临床主张；需写清 Reti-Pioneer 摘要 “multitask” 与代码侧独立二分类头差异；learnable_q 无监督可能退化；DCA 阈值需按患病率再标定。</p>
   </section>
 
   <section id="conclusion">

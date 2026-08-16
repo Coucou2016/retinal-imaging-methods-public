@@ -1,10 +1,13 @@
 # 研究报告：基于 Reti-Pioneer 的可学习质量路由与多任务眼底筛查方法扩展
 
-**日期：** 2026-08-16  
+**日期：** 2026-08-16（iter-5）  
 **项目路径：** `E:\Projects\20260522-retinal-imaging`  
-**性质：** 方法学跟进 / 工程可复现报告（非临床试验报告）
+**性质：** 方法学跟进 / 工程可复现报告（非临床试验报告）  
+**公开代码：** https://github.com/Coucou2016/retinal-imaging-methods-public
 
 <span class="badge">SYNTHETIC metrics ≠ clinical AUROC</span>
+<span class="badge">RFMiD labels real; features SYNTHETIC</span>
+<span class="badge">no UKB AUROC</span>
 
 ## 封面信息
 
@@ -14,7 +17,7 @@
 | 本文定位 | Methods extension：learnable_q + multitask + calibration/DCA + 公开队列验证 |
 | 目标期刊（无 UKB） | npj Digital Medicine / MedIA / IEEE JBHI·TMI / CIBM |
 | 写作架构 | Nature-family methods 论证链（nature-writing skill） |
-| 数据诚实性 | ODIR-D ≠ UKB T2DM；合成特征 AUROC 仅流水线自检 |
+| 数据诚实性 | ODIR-D ≠ UKB T2DM；RFMiD 真标签+合成特征；合成 AUROC 仅流水线自检 |
 
 ## 目录
 
@@ -88,9 +91,11 @@ Reti-Pioneer 证明了冻结视觉基础模型特征 + 质量感知融合可用�
 
 1. 阅读 README、PAPER_PLAN、PUBLIC_DATA、既有 chatgpt-runs 与 `results/`。  
 2. 安装 SciencePlots；脚本 `scripts/plot_paper_figures.py` 用 Times New Roman + science 样式重绘消融图（英文轴标签，中文说明放图注）。  
-3. 按 nature-writing（methods）起草 `docs/paper/manuscript.md` 与 HTML。  
-4. 生成自包含 `docs/report/report.html`（Base64 嵌图）。  
-5. ChatGPT：Cursor 内置浏览器标签无法稳定创建/导航（反复 “No browser tab available”）；已用系统默认浏览器打开 chatgpt.com，并落盘 `TASK_BRIEF.md` 供用户粘贴；顾问结论以本地文献检索+ PAPER_PLAN 独立裁定。  
+3. 按 nature-writing（methods）起草并成熟化 `docs/paper/manuscript.md` 与 HTML（`build_paper_report.py` 以磁盘稿为真源，不再覆盖）。  
+4. 生成自包含 `docs/report/report.html`（Base64 嵌图 + 来龙去脉图注）。  
+5. ChatGPT 五轮（`docs/chatgpt-runs/2026-08-16-iter5/`）：`cursor-ide-browser` MCP 不可用；Playwright 两次探测停在 Cloudflare（`_probe2.json`）。已 `Start-Process` 打开系统浏览器并留下 `PASTE_BRIEF_R1`–`R5`；Round1–5 为本地结构化评审 + WebSearch，**无虚构顾问回复**。  
+6. 数据：无 Kaggle → ODIR 未下；BRSET PhysioNet 凭据缺失；RFMiD 官方标签 CSV 已从 Hugging Face 写入 `data/rfmid`（n=3200, K=46），骨干特征仍 SYNTHETIC；CPU-only → foundation 提取 **待补充**。  
+7. 修复：`prepare_public_npz.py` 在仅有 `--train-csv`（无 `--src`）时不再误走 synthetic-demo。  
 
 ---
 
@@ -162,9 +167,11 @@ Reti-Pioneer 证明了冻结视觉基础模型特征 + 质量感知融合可用�
 
 ## 6. 讨论
 
-1. **创新点可信边界：** I–III 有代码与消融协议支撑；临床增益必须等真实公开队列。  
-2. **标签语义：** 公开数据适合方法学复核，不适合直接对标 Nat Med 六病种 AUROC。  
-3. **ChatGPT 顾问角色：** 本次未能稳定完成对话；大纲以 PAPER_PLAN + 独立检索为准，不虚构顾问“已批准”表述。  
+1. **创新点可信边界：** I–III 有代码与消融协议支撑；临床增益必须等真实公开队列像素 + foundation 特征。  
+2. **标签语义：** 公开数据适合方法学复核，不适合直接对标 Nat Med 六病种 AUROC；RFMiD 真实标签 ≠ 可投稿 AUROC。  
+3. **当前稿件风险（独立审计）：** Results 仍为 待补充；勿把 SYNTHETIC 图当临床主张；Reti-Pioneer 摘要 “multitask” vs 代码独立二分类头已写清；learnable_q 无质量监督可能退化；DCA@0.10 需按患病率再标定；CPU-only 阻断特征提取。  
+4. **ChatGPT 顾问角色：** iter-5 仍被 Cloudflare/缺 MCP 阻断；五轮本地评审 + paste briefs；大纲以 PAPER_PLAN + 独立 WebSearch 为准。  
+5. **文献锚点（已核验）：** Reti-Pioneer、RETFound、EyeQ、BRSET、RFMiD、Guo temperature scaling、Vickers DCA、Quellec 2023 population-independent multi-disease。  
 
 ---
 

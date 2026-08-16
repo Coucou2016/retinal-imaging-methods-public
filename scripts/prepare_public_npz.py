@@ -201,7 +201,9 @@ def _find_csv(root: Path, names: list[str]) -> Path | None:
 
 
 def load_records(dataset: str, src: Path | None, args) -> tuple[list[PatientRecord], list[str]]:
-    if args.synthetic_demo or src is None:
+    # Explicit CSVs / split files always win (do not require --src).
+    has_explicit_csv = bool(args.csv or args.train_csv or args.val_csv or args.test_csv)
+    if args.synthetic_demo or (src is None and not has_explicit_csv):
         n = args.n_samples
         if dataset == "odir":
             return make_synthetic_odir_records(n, args.seed), list(ODIR_LABELS)
@@ -211,12 +213,12 @@ def load_records(dataset: str, src: Path | None, args) -> tuple[list[PatientReco
         return recs, names
 
     if dataset == "odir":
-        csv_path = Path(args.csv) if args.csv else _find_csv(src, ["full_df.csv", "train.csv", "odir.csv"])
+        csv_path = Path(args.csv) if args.csv else (_find_csv(src, ["full_df.csv", "train.csv", "odir.csv"]) if src else None)
         if csv_path is None:
             raise FileNotFoundError(f"No ODIR CSV under {src}")
         return parse_odir_csv(csv_path), list(ODIR_LABELS)
     if dataset == "brset":
-        csv_path = Path(args.csv) if args.csv else _find_csv(src, ["labels.csv", "brset.csv", "metadata.csv"])
+        csv_path = Path(args.csv) if args.csv else (_find_csv(src, ["labels.csv", "brset.csv", "metadata.csv"]) if src else None)
         if csv_path is None:
             raise FileNotFoundError(f"No BRSET CSV under {src}")
         return parse_brset_csv(csv_path), list(BRSET_LABELS)
@@ -224,6 +226,8 @@ def load_records(dataset: str, src: Path | None, args) -> tuple[list[PatientReco
     if args.train_csv or args.val_csv or args.test_csv:
         recs, names = parse_rfmid_splits(args.train_csv, args.val_csv, args.test_csv)
         return recs, names
+    if src is None:
+        raise FileNotFoundError("RFMiD requires --src or --train-csv/--val-csv/--test-csv/--csv")
     train = _find_csv(src, ["RFMiD_Training_Labels.csv", "Training_Labels.csv"])
     val = _find_csv(src, ["RFMiD_Validation_Labels.csv", "Validation_Labels.csv"])
     test = _find_csv(src, ["RFMiD_Testing_Labels.csv", "Testing_Labels.csv"])

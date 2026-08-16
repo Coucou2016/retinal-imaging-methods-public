@@ -270,6 +270,8 @@ Public ocular+systemic labels enable reproducible methods claims that UKB-gated 
 
 **Honest novelty phrasing.** Prefer: “we unfreeze quality routing initialized at Reti-Pioneer’s fixed weights and evaluate jointly with multi-label heads and calibration/DCA on public cohorts.” Avoid: “we outperform Reti-Pioneer” or “we achieve AUROC X on T2DM” without the original UKB endpoint and cohort.
 
+**Draft risks (pre-submission; independent audit).** (1) Results § still empty of real AUROC/ECE — reviewers will reject if SYNTHETIC companion figures are mistaken for claims. (2) Reti-Pioneer’s abstract says “multitask”; our clone control is **independent binary heads** as in the released codebase — state that distinction explicitly to avoid straw-man novelty. (3) ODIR-D / BRSET diabetes labels remain ocular or mixed, not UKB T2DM ICD. (4) Learnable `q_fc` without BRSET quality supervision may collapse to near-fixed weights. (5) DCA @ 0.10 is illustrative until prevalence and costs are cohort-specific.
+
 ---
 
 ## 7. Limitations
@@ -296,23 +298,24 @@ python scripts/run_ablations.py --quick
 
 ## References (seed list; expand on real submission)
 
-1. Zhang et al. AI framework for multidisease detection via retinal imaging. *Nat Med* (2026). doi:10.1038/s41591-026-04359-w  
-2. Zhou et al. A foundation model for generalizable disease detection from retinal images. *Nature* (2023). doi:10.1038/s41586-023-06555-x  
-3. Fu et al. Evaluation of retinal image quality assessment systems (EyeQ). *MICCAI* workshops / related EyeQ resources.  
-4. ODIR-5K Grand Challenge / dataset documentation.  
-5. BRSET: Brazilian Multilabel Ophthalmological Dataset. *PLOS Digit Health* (doi:10.1371/journal.pdig.0000454); PhysioNet.  
-6. RFMiD / RFMiD 2.0 multi-disease fundus datasets.  
-7. Guo et al. On calibration of modern neural networks. *ICML* 2017 (temperature scaling).  
-8. Vickers & Elkin. Decision curve analysis. *Med Decis Making* 2006.  
-9. RETFound-enhanced community screening with DCA (e.g., PubMed 38693205).  
-10. Official Reti-Pioneer code: https://github.com/lyhyl/Reti-Pioneer  
+1. Zhang et al. AI framework for multidisease detection via retinal imaging. *Nat Med* 32, 2494–2503 (2026). doi:10.1038/s41591-026-04359-w  
+2. Research Briefing. An AI framework for multi-disease detection via retinal imaging. *Nat Med* 32, 2366–2367 (2026). doi:10.1038/s41591-026-04424-4  
+3. Zhou et al. A foundation model for generalizable disease detection from retinal images. *Nature* (2023). doi:10.1038/s41586-023-06555-x  
+4. Fu et al. Evaluation of retinal image quality assessment networks in different color-spaces (EyeQ / MCF-Net). *MICCAI* 2019. doi:10.1007/978-3-030-32239-7_6  
+5. ODIR-5K Grand Challenge / dataset documentation.  
+6. Nakayama et al. BRSET: A Brazilian Multilabel Ophthalmological Dataset of Retina Fundus Photos. *PLOS Digit Health* 3(7):e0000454 (2024). doi:10.1371/journal.pdig.0000454; PhysioNet.  
+7. RFMiD / RFMiD 2.0 multi-disease fundus datasets.  
+8. Guo et al. On calibration of modern neural networks. *ICML* 2017 (temperature scaling).  
+9. Vickers & Elkin. Decision curve analysis. *Med Decis Making* 2006.  
+10. RETFound-enhanced community screening with DCA (e.g., PubMed 38693205).  
+11. Official Reti-Pioneer code: https://github.com/lyhyl/Reti-Pioneer  
 
 ---
 
 ## Assumptions or missing inputs
 
 - Real ODIR/BRSET/RFMiD downloads and GPU feature extraction not completed in this workspace.  
-- ChatGPT Pro/Plus live consult was attempted but Cursor browser tabs failed to stick; literature outline above was independently verified via web search + `docs/PAPER_PLAN.md`.  
+- ChatGPT live consult (2026-08-16-gh-consult): `cursor-ide-browser` MCP absent; Playwright hit Cloudflare interstitial — no ChatGPT reply invented; see `docs/chatgpt-runs/2026-08-16-gh-consult/`. Outline/refs verified via web search + `docs/PAPER_PLAN.md`.  
 - No invented UKB results.
 """
 
@@ -321,11 +324,14 @@ def report_md(rows: list[dict], uris: dict[str, str]) -> str:
     table = ablation_table_md(rows)
     return f"""# 研究报告：基于 Reti-Pioneer 的可学习质量路由与多任务眼底筛查方法扩展
 
-**日期：** {date.today().isoformat()}  
+**日期：** {date.today().isoformat()}（iter-5）  
 **项目路径：** `E:\\Projects\\20260522-retinal-imaging`  
-**性质：** 方法学跟进 / 工程可复现报告（非临床试验报告）
+**性质：** 方法学跟进 / 工程可复现报告（非临床试验报告）  
+**公开代码：** https://github.com/Coucou2016/retinal-imaging-methods-public
 
 <span class="badge">SYNTHETIC metrics ≠ clinical AUROC</span>
+<span class="badge">RFMiD labels real; features SYNTHETIC</span>
+<span class="badge">no UKB AUROC</span>
 
 ## 封面信息
 
@@ -335,7 +341,7 @@ def report_md(rows: list[dict], uris: dict[str, str]) -> str:
 | 本文定位 | Methods extension：learnable_q + multitask + calibration/DCA + 公开队列验证 |
 | 目标期刊（无 UKB） | npj Digital Medicine / MedIA / IEEE JBHI·TMI / CIBM |
 | 写作架构 | Nature-family methods 论证链（nature-writing skill） |
-| 数据诚实性 | ODIR-D ≠ UKB T2DM；合成特征 AUROC 仅流水线自检 |
+| 数据诚实性 | ODIR-D ≠ UKB T2DM；RFMiD 真标签+合成特征；合成 AUROC 仅流水线自检 |
 
 ## 目录
 
@@ -409,9 +415,11 @@ Reti-Pioneer 证明了冻结视觉基础模型特征 + 质量感知融合可用�
 
 1. 阅读 README、PAPER_PLAN、PUBLIC_DATA、既有 chatgpt-runs 与 `results/`。  
 2. 安装 SciencePlots；脚本 `scripts/plot_paper_figures.py` 用 Times New Roman + science 样式重绘消融图（英文轴标签，中文说明放图注）。  
-3. 按 nature-writing（methods）起草 `docs/paper/manuscript.md` 与 HTML。  
-4. 生成自包含 `docs/report/report.html`（Base64 嵌图）。  
-5. ChatGPT：Cursor 内置浏览器标签无法稳定创建/导航（反复 “No browser tab available”）；已用系统默认浏览器打开 chatgpt.com，并落盘 `TASK_BRIEF.md` 供用户粘贴；顾问结论以本地文献检索+ PAPER_PLAN 独立裁定。  
+3. 按 nature-writing（methods）起草并成熟化 `docs/paper/manuscript.md` 与 HTML（`build_paper_report.py` 以磁盘稿为真源，不再覆盖）。  
+4. 生成自包含 `docs/report/report.html`（Base64 嵌图 + 来龙去脉图注）。  
+5. ChatGPT 五轮（`docs/chatgpt-runs/2026-08-16-iter5/`）：`cursor-ide-browser` MCP 不可用；Playwright 两次探测停在 Cloudflare（`_probe2.json`）。已 `Start-Process` 打开系统浏览器并留下 `PASTE_BRIEF_R1`–`R5`；Round1–5 为本地结构化评审 + WebSearch，**无虚构顾问回复**。  
+6. 数据：无 Kaggle → ODIR 未下；BRSET PhysioNet 凭据缺失；RFMiD 官方标签 CSV 已从 Hugging Face 写入 `data/rfmid`（n=3200, K=46），骨干特征仍 SYNTHETIC；CPU-only → foundation 提取 **待补充**。  
+7. 修复：`prepare_public_npz.py` 在仅有 `--train-csv`（无 `--src`）时不再误走 synthetic-demo。  
 
 ---
 
@@ -474,9 +482,11 @@ Reti-Pioneer 证明了冻结视觉基础模型特征 + 质量感知融合可用�
 
 ## 6. 讨论
 
-1. **创新点可信边界：** I–III 有代码与消融协议支撑；临床增益必须等真实公开队列。  
-2. **标签语义：** 公开数据适合方法学复核，不适合直接对标 Nat Med 六病种 AUROC。  
-3. **ChatGPT 顾问角色：** 本次未能稳定完成对话；大纲以 PAPER_PLAN + 独立检索为准，不虚构顾问“已批准”表述。  
+1. **创新点可信边界：** I–III 有代码与消融协议支撑；临床增益必须等真实公开队列像素 + foundation 特征。  
+2. **标签语义：** 公开数据适合方法学复核，不适合直接对标 Nat Med 六病种 AUROC；RFMiD 真实标签 ≠ 可投稿 AUROC。  
+3. **当前稿件风险（独立审计）：** Results 仍为 待补充；勿把 SYNTHETIC 图当临床主张；Reti-Pioneer 摘要 “multitask” vs 代码独立二分类头已写清；learnable_q 无质量监督可能退化；DCA@0.10 需按患病率再标定；CPU-only 阻断特征提取。  
+4. **ChatGPT 顾问角色：** iter-5 仍被 Cloudflare/缺 MCP 阻断；五轮本地评审 + paste briefs；大纲以 PAPER_PLAN + 独立 WebSearch 为准。  
+5. **文献锚点（已核验）：** Reti-Pioneer、RETFound、EyeQ、BRSET、RFMiD、Guo temperature scaling、Vickers DCA、Quellec 2023 population-independent multi-disease。  
 
 ---
 
@@ -699,7 +709,7 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
       <li>仓库基线核对；按用户授权准备<strong>公开</strong> GitHub 代码+文档快照（排除 data/ckpt/results 大缓存与密钥）。</li>
       <li>安装/确认 SciencePlots；运行 <code>scripts/plot_paper_figures.py</code>（Times New Roman + science 样式；中文说明放图注）重绘结果图。</li>
       <li>nature-writing（methods）升级论文稿与本报告；图注按「问什么 / 怎么读 / 含义 / 结论 / 待补充」加深。</li>
-      <li>ChatGPT：粘贴文本简报 + 公开仓库 URL（启用 web search）；顾问建议经独立核实后才采纳。</li>
+      <li>ChatGPT：粘贴文本简报 + 公开仓库 URL（启用 web search）；本会话 MCP 缺失且 Playwright 遇 Cloudflare，见 <code>docs/chatgpt-runs/2026-08-16-gh-consult/</code>；顾问建议经独立核实后才采纳。</li>
     </ol>
   </section>
 
@@ -718,6 +728,7 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
     <h2>6. 讨论</h2>
     <p>方法学创新点 I–III 与仓库实现一致，具备可投稿叙事潜力；但<strong>证据强度</strong>目前停在工程与合成自检层。公开队列一旦接入，应优先报告：相对 Reti-Pioneer-clone 的同数据提升、校准改善、跨库落差与亚组公平性，而不是与 UKB 内部 AUROC 硬比。</p>
     <p>诚实措辞优先使用 “unfreeze quality routing initialized at fixed weights + multi-label + calibration/DCA on public cohorts”，避免在无 UKB 终点时声称 “outperform Reti-Pioneer”。</p>
+    <p><strong>当前稿件风险（独立审计）：</strong> Results 仍为待补充；勿把 SYNTHETIC 图当临床主张；需写清 Reti-Pioneer 摘要 “multitask” 与代码侧独立二分类头差异；learnable_q 无监督可能退化；DCA 阈值需按患病率再标定。</p>
   </section>
 
   <section id="conclusion">
@@ -861,8 +872,13 @@ def main() -> None:
     rows = load_rows()
     uris = load_uris()
 
-    ms = manuscript_md()
-    (PAPER / "manuscript.md").write_text(ms, encoding="utf-8")
+    # Prefer on-disk manuscript.md as source of truth (do not clobber matured drafts).
+    ms_path = PAPER / "manuscript.md"
+    if ms_path.is_file() and ms_path.stat().st_size > 500:
+        ms = ms_path.read_text(encoding="utf-8")
+    else:
+        ms = manuscript_md()
+        ms_path.write_text(ms, encoding="utf-8")
     (PAPER / "manuscript.html").write_text(build_manuscript_html(ms, uris), encoding="utf-8")
 
     rm = report_md(rows, uris)
@@ -883,13 +899,32 @@ def main() -> None:
     outline.write_text(
         """# Adopted writing architecture
 
-**Emulate:** Nature-family *methods* article (argument: gap → method → fair ablation → calibration/utility → reproducibility → boundary).
+**Emulate:** Nature-family *methods* article (argument: gap → method → fair ablation → calibration/utility → reproducibility → boundary). Closest venue archetypes without UKB: *npj Digital Medicine* methods / *MedIA* technical papers — not flagship *Nat Med* clinical discovery.
 
 **Do not emulate:** flagship *Nature Medicine* clinical discovery narrative requiring UKB-scale cohorts and prospective pilots as primary claims.
 
 **Innovation claims (bounded):** learnable quality routing; shared multi-task head; calibration + DCA as co-primary; public ODIR/BRSET/RFMiD patient-level validation.
 
 **Non-claims:** synthetic AUROC; beating 0.833 T2DM; ODIR-D as UKB T2DM.
+
+## Section map (bounded novelty)
+
+| Section | Job | Claim ceiling |
+|---------|-----|---------------|
+| Abstract / Intro | Gap vs fixed-q + independent heads + AUROC-only utility | Methods extension of Reti-Pioneer skeleton |
+| Related work | RETFound, EyeQ, BRSET/ODIR/RFMiD, calibration/DCA | Position as follow-up, not new foundation model |
+| Methods | `learnable_q`, multi-label BCE, temp scaling, patient splits | Mechanism + protocol only |
+| Experiments | Ablation arms + transfer + fairness slots | Real-data tables 待补充 |
+| Results | Empty / deferred | No SYNTHETIC numbers in submission tables |
+| Discussion / Limits | Label mismatch, domain shift, no UKB | Honest novelty phrasing only |
+
+## Draft risks (keep visible)
+
+1. SYNTHETIC companion figures mistaken for clinical evidence.  
+2. Straw-man vs Reti-Pioneer if “multitask” wording in their abstract is not reconciled with independent-head code clone.  
+3. Endpoint drift (ocular D/H ≠ UKB ICD).  
+4. Unsupervised learnable quality may not move off (1, 0.5, 0).  
+5. Single DCA threshold without prevalence justification.
 """,
         encoding="utf-8",
     )

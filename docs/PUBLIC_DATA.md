@@ -20,6 +20,16 @@ python scripts/download_public_data.py
 python scripts/download_public_data.py --try-download
 ```
 
+### Workspace download status (2026-08-16 iter-5)
+
+| Dataset | Labels | Images | Foundation features | Notes |
+|---------|--------|--------|---------------------|-------|
+| **ODIR-5K** | not downloaded | not downloaded | SYNTHETIC demo cache only | No `kaggle` CLI / `~/.kaggle/kaggle.json` |
+| **BRSET** | blocked | blocked | SYNTHETIC demo cache only | PhysioNet credentialing / DUA required; script never auto-downloads |
+| **RFMiD** | **real** official CSVs (n=3200, K=46) under `data/raw/rfmid/` | sample PNGs only (3 training images for path check); full ~3200 images not bulk-pulled | **SYNTHETIC** in `data/rfmid/` (`SYNTHETIC_FEATURES.txt`) | CUDA unavailable (`torch.cuda.is_available()==False`) → RETFound/Swin extraction **待补充** |
+
+Honesty: real RFMiD *labels* do not authorize manuscript AUROCs until real pixels + foundation features replace the synthetic backbone caches.
+
 ## Label mapping (pre-register these heads)
 
 | Head in this repo | ODIR | BRSET | RFMiD | UKB / Reti-Pioneer |
