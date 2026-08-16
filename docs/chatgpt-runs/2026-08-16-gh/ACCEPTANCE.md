@@ -4,7 +4,7 @@
 
 | # | Criterion | Status |
 |---|-----------|--------|
-| 1 | Public GitHub URL with code+docs (no secrets / no private images) | **PASS** — https://github.com/Coucou2016/retinal-imaging-methods-public |
+| 1 | Public GitHub URL with code+docs (no secrets / no private images) | **PASS** — https://github.com/Coucou2016/retinal-imaging-methods-public (remote `f5ec6bd`; local may be +1 trivial NOTES SHA commit if 443 flaky) |
 | 2 | ChatGPT consulted with URL + text brief **OR** documented browser failure + TASK_BRIEF | **PASS (fallback)** — browser MCP unavailable; TASK_BRIEF + system browser open; see BROWSER_FAILURE.md |
 | 3 | SciencePlots figures regenerated into paper+report | **PASS** |
 | 4 | `report.html` fully self-contained (Base64, no CDN) | **PASS** (0 `http(s)` URLs; data URIs present) |
