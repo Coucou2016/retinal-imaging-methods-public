@@ -1,0 +1,258 @@
+test_state_dict_reload_changes_predictions (test_audit.TestCheckpointRoundTrip.test_state_dict_reload_changes_predictions) ... ok
+test_soft_train_vs_max_aggregation (test_audit.TestEnsembleModes.test_soft_train_vs_max_aggregation)
+Paper: soft voting (train) vs max pooling (inference). ... ok
+test_auroc_perfect_and_random (test_audit.TestMetricsSanity.test_auroc_perfect_and_random) ... ok
+Wrote demo dataset (96 samples) to D:\CursorTemp\tmpantgtg1p
+test_demo_train_val_auroc_in_range (test_audit.TestSplitAndValidation.test_demo_train_val_auroc_in_range) ... 
+[1/5]  20%|██         [00:00<?]
+Epoch [1/3]: [1/5]  20%|██         [00:00<?]
+Epoch [1/3]: [1/5]  20%|██         [00:00<?]
+Epoch [1/3]: [2/5]  40%|████       [00:00<00:02]
+Epoch [1/3]: [2/5]  40%|████       [00:01<00:02]
+Epoch [1/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [1/3]: [3/5]  60%|██████     [00:02<00:01]
+Epoch [1/3]: [4/5]  80%|████████   [00:02<00:00]
+Epoch [1/3]: [4/5]  80%|████████   [00:02<00:00]
+Epoch [1/3]: [5/5] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [2/2] 100%|██████████ [00:00<00:00]
+                                              
+
+[1/5]  20%|██         [00:00<?]
+Epoch [2/3]: [1/5]  20%|██         [00:00<?]
+Epoch [2/3]: [1/5]  20%|██         [00:00<?]
+Epoch [2/3]: [2/5]  40%|████       [00:00<00:01]
+Epoch [2/3]: [2/5]  40%|████       [00:01<00:01]
+Epoch [2/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [2/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [2/3]: [4/5]  80%|████████   [00:01<00:00]
+Epoch [2/3]: [4/5]  80%|████████   [00:02<00:00]
+Epoch [2/3]: [5/5] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [2/2] 100%|██████████ [00:00<00:00]
+                                              
+
+[1/5]  20%|██         [00:00<?]
+Epoch [3/3]: [1/5]  20%|██         [00:00<?]
+Epoch [3/3]: [1/5]  20%|██         [00:00<?]
+Epoch [3/3]: [2/5]  40%|████       [00:00<00:01]
+Epoch [3/3]: [2/5]  40%|████       [00:01<00:01]
+Epoch [3/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [3/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [3/3]: [4/5]  80%|████████   [00:01<00:00]
+Epoch [3/3]: [4/5]  80%|████████   [00:02<00:00]
+Epoch [3/3]: [5/5] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [2/2] 100%|██████████ [00:00<00:00]
+                                              
+ok
+test_stratified_split_both_classes_in_val (test_audit.TestSplitAndValidation.test_stratified_split_both_classes_in_val) ... ok
+Wrote odir cache (32 rows, K=8) to D:\CursorTemp\tmpdjyb_6r0\odir
+Wrote brset cache (32 rows, K=3) to D:\CursorTemp\tmpdjyb_6r0\brset
+SYNTHETIC FEATURE CACHE - not for manuscript AUROC. Replace with real ODIR/BRSET images + extract_features.py before paper tables.
+[cache] building synthetic odir -> D:\CursorTemp\tmpdjyb_6r0\odir (n=32)
+[cache] building synthetic brset -> D:\CursorTemp\tmpdjyb_6r0\brset (n=32)
+
+=== Ablation: baseline ===
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\train.py --config D:\CursorTemp\tmpdjyb_6r0\ckpt\_cfg_baseline.yaml --dataset odir --data-dir D:\CursorTemp\tmpdjyb_6r0\odir --horizon 0 --demo --disease D
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt D:\CursorTemp\tmpdjyb_6r0\ckpt\20260815225049\D\y0 --dataset odir --data-dir D:\CursorTemp\tmpdjyb_6r0\odir --split val --out-json D:\CursorTemp\tmpdjyb_6r0\results\metrics_baseline_odir_val.json --calibrate
+Wrote D:\CursorTemp\tmpdjyb_6r0\results\ablation_summary.csv
+Wrote D:\CursorTemp\tmpdjyb_6r0\results\ablation_summary.md
+Done: 1/1 eval rows ok (SYNTHETIC).
+test_run_ablations_quick_one_arm (test_followup.TestAblationQuickSmoke.test_run_ablations_quick_one_arm) ... ok
+test_write_summary_marks_synthetic (test_followup.TestAblationSummaryWriter.test_write_summary_marks_synthetic) ... ok
+test_metrics_finite_on_synthetic_labels (test_followup.TestCalibrationFinite.test_metrics_finite_on_synthetic_labels) ... ok
+test_collect_probs_keeps_multilabel_when_model_k1 (test_followup.TestCrossDatasetMap.test_collect_probs_keeps_multilabel_when_model_k1)
+K=1 model on K>1 label cache must not flatten labels to n*K. ... ok
+test_evaluate_cli_cross_dataset (test_followup.TestCrossDatasetMap.test_evaluate_cli_cross_dataset) ... ok
+test_odir_brset_overlap (test_followup.TestCrossDatasetMap.test_odir_brset_overlap) ... ok
+test_download_helper_exits_zero_without_creds (test_followup.TestDownloadHelper.test_download_helper_exits_zero_without_creds) ... ok
+Disease=D horizon=0y split=all n=24 pos=2
+raw  AUROC=0.5682  AP=0.1339  ECE=0.7294  Brier=0.6340  NB@0.10=-0.0185  treat-all=-0.0185  treat-none=0.0000  YoudenJ=0.4545@t=0.9151  sens@95%spec=0.0000(spec=0.9545)
+  subgroup sex=0 n=10 AUROC=0.3333
+  subgroup sex=1 n=14 AUROC=0.6923
+  subgroup age_tertile=0 n=8 AUROC=nan
+  subgroup age_tertile=1 n=8 AUROC=0.7143
+  subgroup age_tertile=2 n=8 AUROC=0.2857
+Wrote metrics JSON to D:\CursorTemp\tmp3w0vk1mj\metrics.json
+test_out_json_written (test_followup.TestEvaluateOutJson.test_out_json_written) ... ok
+Wrote odir cache (24 rows, K=8) to D:\CursorTemp\tmpw3nnynfv\odir
+test_labels_only_preserves_backbone (test_followup.TestFrozenSplitAndDCA.test_labels_only_preserves_backbone) ... E:\Projects\20260522-retinal-imaging\tests\test_followup.py:709: ResourceWarning: unclosed file <_io.BufferedReader name='D:\\CursorTemp\\tmpw3nnynfv\\odir\\UKB_RETF.npz'>
+  before = open(retf, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+labels-only: refreshed mqd/y under D:\CursorTemp\tmpw3nnynfv\odir; backbone npz unchanged
+Wrote odir cache (24 rows, K=8) to D:\CursorTemp\tmpw3nnynfv\odir
+E:\Projects\20260522-retinal-imaging\tests\test_followup.py:726: ResourceWarning: unclosed file <_io.BufferedReader name='D:\\CursorTemp\\tmpw3nnynfv\\odir\\UKB_RETF.npz'>
+  after = open(retf, "rb").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_net_benefit_can_be_negative (test_followup.TestFrozenSplitAndDCA.test_net_benefit_can_be_negative) ... ok
+Wrote odir cache (48 rows, K=8) to D:\CursorTemp\tmpdmk308yz\odir
+Public cache already present in D:\CursorTemp\tmpdmk308yz\odir
+Training D K=1 (y=0 years) learnable_q=False ensemble=paper on cpu
+  using frozen split from D:\CursorTemp\tmpdmk308yz\odir\split.npz
+  train=32 val=12 test=4 (val positives=4 patients=48)
+test_train_copies_frozen_test_idx (test_followup.TestFrozenSplitAndDCA.test_train_copies_frozen_test_idx) ... 
+[1/1] 100%|██████████ [00:00<?]
+Epoch [1/4]: [1/1] 100%|██████████ [00:00<?]
+                                            
+
+[1/1] 100%|██████████ [00:00<?]
+Iteration: [1/1] 100%|██████████ [00:00<?]
+                                          
+
+[1/1] 100%|██████████ [00:00<?]
+Epoch [2/4]: [1/1] 100%|██████████ [00:00<?]
+                                            
+
+[1/1] 100%|██████████ [00:00<?]
+Iteration: [1/1] 100%|██████████ [00:00<?]
+                                          
+
+[1/1] 100%|██████████ [00:00<?]
+Epoch [3/4]: [1/1] 100%|██████████ [00:00<?]
+                                            
+
+[1/1] 100%|██████████ [00:00<?]
+Iteration: [1/1] 100%|██████████ [00:00<?]
+                                          
+
+[1/1] 100%|██████████ [00:00<?]
+Epoch [4/4]: [1/1] 100%|██████████ [00:00<?]
+                                            
+
+[1/1] 100%|██████████ [00:00<?]
+Iteration: [1/1] 100%|██████████ [00:00<?]
+                                          
+ok
+test_k1_and_k_gt1_forward (test_followup.TestMultitaskShapes.test_k1_and_k_gt1_forward) ... ok
+test_learnable_q_grad_vs_frozen (test_followup.TestMultitaskShapes.test_learnable_q_grad_vs_frozen) ... ok
+test_operating_points_nan_on_single_class (test_followup.TestOperatingPoints.test_operating_points_nan_on_single_class) ... ok
+test_score_predictions_includes_operating_points (test_followup.TestOperatingPoints.test_score_predictions_includes_operating_points) ... ok
+test_sens_at_100_spec_uses_fpr_zero_corner (test_followup.TestOperatingPoints.test_sens_at_100_spec_uses_fpr_zero_corner) ... ok
+test_sens_at_95_spec_met_via_high_specificity_corner (test_followup.TestOperatingPoints.test_sens_at_95_spec_met_via_high_specificity_corner) ... ok
+test_sens_at_95_spec_prefers_high_spec_floor (test_followup.TestOperatingPoints.test_sens_at_95_spec_prefers_high_spec_floor) ... ok
+test_youden_on_perfect_separator (test_followup.TestOperatingPoints.test_youden_on_perfect_separator) ... ok
+test_same_patient_never_in_train_and_val (test_followup.TestPatientLevelSplit.test_same_patient_never_in_train_and_val) ... ok
+Wrote odir cache (16 rows, K=8) to D:\CursorTemp\tmpgegs70nw
+test_prepare_synthetic_demo_cli (test_followup.TestPreparePublicCli.test_prepare_synthetic_demo_cli) ... ok
+test_parse_tiny_csvs_without_images (test_followup.TestPublicLoaders.test_parse_tiny_csvs_without_images) ... ok
+Wrote demo dataset (128 samples) to D:\CursorTemp\tmpnv08i8fl
+Wrote D:\CursorTemp\tmptbuciv7j\ablation_summary.csv
+Wrote D:\CursorTemp\tmptbuciv7j\ablation_summary.md
+Wrote brset cache (16 rows, K=3) to D:\CursorTemp\tmpx1xrie8v
+Wrote odir cache (24 rows, K=8) to D:\CursorTemp\tmpxw8dvlcv\odir
+Wrote brset cache (20 rows, K=3) to D:\CursorTemp\tmpxw8dvlcv\brset
+Wrote odir cache (24 rows, K=8) to D:\CursorTemp\tmp3w0vk1mj\odir
+Wrote odir cache (48 rows, K=8) to D:\CursorTemp\tmpuvey5r84
+test_synthetic_odir_npz_train_eval (test_followup.TestPublicSmokeTrainEval.test_synthetic_odir_npz_train_eval) ... 
+[1/5]  20%|██         [00:00<?]
+Epoch [1/3]: [1/5]  20%|██         [00:00<?]
+Epoch [1/3]: [1/5]  20%|██         [00:00<?]
+Epoch [1/3]: [2/5]  40%|████       [00:00<00:01]
+Epoch [1/3]: [2/5]  40%|████       [00:01<00:01]
+Epoch [1/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [1/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [1/3]: [4/5]  80%|████████   [00:01<00:00]
+Epoch [1/3]: [4/5]  80%|████████   [00:02<00:00]
+Epoch [1/3]: [5/5] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [2/2] 100%|██████████ [00:00<00:00]
+                                              
+
+[1/5]  20%|██         [00:00<?]
+Epoch [2/3]: [1/5]  20%|██         [00:00<?]
+Epoch [2/3]: [1/5]  20%|██         [00:00<?]
+Epoch [2/3]: [2/5]  40%|████       [00:00<00:01]
+Epoch [2/3]: [2/5]  40%|████       [00:01<00:01]
+Epoch [2/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [2/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [2/3]: [4/5]  80%|████████   [00:01<00:00]
+Epoch [2/3]: [4/5]  80%|████████   [00:02<00:00]
+Epoch [2/3]: [5/5] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [2/2] 100%|██████████ [00:00<00:00]
+                                              
+
+[1/5]  20%|██         [00:00<?]
+Epoch [3/3]: [1/5]  20%|██         [00:00<?]
+Epoch [3/3]: [1/5]  20%|██         [00:00<?]
+Epoch [3/3]: [2/5]  40%|████       [00:00<00:01]
+Epoch [3/3]: [2/5]  40%|████       [00:01<00:01]
+Epoch [3/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [3/3]: [3/5]  60%|██████     [00:01<00:01]
+Epoch [3/3]: [4/5]  80%|████████   [00:01<00:00]
+Epoch [3/3]: [4/5]  80%|████████   [00:02<00:00]
+Epoch [3/3]: [5/5] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [1/2]  50%|█████      [00:00<?]
+Iteration: [2/2] 100%|██████████ [00:00<00:00]
+                                              
+ok
+test_demo_data_and_imports (test_smoke.TestRetiPioneerSmoke.test_demo_data_and_imports) ... ok
+test_evaluate_checkpoint (test_smoke.TestRetiPioneerSmoke.test_evaluate_checkpoint) ... ok
+test_model_forward_fast_mode (test_smoke.TestRetiPioneerSmoke.test_model_forward_fast_mode)
+Forward pass on synthetic tensors (no torchvision dataset import). ... ok
+test_train_one_disease_cpu (test_smoke.TestRetiPioneerSmoke.test_train_one_disease_cpu)
+Wrote demo dataset (64 samples) to D:\CursorTemp\tmp19dlw9rz
+Wrote demo dataset (32 samples) to D:\CursorTemp\tmplf6r89f9
+Wrote demo dataset (48 samples) to D:\CursorTemp\tmp7koxuccx
+Train on pre-extracted features (no torchvision required). ... 
+[1/4]  25%|██▌        [00:00<?]
+Epoch [1/3]: [1/4]  25%|██▌        [00:00<?]
+Epoch [1/3]: [1/4]  25%|██▌        [00:00<?]
+Epoch [1/3]: [2/4]  50%|█████      [00:00<00:01]
+Epoch [1/3]: [2/4]  50%|█████      [00:01<00:01]
+Epoch [1/3]: [3/4]  75%|███████▌   [00:01<00:00]
+Epoch [1/3]: [3/4]  75%|███████▌   [00:02<00:00]
+Epoch [1/3]: [4/4] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/4]  25%|██▌        [00:00<?]
+Epoch [2/3]: [1/4]  25%|██▌        [00:00<?]
+Epoch [2/3]: [1/4]  25%|██▌        [00:00<?]
+Epoch [2/3]: [2/4]  50%|█████      [00:00<00:01]
+Epoch [2/3]: [2/4]  50%|█████      [00:01<00:01]
+Epoch [2/3]: [3/4]  75%|███████▌   [00:01<00:00]
+Epoch [2/3]: [3/4]  75%|███████▌   [00:02<00:00]
+Epoch [2/3]: [4/4] 100%|██████████ [00:02<00:00]
+                                                
+
+[1/4]  25%|██▌        [00:00<?]
+Epoch [3/3]: [1/4]  25%|██▌        [00:00<?]
+Epoch [3/3]: [1/4]  25%|██▌        [00:00<?]
+Epoch [3/3]: [2/4]  50%|█████      [00:00<00:01]
+Epoch [3/3]: [2/4]  50%|█████      [00:01<00:01]
+Epoch [3/3]: [3/4]  75%|███████▌   [00:01<00:00]
+Epoch [3/3]: [3/4]  75%|███████▌   [00:02<00:00]
+Epoch [3/3]: [4/4] 100%|██████████ [00:02<00:00]
+                                                
+ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 142.463s
+
+OK

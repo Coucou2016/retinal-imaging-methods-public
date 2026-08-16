@@ -1,0 +1,5 @@
+baseline: no-git-repository post-patch snapshot 2026-08-15
+zip: E:\Projects\20260522-retinal-imaging\artifacts\chatgpt-handoff\reti-pioneer-followup-postpatch-20260815-223100.zip
+size_bytes: 106156
+sha256: 3D2663273E07C4160F6854017E057CC68A09C2C09BCF6E9FCCAE342B32D1DBDF
+note: includes lead-agent patches after ChatGPT browser failure

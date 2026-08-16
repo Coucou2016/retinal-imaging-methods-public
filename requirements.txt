@@ -1,0 +1,24 @@
+# Reti-Pioneer reproduction (Zhang et al., Nat Med 2026)
+# Core training on pre-extracted features works on CPU with demo data.
+numpy>=1.26
+pillow>=10.0
+pyyaml>=6.0
+scikit-learn>=1.4
+scikit-image>=0.22
+tqdm>=4.66
+tensorboardX>=2.6
+pytorch-ignite>=0.5.2
+imbalanced-learn>=0.12
+huggingface-hub>=0.23
+timm==0.9.2
+SciencePlots>=2.1.0
+matplotlib>=3.8
+markdown>=3.5
+fpdf2>=2.7
+
+# PyTorch: install separately for your CUDA/CPU build, e.g.:
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+
+# Optional (full end-to-end inference with three backbones):
+# mamba-ssm
+# causal-conv1d

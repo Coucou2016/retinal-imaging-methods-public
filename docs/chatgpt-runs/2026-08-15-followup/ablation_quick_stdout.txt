@@ -1,0 +1,26 @@
+SYNTHETIC FEATURE CACHE - not for manuscript AUROC. Replace with real ODIR/BRSET images + extract_features.py before paper tables.
+[cache] odir: reuse E:\Projects\20260522-retinal-imaging\data\odir
+[cache] brset: reuse E:\Projects\20260522-retinal-imaging\data\brset
+
+=== Ablation: baseline ===
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\train.py --config E:\Projects\20260522-retinal-imaging\results\ablation_runs\_cfg_baseline.yaml --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --horizon 0 --demo --disease D
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224103\D\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split val --out-json E:\Projects\20260522-retinal-imaging\results\metrics_baseline_odir_val.json --calibrate
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224103\D\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split all --out-json E:\Projects\20260522-retinal-imaging\results\metrics_baseline_odir_to_brset.json --calibrate --test-data-dir E:\Projects\20260522-retinal-imaging\data\brset --test-dataset brset
+
+=== Ablation: learnq ===
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\train.py --config E:\Projects\20260522-retinal-imaging\results\ablation_runs\_cfg_learnq.yaml --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --horizon 0 --demo --disease D --learnable-q
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224155\D\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split val --out-json E:\Projects\20260522-retinal-imaging\results\metrics_learnq_odir_val.json --calibrate
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224155\D\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split all --out-json E:\Projects\20260522-retinal-imaging\results\metrics_learnq_odir_to_brset.json --calibrate --test-data-dir E:\Projects\20260522-retinal-imaging\data\brset --test-dataset brset
+
+=== Ablation: multitask ===
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\train.py --config E:\Projects\20260522-retinal-imaging\results\ablation_runs\_cfg_multitask.yaml --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --horizon 0 --demo --multitask
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224240\multitask\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split val --out-json E:\Projects\20260522-retinal-imaging\results\metrics_multitask_odir_val.json --calibrate
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224240\multitask\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split all --out-json E:\Projects\20260522-retinal-imaging\results\metrics_multitask_odir_to_brset.json --calibrate --test-data-dir E:\Projects\20260522-retinal-imaging\data\brset --test-dataset brset
+
+=== Ablation: full ===
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\train.py --config E:\Projects\20260522-retinal-imaging\results\ablation_runs\_cfg_full.yaml --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --horizon 0 --demo --multitask --learnable-q
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224320\multitask\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split val --out-json E:\Projects\20260522-retinal-imaging\results\metrics_full_odir_val.json --calibrate
++ E:\Miniconda3\python.exe E:\Projects\20260522-retinal-imaging\scripts\evaluate.py --ckpt E:\Projects\20260522-retinal-imaging\results\ablation_runs\20260815224320\multitask\y0 --dataset odir --data-dir E:\Projects\20260522-retinal-imaging\data\odir --split all --out-json E:\Projects\20260522-retinal-imaging\results\metrics_full_odir_to_brset.json --calibrate --test-data-dir E:\Projects\20260522-retinal-imaging\data\brset --test-dataset brset
+Wrote E:\Projects\20260522-retinal-imaging\results\ablation_summary.csv
+Wrote E:\Projects\20260522-retinal-imaging\results\ablation_summary.md
+Done: 8/8 eval rows ok (SYNTHETIC).

@@ -1,0 +1,41 @@
+{
+  "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\ablation_runs\\20260815223646\\D\\y0\\ckpt\\4.pt",
+  "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\ablation_runs\\20260815223646\\D\\y0",
+  "dataset": "odir",
+  "disease": "diabetes_related",
+  "horizon": 0,
+  "split": "all",
+  "n": 48,
+  "cross_dataset": 1,
+  "test_dataset": "brset",
+  "calibrate": 0,
+  "temperature": null,
+  "temperature_fit": null,
+  "raw": {
+    "class_0_auroc": 0.4987714987714988,
+    "class_diabetes_related_auroc": 0.4987714987714988,
+    "auroc": 0.4987714987714988,
+    "ap": 0.3339512088696176,
+    "ece": 0.37202622182667255,
+    "brier": 0.31109856824216037,
+    "nb@0.10": 0.09259259259259259,
+    "youden_j": 0.21130221130221138,
+    "youden_sensitivity": 0.45454545454545453,
+    "youden_specificity": 0.7567567567567568,
+    "youden_threshold": 0.6484817266464233,
+    "sens@95%spec": 0.09090909090909091,
+    "sens@95%spec_threshold": 0.9738032221794128,
+    "sens@95%spec_specificity": 1.0,
+    "sens@95%spec_met_target": 1.0,
+    "treat_all_nb@0.10": 0.1435185185185185,
+    "treat_none_nb@0.10": 0.0
+  },
+  "calibrated": null,
+  "per_head": {
+    "diabetes_related": {
+      "auroc": 0.4987714987714988,
+      "ap": 0.3339512088696176
+    }
+  },
+  "disclaimer": "Metrics reflect the loaded cache; synthetic features are not for manuscript AUROC."
+}

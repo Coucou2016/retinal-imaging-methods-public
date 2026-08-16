@@ -1,0 +1,49 @@
+# Learnable quality routing (q_fc unfrozen; init = paper 1 / 0.5 / 0).
+# Single-task head. Compare to configs/ablation_baseline.yaml on the same split.
+
+data_dir: data/UKBCompressed
+pretrained_dir: pretrained
+ckpt_dir: ckpt
+
+clinic_variables:
+  - baselineage
+  - gender
+  - weight
+  - ethnicity
+
+diseases:
+  - t2dm
+
+pretrain_features:
+  - RETF
+  - SwinB
+  - VimS
+
+training:
+  lr: 1.0e-4
+  weight_decay: 0.01
+  epochs: 20
+  epochs_factor: 2
+  warmup_lr: 1.0e-6
+  warmup_epochs: 4
+  batch_size: 64
+  fast_mode: true
+  balance_sampler: false
+  device: auto
+  learnable_q: true
+  multitask: false
+  pos_weight: false
+  enable_q: true
+  ensemble: paper
+  calibrate: false
+
+longitudinal_years:
+  - 0
+
+split:
+  val_fraction: 0.25
+  seed: 42
+
+demo:
+  n_samples: 256
+  seed: 42

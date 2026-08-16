@@ -1,0 +1,6 @@
+baseline: no-git-repository (dirty workspace snapshot 2026-08-15)
+zip: E:\Projects\20260522-retinal-imaging\artifacts\chatgpt-handoff\reti-pioneer-followup-audit-20260815-220501.zip
+size_bytes: 96514
+sha256: FBF0EFB667EACE280C04ED3ED988DECD789302FE1BBBA8F2E723EEF0293D780F
+excluded: .git, node_modules, ckpt, data/*.npz, pretrained, models, Reti-Pioneer-main, _upstream.zip, __pycache__, results, artifacts
+secret_scan: passed (no .env files; no private keys/tokens)

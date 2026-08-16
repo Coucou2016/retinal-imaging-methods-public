@@ -1,0 +1,61 @@
+# Reti-Pioneer reproduction config (Zhang et al., Nat Med 2026)
+# https://doi.org/10.1038/s41591-026-04359-w
+
+data_dir: data/UKBCompressed
+pretrained_dir: pretrained
+ckpt_dir: ckpt
+
+# Clinical metadata columns stored in UKB_mqd.npz (ethnicity expanded to one-hot in training)
+clinic_variables:
+  - baselineage
+  - gender
+  - weight
+  - ethnicity
+
+diseases:
+  - t2dm
+  - thyroid
+  - osteoporosis
+  - gout
+  - hyperlipemia
+  - hypertension
+
+# Foundation model feature caches used for efficient fine-tuning
+pretrain_features:
+  - RETF
+  - SwinB
+  - VimS
+
+training:
+  lr: 1.0e-4
+  weight_decay: 0.01
+  epochs: 20
+  epochs_factor: 2
+  warmup_lr: 1.0e-6
+  warmup_epochs: 4
+  batch_size: 512
+  fast_mode: true  # train on pre-extracted features (paper workflow)
+  balance_sampler: false
+  device: auto  # auto | cuda | cpu
+  learnable_q: false  # paper clone: freeze q_fc at 1 / 0.5 / 0
+  multitask: false  # paper clone: one binary head per disease
+  pos_weight: false
+  enable_q: true
+  ensemble: paper  # paper | mean | temp_mean
+  calibrate: false
+
+longitudinal_years:
+  - 0
+  - 5
+  - 10
+
+inference:
+  image_size: 224
+  ukb_center_crop: 1400
+  thresholds:
+    T2D: 0.072917238
+    Thyroid: 0.098484434
+    Osteoporosis: 0.029431015
+    Gout: 0.020402882
+    Hyperlipidemia: 0.458788097
+    Hypertension: 0.425803155

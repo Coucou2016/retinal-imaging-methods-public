@@ -1,0 +1,48 @@
+# Fast local demo overrides (see scripts/train.py --demo)
+data_dir: data/UKBCompressed
+pretrained_dir: pretrained
+ckpt_dir: ckpt
+
+clinic_variables:
+  - baselineage
+  - gender
+  - weight
+  - ethnicity
+
+diseases:
+  - t2dm
+
+pretrain_features:
+  - RETF
+  - SwinB
+  - VimS
+
+training:
+  lr: 1.0e-3
+  weight_decay: 0.01
+  epochs: 3
+  epochs_factor: 1
+  warmup_lr: 1.0e-5
+  warmup_epochs: 2
+  batch_size: 64
+  fast_mode: true
+  balance_sampler: false
+  device: cpu
+  learnable_q: false
+  multitask: false
+  pos_weight: false
+  enable_q: true
+  ensemble: paper
+  calibrate: false
+
+longitudinal_years:
+  - 0
+
+# Deterministic train/val split for held-out metrics (synthetic data only)
+split:
+  val_fraction: 0.25
+  seed: 42
+
+demo:
+  n_samples: 256
+  seed: 42
