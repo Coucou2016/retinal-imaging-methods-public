@@ -72,7 +72,10 @@ Artifacts: `docs/chatgpt-runs/2026-08-16-iter5/`. Browser: `BROWSER_FAILURE.md`.
 ### 十九.4 GitHub（ChatGPT 可读）
 
 公开仓库 URL（每轮 paste brief 均含）：https://github.com/Coucou2016/retinal-imaging-methods-public  
-推送范围：**仅代码与文档**（含小图/合成 ablation CSV）；不含 secrets、患者影像、大 npz/ckpt。
+
+推送范围：**仅代码与文档**（含小图/合成 ablation CSV）；不含 secrets、患者影像、大 npz/ckpt。  
+
+**Pushed commit:** `5aab91ccb9c1a97f7f3fb439cf377ed52e57b346` (`Mature iter-5 methods manuscript and honest public-data status.`) on `main`.
 
 ### 十九.5 残留风险 / 下一步
 
