@@ -282,6 +282,10 @@ No UKB / SEED access in this workspace; label mismatch vs ICD systemic endpoints
 
 Code, configs (`configs/ablation_*.yaml`), `scripts/run_ablations.py`, patient-level split, and `docs/REPRODUCIBILITY.md`. BRSET requires PhysioNet credentialing.
 
+**Code availability (public snapshot for review):** https://github.com/Coucou2016/retinal-imaging-methods-public — code, configs, docs, and SYNTHETIC ablation CSV/figures only; no patient images or UKB extracts.
+
+**Data availability:** Public ODIR-5K / BRSET / RFMiD under their respective licenses (BRSET via PhysioNet credentialing). UK Biobank data are **not** redistributed here; clinical UKB AUROCs remain 待补充 until authorized access and re-analysis.
+
 ```powershell
 python -m unittest discover -s tests -v
 python scripts/plot_paper_figures.py

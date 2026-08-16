@@ -7,7 +7,7 @@ Do **not** upload ZIP/files — read the public repository URL below instead.
 
 ## Public repository (read this)
 
-**GitHub URL (fill after push):** `GITHUB_URL_PLACEHOLDER`
+**GitHub URL:** https://github.com/Coucou2016/retinal-imaging-methods-public
 
 Please open and skim:
 - `README.md`
@@ -17,7 +17,7 @@ Please open and skim:
 - `scripts/run_ablations.py`, `scripts/plot_paper_figures.py`
 - `configs/ablation_*.yaml`
 
-Ignore any SYNTHETIC AUROC as clinical performance.
+Ignore any SYNTHETIC AUROC as clinical performance. No private patient images are in this repo.
 
 ---
 
