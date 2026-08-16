@@ -7,7 +7,7 @@
 | URL | https://github.com/Coucou2016/retinal-imaging-methods-public |
 | Visibility | **PUBLIC** |
 | Owner | Coucou2016 |
-| Commit pushed | `1f72677` (+ follow-up docs commit if present) |
+| Commits pushed | `1f72677` (snapshot), `f5ec6bd` (URL + captions/docs) |
 | Purpose | Code + docs for ChatGPT / external reading |
 | **Not uploaded** | `.env`, credentials, `data/` images/npz, `ckpt/`, heavy `results/`, `pretrained/`, `Reti-Pioneer-main/`, `.venv`, browser state, private UKB |
 
