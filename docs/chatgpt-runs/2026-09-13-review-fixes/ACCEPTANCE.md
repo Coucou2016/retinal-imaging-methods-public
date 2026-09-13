@@ -46,3 +46,8 @@ python scripts/build_paper_report.py
 
 Target: https://github.com/Coucou2016/retinal-imaging-methods-public  
 Policy: **code + docs only** (no `data/`, `ckpt/`, secrets, real images).
+
+| Attempt | Result |
+|---------|--------|
+| Local commit | **Done** `f431a000b10d3f60cf7afbd3fde716a51f60ca79` — *Fix P0 review: monotone router, endpoint ontology, calibration split.* |
+| `git push origin HEAD` | **Done** (retry after initial 443 timeout) `5e967a9..f431a00` → `main` |
