@@ -47,8 +47,8 @@ def _batch(b=4, k=1):
     return ((l, r), m, (ql, ql.clone())), torch.zeros(b, k)
 
 
-def _q_fcs(model):
-    return [seq[0].quality_aware.q_fc for seq in model.models]
+def _q_modules(model):
+    return [seq[0].quality_aware for seq in model.models]
 
 
 class TestMultitaskShapes(unittest.TestCase):
@@ -72,24 +72,25 @@ class TestMultitaskShapes(unittest.TestCase):
         torch.manual_seed(0)
         xmq, _ = _batch(3, 1)
         frozen = get_reti_pioneer(True, num_classes=1, learnable_q=False)
-        learn = get_reti_pioneer(True, num_classes=1, learnable_q=True)
-        for fc in _q_fcs(frozen):
-            self.assertFalse(fc.weight.requires_grad)
-        for fc in _q_fcs(learn):
-            self.assertTrue(fc.weight.requires_grad)
+        learn = get_reti_pioneer(
+            True, num_classes=1, learnable_q=True, quality_router="free_linear"
+        )
+        for qa in _q_modules(frozen):
+            self.assertFalse(qa.q_fc.weight.requires_grad)
+        for qa in _q_modules(learn):
+            self.assertTrue(qa.q_fc.weight.requires_grad)
 
-        w0 = _q_fcs(frozen)[0].weight.detach().clone()
+        w0 = _q_modules(frozen)[0].q_fc.weight.detach().clone()
         frozen.train()
         opt_f = torch.optim.SGD(frozen.parameters(), lr=0.5)
         opt_f.zero_grad()
         frozen(xmq).sum().backward()
         opt_f.step()
-        self.assertTrue(torch.equal(w0, _q_fcs(frozen)[0].weight))
+        self.assertTrue(torch.equal(w0, _q_modules(frozen)[0].q_fc.weight))
 
-        q_fc = _q_fcs(learn)[0]
+        q_fc = _q_modules(learn)[0].q_fc
         w1 = q_fc.weight.detach().clone()
         learn.train()
-        # Optimize only q_fc so a non-zero grad is guaranteed to move weights.
         opt_l = torch.optim.SGD(q_fc.parameters(), lr=0.5)
         opt_l.zero_grad()
         learn(xmq).sum().backward()
@@ -343,18 +344,27 @@ class TestCrossDatasetMap(unittest.TestCase):
             list(ODIR_LABELS), list(BRSET_LABELS), "odir", "brset"
         )
         tasks = {h.task for h in heads}
-        self.assertIn("diabetes_related", tasks)
+        self.assertIn("diabetes_ocular", tasks)
         self.assertIn("hypertension_ocular", tasks)
-        d = next(h for h in heads if h.task == "diabetes_related")
+        d = next(h for h in heads if h.task == "diabetes_ocular")
         self.assertEqual(d.train_name, "D")
-        self.assertEqual(d.test_name, "diabetes")
+        self.assertEqual(d.test_name, "dr_referable")
         logits = np.arange(16, dtype=np.float32).reshape(2, 8)
         labels = np.array([[1, 0, 1], [0, 1, 0]], dtype=np.float32)
         p, y = slice_mapped(logits, labels, heads)
         self.assertEqual(p.shape, (2, 2))
         self.assertEqual(y.shape, (2, 2))
-        self.assertEqual(p[0, 0], logits[0, list(ODIR_LABELS).index("D")])
-        self.assertEqual(y[0, 1], labels[0, list(BRSET_LABELS).index("hypertensive_retinopathy")])
+        h_htn = next(h for h in heads if h.task == "hypertension_ocular")
+        h_dm = next(h for h in heads if h.task == "diabetes_ocular")
+        # Column order follows `heads` list order.
+        i_htn = heads.index(h_htn)
+        i_dm = heads.index(h_dm)
+        self.assertEqual(p[0, i_dm], logits[0, list(ODIR_LABELS).index("D")])
+        self.assertEqual(
+            y[0, i_htn],
+            labels[0, list(BRSET_LABELS).index("hypertensive_retinopathy")],
+        )
+        self.assertEqual(y[0, i_dm], labels[0, list(BRSET_LABELS).index("dr_referable")])
 
     def test_evaluate_cli_cross_dataset(self):
         import json
@@ -390,7 +400,7 @@ class TestCrossDatasetMap(unittest.TestCase):
                         "horizon": 0,
                         "learnable_q": False,
                         "enable_q": True,
-                        "ensemble": "paper",
+                        "ensemble": "released_code",
                         "multitask": True,
                         "dataset": "odir",
                         "fast_mode": True,
@@ -417,8 +427,8 @@ class TestCrossDatasetMap(unittest.TestCase):
                 cwd=ROOT,
                 text=True,
             )
-            self.assertIn("Cross-dataset odir -> brset", out)
-            self.assertIn("diabetes_related", out)
+            self.assertIn("Endpoint-aware cross-cohort odir -> brset", out)
+            self.assertIn("diabetes_ocular", out)
             self.assertIn("AUROC=", out)
 
 
@@ -509,7 +519,7 @@ class TestEvaluateOutJson(unittest.TestCase):
                         "horizon": 0,
                         "learnable_q": False,
                         "enable_q": True,
-                        "ensemble": "paper",
+                        "ensemble": "released_code",
                         "multitask": False,
                         "dataset": "odir",
                         "fast_mode": True,

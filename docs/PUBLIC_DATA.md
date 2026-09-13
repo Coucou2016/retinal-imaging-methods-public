@@ -30,29 +30,30 @@ python scripts/download_public_data.py --try-download
 
 Honesty: real RFMiD *labels* do not authorize manuscript AUROCs until real pixels + foundation features replace the synthetic backbone caches.
 
-## Label mapping (pre-register these heads)
+## Label mapping / endpoint harmonization (pre-register these heads)
 
-| Head in this repo | ODIR | BRSET | RFMiD | UKB / Reti-Pioneer |
-|-------------------|------|-------|-------|--------------------|
-| `N` | Normal | — | — | — |
-| `D` / `diabetes_ocular` | Diabetes (ocular findings / DR) | — | `DR` (retinal) | **Not** T2DM ICD |
-| `diabetes` | — | Self-reported / clinical diabetes | — | Closer to systemic, still not UKB T2DM |
-| `G` | Glaucoma | — | — | — |
-| `C` | Cataract | — | — | — |
-| `A` / `ARMD` | AMD | AMD if present | `ARMD` | — |
-| `H` / `hypertension_ocular` | Hypertension (ocular) | — | — | **Not** UKB hypertension |
-| `hypertensive_retinopathy` | — | Specialist HR | hypertensive retinopathy if present | Ocular sign, not systemic HTN |
-| `dr_referable` | — | DR grade ≥ 2 when column exists | — | Referable DR, not T2DM |
-| `M` / `MYA` | Myopia | — | `MYA` | — |
-| `O` / `OTHER` | Other | — | `OTHER` | — |
-| `t2dm` `gout` `osteoporosis` `hyperlipemia` `thyroid` | omitted | omitted | omitted | UKB-only |
+Endpoints carry kind (`systemic` | `ocular_manifestation`) and alignment
+(`direct` | `partial` | `related_not_equivalent`). Clinical tables require
+`alignment=direct` (`scripts/evaluate.py --clinical-tables` / `--paper-mode`).
+
+| Endpoint | Kind | ODIR | BRSET | RFMiD | UKB / Reti-Pioneer | Alignment |
+|----------|------|------|-------|-------|--------------------|-----------|
+| `diabetes_ocular` | ocular_manifestation | D | `dr_referable` | DR | **Not** T2DM ICD | direct / partial |
+| `diabetes_systemic` | systemic | — | diabetes | — | t2dm (still not identical ICD coding) | direct on BRSET/UKB |
+| `diabetes_related` | exploratory only | D | diabetes | DR | t2dm | **related_not_equivalent** |
+| `hypertension_ocular` | ocular_manifestation | H | hypertensive_retinopathy | — | hypertension (related) | direct ocular |
+| `N` | ocular | Normal | — | — | — | — |
+| `G` / `C` / `A` / `M` / `O` | ocular | as labeled | — | ARMD/MYA/OTHER when present | — | — |
+| gout / osteoporosis / hyperlipemia / thyroid | systemic | omitted | omitted | omitted | UKB-only | — |
 
 **Honesty notes (write in Methods):**
 
-- ODIR **D** ≠ UKB T2DM ICD. Call it ocular-evidence diabetes.
-- BRSET **diabetes**, **DR grade**, and **hypertensive retinopathy** are distinct heads. Do not pool them without a footnote.
+- ODIR **D** ≠ UKB T2DM ICD. Prefer endpoint `diabetes_ocular`.
+- Do **not** use `diabetes_related` in clinical-claim tables.
+- BRSET **diabetes**, **DR grade / dr_referable**, and **hypertensive retinopathy** are distinct heads.
 - RFMiD is a long-tail retinal-sign ontology, not a six-disease oculomics replica.
 - Public `UKB_y5.npz` / `UKB_y10.npz` written by `prepare_public_npz.py` are **copies of prevalence** for loader compatibility, not 5/10-year incidence.
+- Synthetic exports set `clinical_claim_allowed: false` in `label_map.json` / `SYNTHETIC_FEATURES.txt`.
 
 ## Build a feature cache
 
@@ -95,21 +96,24 @@ Patient-level split: both eyes / visits of one `patient_id` stay in one fold (`r
 
 Metadata padding into `UKB_mqd.npz`: age, sex, **weight=0**, **ethnicity=0** (7-way one-hot still used in the fusion layer).
 
-## Cross-dataset evaluation
+## Endpoint-aware cross-cohort evaluation
 
-Train on one public cache, score **overlapping heads only** on another. Default tasks: `diabetes_related`, `hypertension_ocular`.
+Train on one public cache, score **overlapping endpoints only** on another.
+Default endpoints: `hypertension_ocular`, `diabetes_ocular` (not `diabetes_related`).
+Pass `--clinical-tables` / `--paper-mode` to refuse non-`direct` alignments.
 
 ```powershell
 python scripts/prepare_public_npz.py --dataset odir --synthetic-demo --out data/odir --force
 python scripts/prepare_public_npz.py --dataset brset --synthetic-demo --out data/brset --force
-python scripts/train.py --config configs/ablation_full.yaml --dataset odir --data-dir data/odir --multitask --horizon 0
-python scripts/evaluate.py --ckpt ckpt/<run>/multitask/y0 --dataset odir --data-dir data/odir --test-data-dir data/brset --test-dataset brset
+python scripts/train.py --config configs/ablation_e4.yaml --dataset odir --data-dir data/odir --multitask --horizon 0
+python scripts/evaluate.py --ckpt ckpt/<run>/multitask/y0 --dataset odir --data-dir data/odir `
+  --test-data-dir data/brset --test-dataset brset --clinical-tables
 ```
 
-| Canonical task | ODIR | BRSET | RFMiD | Honesty |
-|----------------|------|-------|-------|---------|
-| `diabetes_related` | `D` | `diabetes` | `DR` | Ocular or self-report vs retinal DR — not UKB T2DM |
-| `diabetes_ocular` | `D` | `dr_referable` | `DR` | Closer ocular pairing |
-| `hypertension_ocular` | `H` | `hypertensive_retinopathy` | `HR` if present | Ocular sign, not systemic HTN |
+| Canonical endpoint | ODIR | BRSET | RFMiD | Alignment |
+|--------------------|------|-------|-------|-----------|
+| `diabetes_ocular` | `D` | `dr_referable` | `DR` | direct/partial — preferred default |
+| `hypertension_ocular` | `H` | `hypertensive_retinopathy` | `HR` if present | direct ocular |
+| `diabetes_related` | `D` | `diabetes` | `DR` | related_not_equivalent — exploratory only |
 
 Do not put synthetic-cache AUROCs in a manuscript. Real ODIR→BRSET numbers require downloaded images and backbone features.

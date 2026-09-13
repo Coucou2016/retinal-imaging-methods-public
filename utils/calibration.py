@@ -229,3 +229,76 @@ def apply_temperature(logits: np.ndarray, temperature: float) -> np.ndarray:
     t = max(float(temperature), 1e-3)
     z = np.asarray(logits, dtype=np.float64) / t
     return 1.0 / (1.0 + np.exp(-np.clip(z, -60.0, 60.0)))
+
+
+def fit_calibration_intercept_slope(
+    logits: np.ndarray,
+    y_true: np.ndarray,
+) -> tuple[float, float]:
+    """Fit logistic intercept/slope: P = sigmoid(slope * logit + intercept).
+
+    Returns ``(intercept, slope)``. Falls back to (0, 1) on degenerate data.
+    """
+    z = np.asarray(logits, dtype=np.float64).ravel()
+    y = np.asarray(y_true, dtype=np.float64).ravel()
+    if z.size < 4 or len(np.unique(y)) < 2:
+        return 0.0, 1.0
+    # Design matrix [1, z]
+    x = np.column_stack([np.ones_like(z), z])
+
+    def nll(beta: np.ndarray) -> float:
+        return _bce_with_logits(x @ beta, y)
+
+    try:
+        from scipy.optimize import minimize
+
+        res = minimize(nll, x0=np.array([0.0, 1.0]), method="L-BFGS-B")
+        intercept, slope = float(res.x[0]), float(res.x[1])
+    except Exception:
+        intercept, slope = 0.0, 1.0
+    slope = float(np.clip(slope, 1e-3, 50.0))
+    return intercept, slope
+
+
+def apply_intercept_slope(
+    logits: np.ndarray,
+    intercept: float,
+    slope: float,
+) -> np.ndarray:
+    z = slope * np.asarray(logits, dtype=np.float64) + float(intercept)
+    return 1.0 / (1.0 + np.exp(-np.clip(z, -60.0, 60.0)))
+
+
+def per_class_decision_curves(
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    thresholds: np.ndarray | None = None,
+    class_names: list[str] | None = None,
+) -> dict[str, dict[str, list[float]]]:
+    """Per-disease DCA curves; preferred over macro NB@0.10 as primary narrative."""
+    if thresholds is None:
+        thresholds = np.linspace(0.05, 0.50, 10)
+    thresholds = np.asarray(thresholds, dtype=np.float64)
+    y_true = np.asarray(y_true)
+    y_prob = np.asarray(y_prob)
+    out: dict[str, dict[str, list[float]]] = {}
+    if y_true.ndim == 1:
+        names = class_names or ["class_0"]
+        nb = decision_curve_net_benefit(y_true, y_prob, thresholds)
+        out[names[0]] = {
+            "thresholds": thresholds.tolist(),
+            "net_benefit": nb.tolist(),
+            "treat_all": [treat_all_net_benefit(y_true, float(t)) for t in thresholds],
+            "treat_none": [0.0 for _ in thresholds],
+        }
+        return out
+    for k in range(y_true.shape[1]):
+        name = class_names[k] if class_names and k < len(class_names) else f"class_{k}"
+        nb = decision_curve_net_benefit(y_true[:, k], y_prob[:, k], thresholds)
+        out[name] = {
+            "thresholds": thresholds.tolist(),
+            "net_benefit": nb.tolist(),
+            "treat_all": [treat_all_net_benefit(y_true[:, k], float(t)) for t in thresholds],
+            "treat_none": [0.0 for _ in thresholds],
+        }
+    return out

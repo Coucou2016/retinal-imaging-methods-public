@@ -1,9 +1,10 @@
 [project]
 name = "reti-pioneer"
 version = "0.1.0"
-description = "From Oculomics to Clinical Practice: A Low-Cost AI Framework for Multimorbidity Detection via Retinal Imaging"
+description = "Methods extension of Reti-Pioneer: monotone quality routing and endpoint-aware multi-task learning"
 readme = "README.md"
 requires-python = ">=3.12"
+license = { text = "MIT" }
 dependencies = [
     "huggingface-hub[cli]>=0.34.3",
     "imbalanced-learn>=0.13.0",
@@ -19,29 +20,39 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Core scientific stack already in main deps; [core] is an explicit alias.
+core = [
+    "numpy",
+    "scipy",
+]
+cuda = [
+    "torch>=2.2",
+    "torchvision>=0.17",
+]
+# Vision Mamba path (Linux wheels typically); install from PyPI when available.
+mamba = [
+    "causal-conv1d",
+    "mamba-ssm",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
 full = [
     "causal-conv1d",
     "mamba-ssm",
 ]
 
-[tool.uv.sources]
-torch = [
-  { index = "pytorch-cu128" },
-]
-torchvision = [
-  { index = "pytorch-cu128" },
-]
-mamba-ssm = { path = "../../wheel/mamba_ssm-1.1.1-cp312-cp312-linux_x86_64.whl" }
-causal-conv1d = { path = "../../wheel/causal_conv1d-1.4.0-cp312-cp312-linux_x86_64.whl" }
-
+# Optional torch CUDA index helpers (no local ../../wheel paths).
 [[tool.uv.index]]
 name = "pytorch-cu128"
 url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
-[[tool.uv.index]]
-url = "https://mirrors.aliyun.com/pypi/simple"
-# url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple"
-# url = "https://mirrors.cloud.tencent.com/pypi/simple"
-# url = "https://mirrors.huaweicloud.com/repository/pypi/simple"
-default = true
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu128", extra = "cuda" },
+]
+torchvision = [
+  { index = "pytorch-cu128", extra = "cuda" },
+]

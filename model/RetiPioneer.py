@@ -1,33 +1,61 @@
 from typing import List
+import warnings
 
 import torch
 import torch.nn as nn
 
-from model.QualityAware import QualityAware
+from model.QualityAware import QualityAware, QualityRouter
 
 # Ensemble over the three backbone heads:
-#   paper     — train: softmax-weighted mix (T=0.1); eval: max  (Reti-Pioneer)
-#   mean      — arithmetic mean of heads (train and eval)
-#   temp_mean — temperature-scaled softmax mix at train and eval
+#   released_code       — train: softmax-weighted mix (T=0.1); eval: max
+#                         (upstream Reti-Pioneer released training code)
+#   published_soft_vote — soft mix at train and eval
+#   mean                — arithmetic mean of heads (train and eval)
+#   temp_mean           — temperature-scaled softmax mix at train and eval
+# Legacy alias: ensemble="paper" → released_code (DeprecationWarning).
 # For num_classes>1 the mix/max is applied independently per class.
-VALID_ENSEMBLES = ("paper", "mean", "temp_mean")
+VALID_ENSEMBLES = ("released_code", "published_soft_vote", "mean", "temp_mean", "paper")
+
+
+def normalize_ensemble(ensemble: str) -> str:
+    name = str(ensemble)
+    if name == "paper":
+        warnings.warn(
+            'ensemble="paper" is deprecated; use ensemble="released_code" '
+            "(train soft / eval max, matching released upstream code).",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return "released_code"
+    if name not in VALID_ENSEMBLES:
+        raise ValueError(f"ensemble must be one of {VALID_ENSEMBLES}; got {ensemble!r}")
+    return name
 
 
 class FuseBase(nn.Module):
-    def __init__(self,
-                 base: nn.Module,
-                 base_out_size: int,
-                 meta_size: int,
-                 num_classes: int,
-                 fuse_dim: int,
-                 enable_q: bool = True,
-                 learnable_q: bool = False,
-                 flip_r: bool = True) -> None:
+    def __init__(
+        self,
+        base: nn.Module,
+        base_out_size: int,
+        meta_size: int,
+        num_classes: int,
+        fuse_dim: int,
+        enable_q: bool = True,
+        learnable_q: bool = False,
+        quality_router: QualityRouter | str = "fixed",
+        flip_r: bool = True,
+    ) -> None:
         super().__init__()
 
         self.base = base
         self.fuse_dim = fuse_dim
-        self.quality_aware = QualityAware(base_out_size, self.fuse_dim, enable_q, learnable_q)
+        self.quality_aware = QualityAware(
+            base_out_size,
+            self.fuse_dim,
+            enable_q,
+            learnable_q,
+            quality_router=quality_router,
+        )
         self.m_fuse = nn.Bilinear(self.fuse_dim * 2 + 1, meta_size + 1, num_classes, False)
         self.flip_r = flip_r
 
@@ -63,30 +91,39 @@ class ComplexModel(nn.Module):
         num_classes: int,
         learnable_q: bool = False,
         enable_q: bool = True,
-        ensemble: str = "paper",
+        ensemble: str = "released_code",
+        quality_router: QualityRouter | str = "fixed",
     ):
         super().__init__()
-        if ensemble not in VALID_ENSEMBLES:
-            raise ValueError(f"ensemble must be one of {VALID_ENSEMBLES}; got {ensemble!r}")
+        ensemble = normalize_ensemble(ensemble)
         self.num_classes = num_classes
         self.learnable_q = learnable_q
         self.enable_q = enable_q
         self.ensemble = ensemble
-        self.models = nn.ModuleList([
-            nn.Sequential(
-                FuseBase(
-                    backbone,
-                    size,
-                    n_meta,
-                    mid_size,
-                    fuse_dim,
-                    enable_q=enable_q,
-                    learnable_q=learnable_q,
-                    flip_r=False,
-                ),
-                nn.SELU(True),
-                nn.Linear(mid_size, num_classes),
-            ) for backbone, size in zip(backbones, base_out_sizes)])
+        self.quality_router = quality_router
+        if learnable_q and quality_router == "fixed":
+            quality_router = "monotone"
+            self.quality_router = quality_router
+        self.models = nn.ModuleList(
+            [
+                nn.Sequential(
+                    FuseBase(
+                        backbone,
+                        size,
+                        n_meta,
+                        mid_size,
+                        fuse_dim,
+                        enable_q=enable_q,
+                        learnable_q=learnable_q,
+                        quality_router=quality_router,
+                        flip_r=False,
+                    ),
+                    nn.SELU(True),
+                    nn.Linear(mid_size, num_classes),
+                )
+                for backbone, size in zip(backbones, base_out_sizes)
+            ]
+        )
 
     def forward(self, batch):
         (l, r), m, qs = batch
@@ -100,7 +137,12 @@ class ComplexModel(nn.Module):
             return heads.mean(dim=1)
 
         temp = 0.1
-        use_soft = self.training or self.ensemble == "temp_mean"
+        # released_code: soft in train, max in eval (upstream main.py behavior)
+        # published_soft_vote / temp_mean: soft always
+        if self.ensemble == "released_code":
+            use_soft = self.training
+        else:
+            use_soft = True  # published_soft_vote, temp_mean
         if use_soft:
             weights = torch.softmax(heads / temp, dim=1)
             return (weights * heads).sum(dim=1)
@@ -112,10 +154,14 @@ def get_reti_pioneer(
     num_classes: int = 1,
     learnable_q: bool = False,
     enable_q: bool = True,
-    ensemble: str = "paper",
+    ensemble: str = "released_code",
+    quality_router: QualityRouter | str = "fixed",
     n_meta: int = 3 + 7,
 ):
     """Build Reti-Pioneer. K=1 is the paper clone; K>1 is a joint multi-label head."""
+    ensemble = normalize_ensemble(ensemble)
+    if learnable_q and quality_router == "fixed":
+        quality_router = "monotone"
     if fast:
         backbones = [nn.Identity(), nn.Identity(), nn.Identity()]
     else:
@@ -135,4 +181,5 @@ def get_reti_pioneer(
         learnable_q=learnable_q,
         enable_q=enable_q,
         ensemble=ensemble,
+        quality_router=quality_router,
     )

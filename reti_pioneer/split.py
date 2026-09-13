@@ -1,14 +1,16 @@
-"""Deterministic train/validation index splits (sample- or patient-level)."""
+"""Deterministic train/validation/calibration/test index splits (patient-level)."""
 
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 from typing import Literal
 
 import numpy as np
 from torch.utils.data import Subset
 
-SplitName = Literal["train", "val", "test", "all"]
+SplitName = Literal["train", "val", "calibration", "cal", "test", "all"]
 
 
 def _label_scalar(y) -> float:
@@ -157,6 +159,18 @@ def patient_level_train_val_indices(
     return train_idx, val_idx
 
 
+def assert_calibration_disjoint(
+    calibration_ids: list[int],
+    evaluation_ids: list[int],
+) -> None:
+    leak = set(calibration_ids) & set(evaluation_ids)
+    if leak:
+        raise RuntimeError(
+            f"Calibration/evaluation leakage: {len(leak)} shared indices. "
+            "Fit temperature on calibration_ids only; score evaluation_ids only."
+        )
+
+
 def patient_level_train_val_test_indices(
     patient_ids: np.ndarray,
     labels: np.ndarray,
@@ -196,8 +210,167 @@ def patient_level_train_val_test_indices(
     return train_idx, val_idx, test_idx
 
 
+def patient_level_train_cal_val_indices(
+    patient_ids: np.ndarray,
+    labels: np.ndarray,
+    val_fraction: float,
+    cal_fraction: float,
+    seed: int,
+) -> tuple[list[int], list[int], list[int]]:
+    """Patient-level train / calibration / val (eval) with pairwise disjoint patients.
+
+    Order: carve ``val`` (evaluation) first, then ``calibration`` from the remainder,
+    rest is ``train``. Calibration never overlaps the evaluation fold.
+    """
+    patient_ids = np.asarray(patient_ids)
+    row_pos = _row_positive(labels)
+    uniq, inv = np.unique(patient_ids, return_inverse=True)
+    if len(uniq) < 6:
+        raise ValueError(f"Need at least 6 patients for train/cal/val; got {len(uniq)}")
+
+    p_labels = np.zeros(len(uniq), dtype=np.float32)
+    for row_i, p_i in enumerate(inv):
+        if row_pos[row_i] >= 0.5:
+            p_labels[p_i] = 1.0
+
+    val_frac = float(np.clip(val_fraction, 0.05, 0.45))
+    rest_idx, val_p = stratified_train_val_indices(p_labels, val_frac, seed)
+    rest_labels = p_labels[np.asarray(rest_idx)]
+    # cal_fraction is relative to the full cohort; convert to fraction of remainder.
+    cal_of_rest = float(cal_fraction) / max(1e-6, 1.0 - val_frac)
+    cal_of_rest = float(np.clip(cal_of_rest, 0.05, 0.5))
+    train_local, cal_local = stratified_train_val_indices(rest_labels, cal_of_rest, seed + 7)
+    train_p = [rest_idx[i] for i in train_local]
+    cal_p = [rest_idx[i] for i in cal_local]
+
+    train_patients = {uniq[i] for i in train_p}
+    cal_patients = {uniq[i] for i in cal_p}
+    val_patients = {uniq[i] for i in val_p}
+    if train_patients & cal_patients or train_patients & val_patients or cal_patients & val_patients:
+        raise RuntimeError("Patient leaked across train/calibration/val")
+
+    train_idx = [i for i, p in enumerate(patient_ids) if p in train_patients]
+    cal_idx = [i for i, p in enumerate(patient_ids) if p in cal_patients]
+    val_idx = [i for i, p in enumerate(patient_ids) if p in val_patients]
+    return train_idx, cal_idx, val_idx
+
+
+def patient_level_train_cal_val_test_indices(
+    patient_ids: np.ndarray,
+    labels: np.ndarray,
+    val_fraction: float,
+    cal_fraction: float,
+    test_fraction: float,
+    seed: int,
+) -> tuple[list[int], list[int], list[int], list[int]]:
+    """Four-way patient split: train / calibration / val / test."""
+    patient_ids = np.asarray(patient_ids)
+    row_pos = _row_positive(labels)
+    uniq, inv = np.unique(patient_ids, return_inverse=True)
+    if len(uniq) < 8:
+        raise ValueError(f"Need at least 8 patients for 4-way split; got {len(uniq)}")
+
+    p_labels = np.zeros(len(uniq), dtype=np.float32)
+    for row_i, p_i in enumerate(inv):
+        if row_pos[row_i] >= 0.5:
+            p_labels[p_i] = 1.0
+
+    hold_frac = float(np.clip(test_fraction, 0.05, 0.35))
+    rest_p, test_p = stratified_train_val_indices(p_labels, hold_frac, seed)
+    rest_labels = p_labels[np.asarray(rest_p)]
+    # Fractions of the *full* cohort, re-expressed on the non-test remainder.
+    scale = max(1e-6, 1.0 - hold_frac)
+    val_of_rest = float(np.clip(val_fraction / scale, 0.05, 0.45))
+    # Carve val from remainder, then cal from what's left.
+    mid_p, val_p_local = stratified_train_val_indices(rest_labels, val_of_rest, seed + 1)
+    mid_labels = rest_labels[np.asarray(mid_p)]
+    cal_of_mid = float(np.clip(cal_fraction / max(1e-6, scale - val_fraction), 0.05, 0.5))
+    train_local, cal_local = stratified_train_val_indices(mid_labels, cal_of_mid, seed + 2)
+
+    mid_p_arr = np.asarray(mid_p, dtype=np.int64)
+    rest_p_arr = np.asarray(rest_p, dtype=np.int64)
+    train_patients = {uniq[int(rest_p_arr[int(mid_p_arr[i])])] for i in train_local}
+    cal_patients = {uniq[int(rest_p_arr[int(mid_p_arr[i])])] for i in cal_local}
+    val_patients = {uniq[int(rest_p_arr[i])] for i in val_p_local}
+    test_patients = {uniq[i] for i in test_p}
+    if (
+        train_patients & cal_patients
+        or train_patients & val_patients
+        or train_patients & test_patients
+        or cal_patients & val_patients
+        or cal_patients & test_patients
+        or val_patients & test_patients
+    ):
+        raise RuntimeError("Patient leaked across train/cal/val/test")
+
+    train_idx = [i for i, p in enumerate(patient_ids) if p in train_patients]
+    cal_idx = [i for i, p in enumerate(patient_ids) if p in cal_patients]
+    val_idx = [i for i, p in enumerate(patient_ids) if p in val_patients]
+    test_idx = [i for i, p in enumerate(patient_ids) if p in test_patients]
+    return train_idx, cal_idx, val_idx, test_idx
+
+
+def nested_calibration_from_val(
+    patient_ids: np.ndarray,
+    val_idx: list[int],
+    labels: np.ndarray,
+    cal_fraction: float,
+    seed: int,
+) -> tuple[list[int], list[int]]:
+    """Split an existing val fold into (cal_fit, val_eval) without patient leakage.
+
+    Returns ``(calibration_idx, evaluation_idx)`` as indices into the original dataset.
+    """
+    patient_ids = np.asarray(patient_ids)
+    val_idx = list(val_idx)
+    if len(val_idx) < 4:
+        raise ValueError("Need at least 4 val rows to nest calibration")
+    sub_pids = patient_ids[np.asarray(val_idx)]
+    sub_labels = np.asarray(labels)[np.asarray(val_idx)]
+    frac = float(np.clip(cal_fraction, 0.1, 0.5))
+    uniq = np.unique(sub_pids)
+    if len(uniq) < 4:
+        rng = np.random.default_rng(seed)
+        perm = rng.permutation(len(val_idx))
+        n_cal = max(1, int(round(len(val_idx) * frac)))
+        n_cal = min(n_cal, len(val_idx) - 1)
+        cal_local = perm[:n_cal].tolist()
+        eval_local = perm[n_cal:].tolist()
+    else:
+        # val_fraction=frac → second return is the calibration fold
+        eval_local, cal_local = patient_level_train_val_indices(
+            sub_pids, sub_labels, frac, seed
+        )
+    cal_idx = [val_idx[i] for i in cal_local]
+    eval_idx = [val_idx[i] for i in eval_local]
+    assert_calibration_disjoint(cal_idx, eval_idx)
+    return cal_idx, eval_idx
+
+
 def make_subsets(dataset, train_idx: list[int], val_idx: list[int]) -> tuple[Subset, Subset]:
     return Subset(dataset, train_idx), Subset(dataset, val_idx)
+
+
+def split_hash(
+    train_idx: list[int],
+    val_idx: list[int],
+    test_idx: list[int] | None = None,
+    calibration_idx: list[int] | None = None,
+    patient_ids: np.ndarray | None = None,
+) -> str:
+    payload = {
+        "train": sorted(int(i) for i in train_idx),
+        "val": sorted(int(i) for i in val_idx),
+        "test": sorted(int(i) for i in (test_idx or [])),
+        "calibration": sorted(int(i) for i in (calibration_idx or [])),
+        "patients": (
+            [str(p) for p in np.asarray(patient_ids).tolist()]
+            if patient_ids is not None
+            else None
+        ),
+    }
+    blob = json.dumps(payload, sort_keys=True).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()[:16]
 
 
 def save_split(
@@ -208,6 +381,7 @@ def save_split(
     val_fraction: float,
     test_idx: list[int] | None = None,
     patient_ids: np.ndarray | None = None,
+    calibration_idx: list[int] | None = None,
 ) -> None:
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     payload: dict = {
@@ -215,11 +389,31 @@ def save_split(
         "val_idx": np.asarray(val_idx, dtype=np.int64),
         "seed": np.int64(seed),
         "val_fraction": np.float64(val_fraction),
+        "split_hash": np.asarray(
+            split_hash(train_idx, val_idx, test_idx, calibration_idx, patient_ids)
+        ),
     }
     if test_idx is not None:
         payload["test_idx"] = np.asarray(test_idx, dtype=np.int64)
+    if calibration_idx is not None:
+        payload["calibration_idx"] = np.asarray(calibration_idx, dtype=np.int64)
     if patient_ids is not None:
         payload["patient_ids"] = np.asarray(patient_ids)
+    # Disjointness check
+    sets = {
+        "train": set(train_idx),
+        "val": set(val_idx),
+    }
+    if calibration_idx is not None:
+        sets["calibration"] = set(calibration_idx)
+    if test_idx is not None:
+        sets["test"] = set(test_idx)
+    names = list(sets)
+    for i, a in enumerate(names):
+        for b in names[i + 1 :]:
+            leak = sets[a] & sets[b]
+            if leak:
+                raise RuntimeError(f"Index leak between {a} and {b}: {len(leak)} rows")
     np.savez_compressed(path, **payload)
 
 
@@ -235,23 +429,49 @@ def load_test_idx(path: str) -> list[int] | None:
     return data["test_idx"].tolist()
 
 
+def load_calibration_idx(path: str) -> list[int] | None:
+    data = np.load(path, allow_pickle=True)
+    if "calibration_idx" not in data.files:
+        return None
+    return data["calibration_idx"].tolist()
+
+
+def load_split_hash(path: str) -> str | None:
+    data = np.load(path, allow_pickle=True)
+    if "split_hash" not in data.files:
+        return None
+    v = data["split_hash"]
+    if getattr(v, "shape", ()) == ():
+        return str(v.item())
+    return str(v)
+
+
 def resolve_split_indices(
     split: SplitName,
     train_idx: list[int],
     val_idx: list[int],
     test_idx: list[int] | None = None,
+    calibration_idx: list[int] | None = None,
 ) -> list[int]:
     if split == "train":
         return train_idx
     if split == "val":
         return val_idx
+    if split in ("calibration", "cal"):
+        if calibration_idx is None:
+            raise ValueError("split='calibration' requires calibration_idx in split.npz")
+        return calibration_idx
     if split == "test":
         if test_idx is None:
             raise ValueError("split='test' requires test_idx in split.npz")
         return test_idx
-    if test_idx is None:
-        return train_idx + val_idx
-    return train_idx + val_idx + test_idx
+    # all
+    parts = list(train_idx) + list(val_idx)
+    if calibration_idx is not None:
+        parts = parts + list(calibration_idx)
+    if test_idx is not None:
+        parts = parts + list(test_idx)
+    return parts
 
 
 def subset_for_split(
@@ -260,6 +480,7 @@ def subset_for_split(
     train_idx: list[int],
     val_idx: list[int],
     test_idx: list[int] | None = None,
+    calibration_idx: list[int] | None = None,
 ) -> Subset:
-    idx = resolve_split_indices(split, train_idx, val_idx, test_idx)
+    idx = resolve_split_indices(split, train_idx, val_idx, test_idx, calibration_idx)
     return Subset(dataset, idx)

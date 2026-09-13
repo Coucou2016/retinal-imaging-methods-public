@@ -1,28 +1,29 @@
 # Adopted writing architecture
 
-**Emulate:** Nature-family *methods* article (argument: gap → method → fair ablation → calibration/utility → reproducibility → boundary). Closest venue archetypes without UKB: *npj Digital Medicine* methods / *MedIA* technical papers — not flagship *Nat Med* clinical discovery.
+**Emulate:** Nature-family *methods* article (gap → method → fair ablation → calibration/utility as **evaluation** → reproducibility → boundary).
 
-**Do not emulate:** flagship *Nature Medicine* clinical discovery narrative requiring UKB-scale cohorts and prospective pilots as primary claims.
+**Title direction:** Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning
 
-**Innovation claims (bounded):** learnable quality routing; shared multi-task head; calibration + DCA as co-primary; public ODIR/BRSET/RFMiD patient-level validation.
+**Innovation claims (bounded):** monotone bounded quality routing; masked partial-label multitask vs released-code independent loops; endpoint ontology + endpoint-aware cross-cohort evaluation.
 
-**Non-claims:** synthetic AUROC; beating 0.833 T2DM; ODIR-D as UKB T2DM.
+**Evaluation framework (not novelty):** temperature scaling, ECE, Brier, per-disease DCA (NB@0.10 illustrative only).
+
+**Non-claims:** synthetic AUROC; beating 0.833 T2DM; ODIR-D as UKB T2DM; `diabetes_related` as clinical head; calibration/DCA as methodological novelty.
 
 ## Section map (bounded novelty)
 
 | Section | Job | Claim ceiling |
 |---------|-----|---------------|
-| Abstract / Intro | Gap vs fixed-q + independent heads + AUROC-only utility | Methods extension of Reti-Pioneer skeleton |
-| Related work | RETFound, EyeQ, BRSET/ODIR/RFMiD, calibration/DCA | Position as follow-up, not new foundation model |
-| Methods | `learnable_q`, multi-label BCE, temp scaling, patient splits | Mechanism + protocol only |
-| Experiments | Ablation arms + transfer + fairness slots | Real-data tables 待补充 |
-| Results | Empty / deferred | No SYNTHETIC numbers in submission tables |
-| Discussion / Limits | Label mismatch, domain shift, no UKB | Honest novelty phrasing only |
+| Abstract / Intro | Gap vs fixed-q + released independent heads | Methods extension |
+| Methods | monotone router, masked BCE, endpoint ontology, disjoint cal | Mechanism + protocol |
+| Experiments | E0–E4 + endpoint-aware transfer | Real-data tables 待补充 |
+| Results | Empty / deferred | No SYNTHETIC in submission tables |
+| Discussion | Published vs released multitask; endpoint drift | Honest novelty only |
 
 ## Draft risks (keep visible)
 
 1. SYNTHETIC companion figures mistaken for clinical evidence.  
-2. Straw-man vs Reti-Pioneer if “multitask” wording in their abstract is not reconciled with independent-head code clone.  
-3. Endpoint drift (ocular D/H ≠ UKB ICD).  
-4. Unsupervised learnable quality may not move off (1, 0.5, 0).  
-5. Single DCA threshold without prevalence justification.
+2. Published “multitask” vs released independent-head loops.  
+3. Endpoint drift (`diabetes_related` / ocular ≠ UKB ICD).  
+4. Monotone router without quality supervision may stay near (0, 0.5, 1).  
+5. Single DCA threshold — keep per-disease curves primary.

@@ -135,7 +135,8 @@ def write_public_npz(
             "SYNTHETIC backbone features derived from labels, not fundus photographs.\n"
             f"dataset={dataset_name} n={len(records)} seed={seed}\n"
             f"{HONESTY.get(dataset_name, '')}\n"
-            "Do not report AUROC from this cache as a clinical result.\n",
+            "Do not report AUROC from this cache as a clinical result.\n"
+            "clinical_claim_allowed: false\n",
             encoding="utf-8",
         )
         for fname, dim, stream in BACKBONE_DIMS:
@@ -176,6 +177,7 @@ def write_public_npz(
         "n": len(records),
         "label_names": label_names,
         "synthetic_features": bool(marker.is_file()),
+        "clinical_claim_allowed": False,
         "labels_only": labels_only,
         "honesty": HONESTY.get(dataset_name, ""),
         "horizons": "prevalence_only (y5/y10 copy y0)",
@@ -183,6 +185,11 @@ def write_public_npz(
         "ethnicity": "padded 0 (not collected)",
         "seed": seed,
     }
+    if marker.is_file():
+        # Ensure honesty flag is present even if marker was written earlier this call.
+        text = marker.read_text(encoding="utf-8")
+        if "clinical_claim_allowed" not in text:
+            marker.write_text(text + "clinical_claim_allowed: false\n", encoding="utf-8")
     (out_dir / "label_map.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"Wrote {dataset_name} cache ({len(records)} rows, K={len(label_names)}) to {out_dir}")
     return out_dir

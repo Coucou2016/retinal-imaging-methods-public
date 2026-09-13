@@ -1,38 +1,132 @@
-"""Canonical head mapping for cross-dataset evaluation.
+"""Endpoint ontology and cross-dataset head mapping.
 
-These pairs are *related* screening targets, not identical gold standards.
-ODIR D is ocular-evidence diabetes; BRSET diabetes is a clinical/self-report
-diagnosis; RFMiD DR is a retinal sign. Never report a mapped AUROC as UKB T2DM.
+Endpoints are *related* screening targets, not identical gold standards.
+ODIR D is ocular-evidence diabetes; BRSET diabetes is clinical/self-report;
+RFMiD DR is a retinal sign. Never report a mapped AUROC as UKB T2DM ICD.
+
+Alignment levels
+----------------
+- ``direct``: same clinical concept (safe for clinical-claim tables)
+- ``partial``: overlapping but incomplete (warn; not clinical-claim by default)
+- ``related_not_equivalent``: related screening proxies only (refuse clinical tables)
 """
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
+from typing import Literal
 
-# Canonical task -> {dataset_key: label name as stored in UKB_y*.npz `yn`}
-CROSS_TASKS: dict[str, dict[str, str]] = {
-    "diabetes_related": {
-        "odir": "D",
-        "brset": "diabetes",
-        "rfmid": "DR",
-        "ukb": "t2dm",
-        "demo": "t2dm",
-    },
-    "diabetes_ocular": {
-        "odir": "D",
-        "brset": "dr_referable",
-        "rfmid": "DR",
-    },
-    "hypertension_ocular": {
-        "odir": "H",
-        "brset": "hypertensive_retinopathy",
-        # RFMiD 1.0 default columns have no HR/HTN — do not invent a mapping.
-        "ukb": "hypertension",
-        "demo": "hypertension",
-    },
+Alignment = Literal["direct", "partial", "related_not_equivalent"]
+EndpointKind = Literal["systemic", "ocular_manifestation"]
+
+
+@dataclass(frozen=True)
+class DatasetLabelRef:
+    """One dataset's column mapped to a canonical endpoint."""
+
+    dataset: str
+    label: str
+    alignment: Alignment
+
+
+@dataclass(frozen=True)
+class Endpoint:
+    """Canonical screening endpoint with per-dataset alignment metadata."""
+
+    id: str
+    kind: EndpointKind
+    description: str
+    refs: tuple[DatasetLabelRef, ...]
+
+    def ref_for(self, dataset: str) -> DatasetLabelRef | None:
+        for r in self.refs:
+            if r.dataset == dataset:
+                return r
+        return None
+
+    def label_for(self, dataset: str) -> str | None:
+        r = self.ref_for(dataset)
+        return None if r is None else r.label
+
+    def alignment_pair(self, train_dataset: str, test_dataset: str) -> Alignment | None:
+        a = self.ref_for(train_dataset)
+        b = self.ref_for(test_dataset)
+        if a is None or b is None:
+            return None
+        order = {"direct": 0, "partial": 1, "related_not_equivalent": 2}
+        return a.alignment if order[a.alignment] >= order[b.alignment] else b.alignment
+
+
+# Canonical endpoints (pre-registered). Keep related mappings only with explicit flags.
+ENDPOINTS: dict[str, Endpoint] = {
+    "diabetes_ocular": Endpoint(
+        id="diabetes_ocular",
+        kind="ocular_manifestation",
+        description=(
+            "Ocular manifestation of diabetes / DR findings. "
+            "Not UKB T2DM ICD."
+        ),
+        refs=(
+            DatasetLabelRef("odir", "D", "direct"),
+            DatasetLabelRef("brset", "dr_referable", "partial"),
+            DatasetLabelRef("rfmid", "DR", "direct"),
+        ),
+    ),
+    "diabetes_systemic": Endpoint(
+        id="diabetes_systemic",
+        kind="systemic",
+        description=(
+            "Systemic diabetes diagnosis when the dataset records it. "
+            "Still not UKB T2DM ICD unless the UKB column is used."
+        ),
+        refs=(
+            DatasetLabelRef("brset", "diabetes", "direct"),
+            DatasetLabelRef("ukb", "t2dm", "direct"),
+            DatasetLabelRef("demo", "t2dm", "direct"),
+        ),
+    ),
+    # Kept for exploratory cross-eval only — never a clinical-claim head.
+    "diabetes_related": Endpoint(
+        id="diabetes_related",
+        kind="systemic",
+        description=(
+            "Exploratory related screening proxies across ocular and systemic "
+            "diabetes labels. alignment=related_not_equivalent by construction."
+        ),
+        refs=(
+            DatasetLabelRef("odir", "D", "related_not_equivalent"),
+            DatasetLabelRef("brset", "diabetes", "related_not_equivalent"),
+            DatasetLabelRef("rfmid", "DR", "related_not_equivalent"),
+            DatasetLabelRef("ukb", "t2dm", "related_not_equivalent"),
+            DatasetLabelRef("demo", "t2dm", "related_not_equivalent"),
+        ),
+    ),
+    "hypertension_ocular": Endpoint(
+        id="hypertension_ocular",
+        kind="ocular_manifestation",
+        description=(
+            "Hypertensive retinopathy / ocular hypertension signs. "
+            "Not UKB systemic hypertension ICD."
+        ),
+        refs=(
+            DatasetLabelRef("odir", "H", "direct"),
+            DatasetLabelRef("brset", "hypertensive_retinopathy", "direct"),
+            DatasetLabelRef("ukb", "hypertension", "related_not_equivalent"),
+            DatasetLabelRef("demo", "hypertension", "related_not_equivalent"),
+        ),
+    ),
 }
 
-DEFAULT_CROSS_HEADS = ("diabetes_related", "hypertension_ocular")
+# Backward-compatible task → {dataset: label} view (alignment lives on Endpoint).
+CROSS_TASKS: dict[str, dict[str, str]] = {
+    eid: {r.dataset: r.label for r in ep.refs} for eid, ep in ENDPOINTS.items()
+}
+
+# Prefer ocular-direct pairs for default cross-eval; keep diabetes_related opt-in.
+DEFAULT_CROSS_HEADS = ("hypertension_ocular", "diabetes_ocular")
+# Legacy default used in older docs/CLIs (explicitly related, not clinical).
+LEGACY_CROSS_HEADS = ("diabetes_related", "hypertension_ocular")
 
 # Extra aliases if a cache used long names instead of ODIR letters.
 _NAME_ALIASES = {
@@ -55,6 +149,9 @@ class MappedHead:
     test_name: str
     train_index: int
     test_index: int
+    alignment: Alignment = "related_not_equivalent"
+    kind: EndpointKind = "systemic"
+    clinical_claim_allowed: bool = False
 
 
 def _index_in(names: list[str], wanted: str) -> int | None:
@@ -67,33 +164,68 @@ def _index_in(names: list[str], wanted: str) -> int | None:
     return None
 
 
+def get_endpoint(task: str) -> Endpoint:
+    if task not in ENDPOINTS:
+        raise ValueError(f"Unknown endpoint {task!r}; known: {list(ENDPOINTS)}")
+    return ENDPOINTS[task]
+
+
+def clinical_claim_allowed(alignment: Alignment) -> bool:
+    return alignment == "direct"
+
+
+def assert_clinical_alignment(
+    heads: list[MappedHead],
+    *,
+    clinical_tables: bool = False,
+    paper_mode: bool = False,
+) -> None:
+    """Refuse or warn when non-direct alignments enter clinical tables."""
+    bad = [h for h in heads if not clinical_claim_allowed(h.alignment)]
+    if not bad:
+        return
+    detail = ", ".join(f"{h.task}({h.alignment})" for h in bad)
+    msg = (
+        f"[endpoint] non-direct alignment for clinical tables: {detail}. "
+        "Related/partial mappings are exploratory only — not UKB ICD equivalents."
+    )
+    if clinical_tables or paper_mode:
+        raise ValueError(msg)
+    warnings.warn(msg, stacklevel=2)
+    print(f"WARNING: {msg}")
+
+
 def resolve_cross_heads(
     train_names: list[str],
     test_names: list[str],
     train_dataset: str,
     test_dataset: str,
     tasks: list[str] | tuple[str, ...] | None = None,
+    *,
+    require_clinical: bool = False,
+    paper_mode: bool = False,
 ) -> list[MappedHead]:
     """Return overlapping canonical heads that exist in both label vectors."""
     if tasks is None:
         tasks = DEFAULT_CROSS_HEADS
     mapped: list[MappedHead] = []
     for task in tasks:
-        spec = CROSS_TASKS.get(task)
-        if spec is None:
-            raise ValueError(f"Unknown cross-dataset task {task!r}; known: {list(CROSS_TASKS)}")
-        src = spec.get(train_dataset)
-        dst = spec.get(test_dataset)
-        if not src or not dst:
+        ep = ENDPOINTS.get(task)
+        if ep is None:
+            raise ValueError(f"Unknown cross-dataset task {task!r}; known: {list(ENDPOINTS)}")
+        src_ref = ep.ref_for(train_dataset)
+        dst_ref = ep.ref_for(test_dataset)
+        if src_ref is None or dst_ref is None:
             continue
-        ti = _index_in(train_names, src)
-        vi = _index_in(test_names, dst)
+        ti = _index_in(train_names, src_ref.label)
+        vi = _index_in(test_names, dst_ref.label)
         if ti is None or vi is None:
             print(
                 f"[label_map] skip task={task}: "
-                f"{train_dataset}:{src!r}->{ti} / {test_dataset}:{dst!r}->{vi}"
+                f"{train_dataset}:{src_ref.label!r}->{ti} / {test_dataset}:{dst_ref.label!r}->{vi}"
             )
             continue
+        alignment = ep.alignment_pair(train_dataset, test_dataset) or "related_not_equivalent"
         mapped.append(
             MappedHead(
                 task=task,
@@ -101,9 +233,35 @@ def resolve_cross_heads(
                 test_name=test_names[vi],
                 train_index=ti,
                 test_index=vi,
+                alignment=alignment,
+                kind=ep.kind,
+                clinical_claim_allowed=clinical_claim_allowed(alignment),
             )
         )
+    if require_clinical or paper_mode:
+        assert_clinical_alignment(mapped, clinical_tables=True, paper_mode=paper_mode)
+    elif mapped:
+        assert_clinical_alignment(mapped, clinical_tables=False)
     return mapped
+
+
+def harmonization_table_rows() -> list[dict[str, str]]:
+    """Rows for manuscript / PUBLIC_DATA endpoint harmonization tables."""
+    rows: list[dict[str, str]] = []
+    for ep in ENDPOINTS.values():
+        for r in ep.refs:
+            rows.append(
+                {
+                    "endpoint": ep.id,
+                    "kind": ep.kind,
+                    "dataset": r.dataset,
+                    "label": r.label,
+                    "alignment": r.alignment,
+                    "clinical_claim_allowed": str(clinical_claim_allowed(r.alignment)).lower(),
+                    "description": ep.description,
+                }
+            )
+    return rows
 
 
 def _as_2d(arr):

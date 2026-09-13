@@ -1,23 +1,12 @@
-# Reti-Pioneer clone: fixed quality weights, independent/single-task head.
-# Paper workflow on cached features. Do not report demo AUROC as clinical.
+# E2 — Partial-label multitask head (fixed quality).
 
 data_dir: data/UKBCompressed
 pretrained_dir: pretrained
 ckpt_dir: ckpt
 
-clinic_variables:
-  - baselineage
-  - gender
-  - weight
-  - ethnicity
-
-diseases:
-  - t2dm
-
-pretrain_features:
-  - RETF
-  - SwinB
-  - VimS
+clinic_variables: [baselineage, gender, weight, ethnicity]
+diseases: [t2dm, thyroid, osteoporosis, gout, hyperlipemia, hypertension]
+pretrain_features: [RETF, SwinB, VimS]
 
 training:
   lr: 1.0e-4
@@ -31,19 +20,19 @@ training:
   balance_sampler: false
   device: auto
   learnable_q: false
-  multitask: false
-  pos_weight: false
+  quality_router: fixed
+  multitask: true
+  masked_bce: true
+  pos_weight: true
   enable_q: true
   ensemble: released_code
   calibrate: false
 
-longitudinal_years:
-  - 0
-
+longitudinal_years: [0]
 split:
   val_fraction: 0.25
+  cal_fraction: 0.1
   seed: 42
-
 demo:
   n_samples: 256
   seed: 42

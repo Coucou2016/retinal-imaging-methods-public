@@ -20,32 +20,39 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 from dataset.UKBDataset import UKBDatasetFast
-from model.RetiPioneer import get_reti_pioneer
+from model.RetiPioneer import get_reti_pioneer, normalize_ensemble
 from reti_pioneer.config import load_config
 from reti_pioneer.constants import PUBLIC_DATASETS
 from reti_pioneer.data_paths import ukb_compressed_ready
 from reti_pioneer.label_map import (
     DEFAULT_CROSS_HEADS,
     MappedHead,
+    assert_clinical_alignment,
     resolve_cross_heads,
     slice_mapped,
 )
 from reti_pioneer.split import (
+    assert_calibration_disjoint,
     dataset_labels,
     dataset_meta_matrix,
     dataset_meta_names,
     dataset_patient_ids,
+    load_calibration_idx,
     load_split,
     load_test_idx,
+    nested_calibration_from_val,
     patient_level_train_val_indices,
+    resolve_split_indices,
     subset_for_split,
 )
 from utils.calibration import (
     apply_temperature,
     brier_score,
     expected_calibration_error,
+    fit_calibration_intercept_slope,
     fit_temperature,
     net_benefit_at_threshold,
+    per_class_decision_curves,
     sensitivity_at_specificity,
     treat_all_net_benefit,
     treat_none_net_benefit,
@@ -154,16 +161,28 @@ def resolve_eval_split(
     split: str,
     val_fraction: float,
     split_seed: int,
-) -> tuple[object, str]:
+) -> tuple[object, str, dict]:
+    """Return (subset, split_name, index_bundle).
+
+    ``index_bundle`` carries train/val/test/calibration lists for leakage checks.
+    """
     split_path = os.path.join(run_dir, "split.npz")
+    train_idx: list[int] = []
+    val_idx: list[int] = []
     test_idx = None
+    calibration_idx = None
     if os.path.isfile(split_path):
         train_idx, val_idx = load_split(split_path)
         test_idx = load_test_idx(split_path)
+        calibration_idx = load_calibration_idx(split_path)
     elif split == "all" or val_fraction <= 0:
-        return base_dataset, "all"
+        return base_dataset, "all", {
+            "train_idx": [],
+            "val_idx": [],
+            "test_idx": None,
+            "calibration_idx": None,
+        }
     else:
-        # Patient-level fallback to avoid eye leakage when run split.npz is missing.
         labels = dataset_labels(base_dataset)
         pids = dataset_patient_ids(base_dataset)
         if len(np.unique(pids)) >= 4:
@@ -174,11 +193,85 @@ def resolve_eval_split(
             from reti_pioneer.split import stratified_train_val_indices
 
             train_idx, val_idx = stratified_train_val_indices(labels, val_fraction, split_seed)
-    if split not in ("train", "val", "test", "all"):
-        raise ValueError(f"Unknown split {split!r}; use train, val, test, or all")
+    if split not in ("train", "val", "test", "all", "calibration", "cal"):
+        raise ValueError(f"Unknown split {split!r}; use train, val, test, calibration, or all")
     if split == "test" and not test_idx:
         raise ValueError("split='test' needs test_idx in split.npz")
-    return subset_for_split(base_dataset, split, train_idx, val_idx, test_idx), split
+    if split in ("calibration", "cal") and not calibration_idx:
+        raise ValueError("split='calibration' needs calibration_idx in split.npz")
+    bundle = {
+        "train_idx": train_idx,
+        "val_idx": val_idx,
+        "test_idx": test_idx,
+        "calibration_idx": calibration_idx,
+        "patient_ids": dataset_patient_ids(base_dataset) if len(base_dataset) else None,
+        "labels": dataset_labels(base_dataset) if len(base_dataset) else None,
+    }
+    return (
+        subset_for_split(
+            base_dataset, split, train_idx, val_idx, test_idx, calibration_idx
+        ),
+        split,
+        bundle,
+    )
+
+
+def resolve_calibration_fit_ids(
+    bundle: dict,
+    eval_split: str,
+    *,
+    paper_mode: bool,
+    split_seed: int,
+) -> tuple[list[int], str]:
+    """Pick calibration indices disjoint from the evaluation fold.
+
+    If ``--split val --calibrate`` would fit and score the same set, nest a held-out
+    calibration fold (or error in ``paper_mode``).
+    """
+    cal = bundle.get("calibration_idx")
+    val = list(bundle.get("val_idx") or [])
+    test = list(bundle.get("test_idx") or [])
+    train = list(bundle.get("train_idx") or [])
+    split_key = "calibration" if eval_split == "cal" else eval_split
+    if split_key == "all":
+        eval_ids = train + val + (test or []) + (cal or [])
+    else:
+        eval_ids = resolve_split_indices(split_key, train, val, test, cal)
+
+    if cal:
+        assert_calibration_disjoint(cal, eval_ids)
+        return list(cal), "calibration_idx"
+
+    if eval_split in ("test", "train") and val:
+        assert_calibration_disjoint(val, eval_ids)
+        return val, "val"
+
+    if eval_split == "val":
+        msg = (
+            "--split val --calibrate would fit temperature on the same fold used for scoring. "
+            "Provide calibration_idx in split.npz, score --split test, or allow nested calibration."
+        )
+        if paper_mode:
+            raise ValueError(msg + " (paper_mode refuses silent leakage.)")
+        pids = bundle.get("patient_ids")
+        labels = bundle.get("labels")
+        if pids is None or labels is None or len(val) < 4:
+            raise ValueError(msg + " Nested calibration unavailable (too few val rows).")
+        cal_ids, eval_only = nested_calibration_from_val(
+            pids, val, labels, cal_fraction=0.4, seed=split_seed + 99
+        )
+        bundle["_nested_eval_idx"] = eval_only
+        print(
+            f"WARNING: nested calibration on val "
+            f"(cal={len(cal_ids)} eval={len(eval_only)}); prefer explicit calibration_idx."
+        )
+        return cal_ids, "nested_val"
+
+    if val:
+        return val, "val"
+    if train:
+        return train, "train"
+    raise ValueError("No fold available to fit temperature")
 
 
 def _binary_scores(labels: np.ndarray, probs: np.ndarray) -> tuple[float, float]:
@@ -290,10 +383,15 @@ def _print_scores(prefix: str, scores: dict[str, float]) -> None:
 
 
 def print_mapped_heads(heads: list[MappedHead], train_ds: str, test_ds: str) -> None:
-    print(f"Cross-dataset {train_ds} -> {test_ds} (related labels, not identical gold standards)")
+    print(
+        f"Endpoint-aware cross-cohort {train_ds} -> {test_ds} "
+        "(alignment flags required; related ≠ identical gold standards)"
+    )
     for h in heads:
+        claim = "clinical_ok" if h.clinical_claim_allowed else "exploratory_only"
         print(
-            f"  {h.task}: train[{h.train_index}]={h.train_name} -> "
+            f"  {h.task} [{h.alignment}/{h.kind}/{claim}]: "
+            f"train[{h.train_index}]={h.train_name} -> "
             f"test[{h.test_index}]={h.test_name}"
         )
 
@@ -371,15 +469,25 @@ def main() -> None:
     parser.add_argument(
         "--heads",
         default=None,
-        help="Comma-separated canonical tasks (default: diabetes_related,hypertension_ocular)",
+        help="Comma-separated canonical endpoints (default: hypertension_ocular,diabetes_ocular)",
     )
     parser.add_argument("--multitask", action="store_true")
     parser.add_argument("--learnable-q", action="store_true", dest="learnable_q")
-    parser.add_argument("--calibrate", action="store_true", help="Fit temperature on val; apply on --split")
+    parser.add_argument("--calibrate", action="store_true", help="Fit temperature on calibration fold; apply on --split")
+    parser.add_argument(
+        "--paper-mode",
+        action="store_true",
+        help="Refuse calibration leakage and non-direct clinical cross-eval heads",
+    )
+    parser.add_argument(
+        "--clinical-tables",
+        action="store_true",
+        help="Require alignment=direct for cross-cohort clinical tables",
+    )
     parser.add_argument(
         "--split",
         default="val",
-        choices=["train", "val", "test", "all"],
+        choices=["train", "val", "test", "all", "calibration", "cal"],
         help="Which partition to score (uses split.npz next to checkpoint when present)",
     )
     parser.add_argument("--regenerate-data", action="store_true", help="Overwrite demo npz files")
@@ -388,7 +496,7 @@ def main() -> None:
     parser.add_argument(
         "--out-json",
         default=None,
-        help="Write metrics JSON for automation (AUROC/AP/ECE/Brier/Youden/sens@95%spec + calibrated if --calibrate)",
+        help="Write metrics JSON (AUROC/AP/ECE/Brier/Youden/sens@95%spec/DCA curves + calibrated if --calibrate)",
     )
     args = parser.parse_args()
 
@@ -447,9 +555,15 @@ def main() -> None:
             diseases = [args.disease]
     horizon = int(meta.get("horizon", args.horizon))
     learnable_q = bool(meta.get("learnable_q", args.learnable_q or tcfg.get("learnable_q", False)))
-    ensemble = meta.get("ensemble", tcfg.get("ensemble", "paper"))
+    ensemble = normalize_ensemble(meta.get("ensemble", tcfg.get("ensemble", "released_code")))
     enable_q = bool(meta.get("enable_q", tcfg.get("enable_q", True)))
+    quality_router = meta.get(
+        "quality_router",
+        tcfg.get("quality_router", "monotone" if learnable_q else "fixed"),
+    )
     fast_mode = bool(meta.get("fast_mode", tcfg["fast_mode"]))
+    paper_mode = bool(args.paper_mode or eval_cfg.get("paper_mode", False))
+    clinical_tables = bool(args.clinical_tables or eval_cfg.get("clinical_tables", False) or paper_mode)
 
     cross = args.test_data_dir is not None
     if cross and not args.test_dataset:
@@ -480,6 +594,7 @@ def main() -> None:
         learnable_q=learnable_q,
         enable_q=enable_q,
         ensemble=ensemble,
+        quality_router=quality_router,
     ).to(device)
     ckpt_path = resolve_ckpt_path(args.ckpt)
     model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
@@ -502,21 +617,52 @@ def main() -> None:
         test_ds.set_target(horizon, list(test_ds.disease_names), incident_exclude_prior=False)
         tasks = [x.strip() for x in (args.heads or ",".join(DEFAULT_CROSS_HEADS)).split(",") if x.strip()]
         mapped_heads = resolve_cross_heads(
-            list(diseases), list(test_ds.disease_names), train_name, test_name, tasks
+            list(diseases),
+            list(test_ds.disease_names),
+            train_name,
+            test_name,
+            tasks,
+            require_clinical=clinical_tables,
+            paper_mode=paper_mode,
         )
         if not mapped_heads:
             raise ValueError(
                 f"No overlapping heads for {train_name}->{test_name} "
                 f"train={diseases} test={test_ds.disease_names} tasks={tasks}"
             )
+        if not clinical_tables:
+            assert_clinical_alignment(mapped_heads, clinical_tables=False)
         print_mapped_heads(mapped_heads, train_name, test_name)
         eval_ds, split_name = test_ds, "all"
+        split_bundle = {
+            "train_idx": [],
+            "val_idx": [],
+            "test_idx": None,
+            "calibration_idx": None,
+            "patient_ids": None,
+            "labels": None,
+        }
     else:
         if base_ds is None:
             raise FileNotFoundError(f"No source cache in {cfg['data_dir']}")
-        eval_ds, split_name = resolve_eval_split(
+        eval_ds, split_name, split_bundle = resolve_eval_split(
             run_dir, base_ds, args.split, val_fraction, split_seed
         )
+
+    # Calibration fold resolution (may nest-split val and shrink eval_ds)
+    cal_fit_ids: list[int] | None = None
+    t_src: str | None = None
+    if do_calibrate and not cross and base_ds is not None:
+        cal_fit_ids, t_src = resolve_calibration_fit_ids(
+            split_bundle, args.split, paper_mode=paper_mode, split_seed=split_seed
+        )
+        nested_eval = split_bundle.get("_nested_eval_idx")
+        if nested_eval is not None:
+            from torch.utils.data import Subset
+
+            eval_ds = Subset(base_ds, nested_eval)
+            split_name = "val_nested_eval"
+            assert_calibration_disjoint(cal_fit_ids, nested_eval)
 
     probs, labels, logits = collect_probs(model, eval_ds, device, return_logits=True)
     if mapped_heads:
@@ -560,30 +706,60 @@ def main() -> None:
 
     cal_scores: dict[str, float] | None = None
     temperature: float | None = None
-    t_src: str | None = None
+    intercept: float | None = None
+    slope: float | None = None
+    dca_curves = per_class_decision_curves(labels, probs, class_names=score_names)
+    print(
+        "Note: NB@0.10 is illustrative only; prefer per-disease DCA curves "
+        "(see out-json dca_curves)."
+    )
     if do_calibrate:
-        split_path = os.path.join(run_dir, "split.npz")
-        t_src = "eval-split"
         fit_logits, fit_y = logits, labels
-        if (not cross) and os.path.isfile(split_path) and args.split != "val" and base_ds is not None:
-            val_ds, _ = resolve_eval_split(run_dir, base_ds, "val", val_fraction, split_seed)
-            _, fit_y, fit_logits = collect_probs(model, val_ds, device, return_logits=True)
-            t_src = "val"
-        elif cross and os.path.isfile(split_path) and base_ds is not None:
-            val_ds, _ = resolve_eval_split(run_dir, base_ds, "val", val_fraction, split_seed)
-            _, fit_y, fit_logits = collect_probs(model, val_ds, device, return_logits=True)
+        if cross and os.path.isfile(os.path.join(run_dir, "split.npz")) and base_ds is not None:
+            val_ds, _, src_bundle = resolve_eval_split(
+                run_dir, base_ds, "val", val_fraction, split_seed
+            )
+            # Prefer source calibration_idx when present
+            cal_ids = src_bundle.get("calibration_idx") or src_bundle.get("val_idx")
+            if cal_ids:
+                from torch.utils.data import Subset
+
+                cal_ds = Subset(base_ds, list(cal_ids))
+                _, fit_y, fit_logits = collect_probs(model, cal_ds, device, return_logits=True)
+                t_src = "source-calibration" if src_bundle.get("calibration_idx") else "source-val"
             if mapped_heads:
                 from reti_pioneer.label_map import take_columns
 
                 idx = [h.train_index for h in mapped_heads]
                 fit_logits = take_columns(fit_logits, idx)
                 fit_y = take_columns(fit_y, idx)
-            t_src = "source-val"
+        elif not cross and cal_fit_ids is not None and base_ds is not None:
+            from torch.utils.data import Subset
+
+            cal_ds = Subset(base_ds, cal_fit_ids)
+            _, fit_y, fit_logits = collect_probs(model, cal_ds, device, return_logits=True)
+            eval_ids = list(range(len(eval_ds)))
+            # Compare underlying dataset indices when both are Subsets of the same base.
+            if hasattr(eval_ds, "indices"):
+                eval_ids = list(eval_ds.indices)
+            assert_calibration_disjoint(cal_fit_ids, eval_ids)
+        elif not cross:
+            # Last resort: previous behavior only when folds unavailable
+            if paper_mode:
+                raise ValueError("paper_mode requires a disjoint calibration fold")
+            t_src = t_src or "eval-split-fallback"
+            print(f"WARNING: fitting temperature on evaluation fold ({t_src})")
+
         temperature = float(fit_temperature(fit_logits, fit_y))
+        intercept, slope = fit_calibration_intercept_slope(fit_logits, fit_y)
         cal_probs = apply_temperature(logits, temperature)
         cal_scores = score_predictions(labels, cal_probs, class_names=score_names)
-        print(f"temperature T={temperature:.4f} fitted on {t_src}")
+        print(
+            f"temperature T={temperature:.4f} fitted on {t_src}; "
+            f"intercept={intercept:.4f} slope={slope:.4f}"
+        )
         _print_scores("calibrated", cal_scores)
+        dca_curves = per_class_decision_curves(labels, cal_probs, class_names=score_names)
 
     if args.out_json:
         payload = {
@@ -599,10 +775,35 @@ def main() -> None:
             "calibrate": do_calibrate,
             "temperature": temperature,
             "temperature_fit": t_src,
+            "calibration_intercept": intercept,
+            "calibration_slope": slope,
             "raw": scores,
             "calibrated": cal_scores,
             "per_head": per_head or None,
-            "disclaimer": "Metrics reflect the loaded cache; synthetic features are not for manuscript AUROC.",
+            "dca_curves": dca_curves,
+            "nb@0.10_note": (
+                "Illustrative single-threshold net benefit only; "
+                "prefer per-disease dca_curves for primary narrative."
+            ),
+            "mapped_heads": (
+                [
+                    {
+                        "task": h.task,
+                        "alignment": h.alignment,
+                        "kind": h.kind,
+                        "clinical_claim_allowed": h.clinical_claim_allowed,
+                        "train_name": h.train_name,
+                        "test_name": h.test_name,
+                    }
+                    for h in mapped_heads
+                ]
+                if mapped_heads
+                else None
+            ),
+            "disclaimer": (
+                "Metrics reflect the loaded cache; synthetic features are not for "
+                "manuscript AUROC. clinical_claim_allowed=false unless alignment=direct."
+            ),
         }
         out_path = os.path.abspath(args.out_json)
         os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)

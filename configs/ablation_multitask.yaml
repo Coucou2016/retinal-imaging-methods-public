@@ -40,7 +40,7 @@ training:
   multitask: true
   pos_weight: true
   enable_q: true
-  ensemble: paper
+  ensemble: released_code
   calibrate: false
 
 longitudinal_years:

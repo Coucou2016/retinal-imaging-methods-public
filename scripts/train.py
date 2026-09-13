@@ -22,13 +22,17 @@ from model.RetiPioneer import get_reti_pioneer
 from reti_pioneer.config import load_config
 from reti_pioneer.constants import DISEASE_NAMES, PUBLIC_DATASETS
 from reti_pioneer.data_paths import ukb_compressed_ready
+from model.RetiPioneer import normalize_ensemble
 from reti_pioneer.split import (
     dataset_label_matrix,
     dataset_labels,
     dataset_patient_ids,
+    load_calibration_idx,
     load_split,
     load_test_idx,
     make_subsets,
+    patient_level_train_cal_val_indices,
+    patient_level_train_cal_val_test_indices,
     patient_level_train_val_indices,
     patient_level_train_val_test_indices,
     save_split,
@@ -121,7 +125,18 @@ def main() -> None:
     parser.add_argument("--data-dir", default=None, help="Override config data_dir")
     parser.add_argument("--multitask", action="store_true", help="Joint K-class head (BCE)")
     parser.add_argument("--learnable-q", action="store_true", dest="learnable_q")
-    parser.add_argument("--ensemble", default=None, choices=["paper", "mean", "temp_mean"])
+    parser.add_argument(
+        "--ensemble",
+        default=None,
+        choices=["released_code", "published_soft_vote", "mean", "temp_mean", "paper"],
+    )
+    parser.add_argument(
+        "--quality-router",
+        default=None,
+        choices=["fixed", "free_linear", "monotone"],
+        dest="quality_router",
+        help="Quality routing: fixed | free_linear (ablation) | monotone (default learnable)",
+    )
     parser.add_argument(
         "--synthetic-public",
         action="store_true",
@@ -173,9 +188,14 @@ def main() -> None:
     tcfg = cfg["training"]
     learnable_q = bool(args.learnable_q or tcfg.get("learnable_q", False))
     multitask = bool(args.multitask or tcfg.get("multitask", False))
-    ensemble = args.ensemble or tcfg.get("ensemble", "paper")
+    ensemble = normalize_ensemble(args.ensemble or tcfg.get("ensemble", "released_code"))
     enable_q = bool(tcfg.get("enable_q", True))
     use_pos_weight = bool(tcfg.get("pos_weight", False))
+    quality_router = args.quality_router or tcfg.get(
+        "quality_router", "monotone" if learnable_q else "fixed"
+    )
+    cal_fraction = float(split_cfg.get("cal_fraction", 0.1 if val_fraction > 0 else 0.0))
+    masked_bce = bool(tcfg.get("masked_bce", True))
 
     if dataset_name == "demo" or (args.demo and dataset_name not in PUBLIC_DATASETS):
         demo_cfg = cfg.get("demo", {})
@@ -256,7 +276,7 @@ def main() -> None:
         tag = "multitask" if num_classes > 1 else target_diseases[0]
         print(
             f"Training {tag} K={num_classes} (y={y} years) learnable_q={learnable_q} "
-            f"ensemble={ensemble} on {device}"
+            f"quality_router={quality_router} ensemble={ensemble} on {device}"
         )
         model = get_reti_pioneer(
             tcfg["fast_mode"],
@@ -264,6 +284,7 @@ def main() -> None:
             learnable_q=learnable_q,
             enable_q=enable_q,
             ensemble=ensemble,
+            quality_router=quality_router,
         )
         model = model.to(device)
         base_dataset.set_target(y, target_diseases, incident_exclude_prior=dataset_name not in PUBLIC_DATASETS)
@@ -274,23 +295,53 @@ def main() -> None:
         train_idx: list[int] = []
         val_idx: list[int] = []
         test_idx: list[int] | None = None
+        calibration_idx: list[int] | None = None
         frozen_split = os.path.join(cfg["data_dir"], "split.npz")
         # Prefer cache-level frozen split (official RFMiD / prepare_public_npz).
         use_split = val_fraction > 0 or os.path.isfile(frozen_split)
         if use_split:
             labels = dataset_labels(base_dataset)
             pids = dataset_patient_ids(base_dataset)
+            n_patients = len(np.unique(pids))
             if os.path.isfile(frozen_split):
                 train_idx, val_idx = load_split(frozen_split)
                 test_idx = load_test_idx(frozen_split)
+                calibration_idx = load_calibration_idx(frozen_split)
                 print(f"  using frozen split from {frozen_split}")
+                # If frozen split lacks calibration, carve from val when calibrating.
+                if calibration_idx is None and cal_fraction > 0 and len(val_idx) >= 4:
+                    from reti_pioneer.split import nested_calibration_from_val
+
+                    calibration_idx, val_idx = nested_calibration_from_val(
+                        pids, val_idx, labels, cal_fraction, split_seed + 11
+                    )
+                    print(
+                        f"  nested calibration from frozen val: "
+                        f"cal={len(calibration_idx)} val={len(val_idx)}"
+                    )
             elif (
                 test_fraction > 0
                 and dataset_name in PUBLIC_DATASETS
-                and len(np.unique(pids)) >= 6
+                and n_patients >= 8
+                and cal_fraction > 0
             ):
+                train_idx, calibration_idx, val_idx, test_idx = (
+                    patient_level_train_cal_val_test_indices(
+                        pids,
+                        labels,
+                        val_fraction,
+                        cal_fraction,
+                        test_fraction,
+                        split_seed,
+                    )
+                )
+            elif test_fraction > 0 and dataset_name in PUBLIC_DATASETS and n_patients >= 6:
                 train_idx, val_idx, test_idx = patient_level_train_val_test_indices(
                     pids, labels, val_fraction, test_fraction, split_seed
+                )
+            elif cal_fraction > 0 and n_patients >= 6:
+                train_idx, calibration_idx, val_idx = patient_level_train_cal_val_indices(
+                    pids, labels, max(val_fraction, 0.05), cal_fraction, split_seed
                 )
             else:
                 train_idx, val_idx = patient_level_train_val_indices(
@@ -306,11 +357,13 @@ def main() -> None:
                 val_fraction if val_fraction > 0 else 0.25,
                 test_idx=test_idx,
                 patient_ids=pids,
+                calibration_idx=calibration_idx,
             )
             extra = f" test={len(test_idx)}" if test_idx else ""
+            cal_extra = f" cal={len(calibration_idx)}" if calibration_idx else ""
             print(
-                f"  train={len(train_idx)} val={len(val_idx)}{extra} "
-                f"(val positives={int(labels[val_idx].sum())} patients={len(np.unique(pids))})"
+                f"  train={len(train_idx)} val={len(val_idx)}{cal_extra}{extra} "
+                f"(val positives={int(labels[val_idx].sum())} patients={n_patients})"
             )
 
         pos_weight = pos_weight_from_dataset(tds) if use_pos_weight else None
@@ -322,8 +375,10 @@ def main() -> None:
                 "horizon": y,
                 "learnable_q": learnable_q,
                 "enable_q": enable_q,
+                "quality_router": quality_router,
                 "ensemble": ensemble,
                 "multitask": num_classes > 1,
+                "masked_bce": masked_bce,
                 "dataset": dataset_name,
                 "fast_mode": tcfg["fast_mode"],
             },
@@ -348,6 +403,7 @@ def main() -> None:
             weight_decay=tcfg.get("weight_decay", 0.01),
             pos_weight=pos_weight,
             simple_metrics=num_classes > 1,
+            masked_bce=masked_bce,
         )
 
 

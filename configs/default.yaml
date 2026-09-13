@@ -41,7 +41,8 @@ training:
   multitask: false  # paper clone: one binary head per disease
   pos_weight: false
   enable_q: true
-  ensemble: paper  # paper | mean | temp_mean
+  ensemble: released_code  # released_code | published_soft_vote | mean | temp_mean
+  quality_router: fixed  # fixed | free_linear | monotone (monotone default when learnable_q)
   calibrate: false
 
 longitudinal_years:

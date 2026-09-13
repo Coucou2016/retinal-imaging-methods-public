@@ -39,18 +39,22 @@ training:
   multitask: true
   pos_weight: true
   enable_q: true
-  ensemble: paper
+  quality_router: monotone
+  ensemble: released_code
+  masked_bce: true
   calibrate: true
 
 eval:
   calibrate: true
   decision_threshold: 0.10
+  # NB@0.10 is illustrative; prefer per-disease DCA curves in evaluate out-json.
 
 longitudinal_years:
   - 0
 
 split:
   val_fraction: 0.25
+  cal_fraction: 0.1
   seed: 42
 
 demo:

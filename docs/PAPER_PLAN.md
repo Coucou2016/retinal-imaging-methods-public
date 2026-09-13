@@ -20,11 +20,11 @@ A follow-up paper that only “reimplements Reti-Pioneer” is not publishable. 
 
 ### Recommended thesis (one sentence)
 
-Reti-Pioneer showed that frozen foundation features plus quality-aware fusion can screen systemic disease from fundus photographs; we keep that skeleton, replace **fixed quality weights** with **learnable quality routing**, replace **six independent binary models** with a **shared multi-task head**, and evaluate **calibration / decision-curve utility** and **cross-dataset generalization** on public cohorts that independent reviewers can download.
+Reti-Pioneer showed that frozen foundation features plus quality-aware fusion can screen systemic disease from fundus photographs; we keep that skeleton, replace **fixed quality weights** with a **monotone bounded quality router**, replace **released-code independent binary loops** with a **masked multi-task head**, and evaluate with an **endpoint-aware cross-cohort** protocol plus a calibration/DCA **evaluation framework** on public cohorts.
 
 Suggested title:
 
-> Quality-Adaptive Multi-Task Oculomics: Extending Reti-Pioneer with Learnable Fusion, Calibration, and Public-Cohort Validation
+> Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning
 
 Target venues (realistic without UKB): *npj Digital Medicine*, *Medical Image Analysis*, *IEEE JBHI*, *IEEE TMI*, *Computers in Biology and Medicine*. Do not aim at *Nature Medicine* unless you obtain UKB + a prospective cohort.
 
@@ -32,16 +32,15 @@ Target venues (realistic without UKB): *npj Digital Medicine*, *Medical Image An
 
 | ID | Innovation | Why it is new vs Reti-Pioneer | Feasible here | Public verification | Risk |
 |----|------------|-------------------------------|---------------|---------------------|------|
-| I | Learnable quality routing | Paper freezes `q_fc` to 1 / 0.5 / 0 | `QualityAware(learnable_q=True)` already exists | BRSET has focus/illumination/artifact labels | Low |
-| II | Joint multi-label head | Paper trains six separate binary models | Change `num_classes` and loss in `ComplexModel` | ODIR-5K (8 labels), BRSET multi-label | Low |
-| III | Calibration + decision curve as primary utility | Helpers exist but are not in the train/eval loop | `utils/calibration.py` | Any public binary/multi-label set | Low |
-| IV | Patient-level domain generalization | External validation was reported, shift was not modelled | Feature caches + train on A / test on B | ODIR ↔ BRSET ↔ RFMiD | Medium |
-| V | Uncertainty / conformal prediction | Inference uses max of three heads, no interval | Post-hoc on logits | Coverage on public test splits | Medium |
-| VI | Fairness slices (age, sex) | Authors flag ethnicity imbalance | Subgroup AUROC in `evaluate.py` | BRSET demographics | Low |
-| VII | Distill three backbones → one | Deployment needs three frozen giants | Distillation loss on cached features | Latency vs AUROC on public sets | Medium |
-| VIII | Survival (Cox / DeepHit) for 5/10y | Authors call this a limitation | Needs time-to-event labels | **Not public** — UKB only | High |
+| I | Monotone bounded quality routing | Paper freezes `q_fc` to 1 / 0.5 / 0; free linear can break order | `quality_router=monotone` | BRSET quality labels | Low |
+| II | Masked multi-label head | Released code: independent loops | `masked_bce` + `num_classes=K` | ODIR / BRSET | Low |
+| III | Endpoint ontology + cross-cohort | Related labels without alignment flags | `reti_pioneer/label_map.py` | ODIR ↔ BRSET | Low |
+| IV | Calibration / DCA as **evaluation framework** | Not novelty — reporting protocol | `utils/calibration.py` | Any public set | Low |
+| V | Disjoint calibration splits | Prevent val fit+score leakage | `split.calibration_idx` | All | Low |
+| VI | Fairness slices (age, sex) | Authors flag ethnicity imbalance | Subgroup AUROC | BRSET | Low |
+| E5 | Quality-conditioned gating | Deferred | — | — | 待补充 |
 
-**Write I+II+III as the paper core. Use IV and VI as required experiments. Keep V/VII as optional. Do not promise VIII without UKB.**
+**Write I+II+III as the paper core. Use IV–VI as required evaluation/protocol. Do not sell calibration/DCA as novelty.**
 
 What not to sell as innovation: swapping one backbone without a mechanism; reporting demo AUROC; equating diabetic-retinopathy grade with systemic T2DM screening; beating 0.833 T2DM AUROC without the original cohort.
 

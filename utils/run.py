@@ -20,6 +20,37 @@ from torch.utils.data.sampler import WeightedRandomSampler
 from utils.metrics import AveragePrecision, SensitivityScore, SpecificityScore
 
 
+def masked_bce_with_logits(
+    logits: torch.Tensor,
+    targets: torch.Tensor,
+    pos_weight: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """BCE that supervises only present labels (target >= 0); -1/NaN = missing."""
+    targets = targets.float()
+    mask = torch.isfinite(targets) & (targets >= 0)
+    # Clamp missing entries so BCE does not NaN; they are zeroed by the mask.
+    safe = torch.where(mask, targets.clamp(0.0, 1.0), torch.zeros_like(targets))
+    per = F.binary_cross_entropy_with_logits(
+        logits, safe, reduction="none", pos_weight=pos_weight
+    )
+    denom = mask.float().sum().clamp_min(1.0)
+    return (per * mask.float()).sum() / denom
+
+
+class MaskedBCEWithLogitsLoss(nn.Module):
+    """Partial-label multitask loss: ignore targets marked missing (<0 or NaN)."""
+
+    def __init__(self, pos_weight: torch.Tensor | None = None):
+        super().__init__()
+        self.pos_weight = pos_weight
+
+    def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        pw = self.pos_weight
+        if pw is not None and pw.device != logits.device:
+            pw = pw.to(logits.device)
+        return masked_bce_with_logits(logits, targets, pos_weight=pw)
+
+
 def save_py(py: List[Tuple[np.ndarray, np.ndarray]] , path: str):
     def to_cpu_numpy(t: torch.Tensor): return t.cpu().numpy()
     p, y = zip(*py)
@@ -39,8 +70,14 @@ def single_fastds_run(model: nn.Module,
                       eval_train: bool = False,
                       **args):
     pos_weight = args.get("pos_weight")
+    use_masked = bool(args.get("masked_bce", True))
     if pos_weight is not None:
         pw = torch.as_tensor(pos_weight, dtype=torch.float32, device=device)
+    else:
+        pw = None
+    if use_masked:
+        loss = MaskedBCEWithLogitsLoss(pos_weight=pw)
+    elif pw is not None:
         loss = nn.BCEWithLogitsLoss(pos_weight=pw)
     else:
         loss = nn.BCEWithLogitsLoss()
@@ -54,9 +91,12 @@ def single_fastds_run(model: nn.Module,
 
     def _label_positive(y) -> float:
         if hasattr(y, "numel"):
-            return float(y.sum().item() if y.numel() > 1 else y.item())
-        arr = np.asarray(y)
-        return float(arr.sum() if arr.size > 1 else arr.item())
+            yy = y.float()
+            present = yy[yy >= 0] if yy.numel() > 1 else yy
+            return float(present.sum().item() if present.numel() > 1 else (present.item() if present.numel() else 0.0))
+        arr = np.asarray(y, dtype=np.float64).reshape(-1)
+        present = arr[np.isfinite(arr) & (arr >= 0)]
+        return float(present.sum() if present.size else 0.0)
 
     sampler = None
     balance_sampler = args.get("balance_sampler", False)
@@ -64,7 +104,7 @@ def single_fastds_run(model: nn.Module,
         ys = []
         for i in range(len(tds)):
             ys.append(_label_positive(tds[i][-1]))
-        pos = sum(ys)
+        pos = sum(1 for y in ys if y >= 0.5)
         neg = len(ys) - pos
         if pos <= 0 or neg <= 0:
             raise ValueError("balance_sampler requires both positive and negative labels")
