@@ -39,3 +39,8 @@ python -m unittest discover -s tests -v
 python scripts/build_paper_report.py
 python scripts/intervention_quality.py
 ```
+
+## Git / public snapshot
+
+- Local commit: `3584cb7` on `main` (ahead of `origin/main` = `686823d`).
+- Push to `https://github.com/Coucou2016/retinal-imaging-methods-public` **failed** (GitHub 443 / empty reply). Retry when network allows: `git push origin HEAD`.
