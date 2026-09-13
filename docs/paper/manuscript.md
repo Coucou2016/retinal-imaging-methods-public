@@ -75,7 +75,7 @@ Following Reti-Pioneer, we freeze RETFound / Swin V2-B / Vision Mamba-S and trai
 
 ### 3.5 Calibration and decision utility (evaluation framework)
 
-Temperature *T* is fit on **calibration_ids** disjoint from **evaluation_ids**. If `--split val --calibrate` would fit and score the same set, `paper_mode` errors; otherwise we nest a held-out calibration slice and warn. We report AUROC / average precision (AP), equal-width ECE, Brier score, optional calibration intercept/slope, sensitivity at high specificity, **per-disease DCA curves**, and (illustrative only) net benefit at threshold 0.10 versus treat-all / treat-none.
+Temperature *T* is fit on **calibration_ids** disjoint from **evaluation_ids**. If `--split val --calibrate` would fit and score the same set, `paper_mode` errors; otherwise we nest a held-out calibration slice and warn. **Operating points** (Youden / sens@95%spec) are selected on validation (or calibration) only and applied **frozen** on the evaluation fold; `paper_mode` refuses fit-on-eval. We report AUROC / average precision (AP) with optional **patient-level bootstrap 95% CI**, equal-width ECE, Brier score, optional calibration intercept/slope, sensitivity at high specificity, **per-disease DCA curves**, and (illustrative only) net benefit at threshold 0.10 versus treat-all / treat-none.
 
 ### 3.6 Training protocol
 
@@ -85,7 +85,7 @@ Temperature *T* is fit on **calibration_ids** disjoint from **evaluation_ids**. 
 | Backbones | Frozen; train fusion + head on caches |
 | Split | Patient-level; train/cal/val/(test); both eyes co-located |
 | Seeds (final tables) | {42, 43, 44} — **待补充** on real data |
-| Ablation arms | E0–E4 (`configs/ablation_e*.yaml`); E5 quality-conditioned gating **待补充** |
+| Ablation arms | E0–E4 (`configs/ablation_e*.yaml`); optional E5 quality-conditioned gating (`ablation_e5.yaml`) |
 | Software (this workspace) | PyTorch 2.x CPU build; CUDA **unavailable** → foundation extraction blocked |
 
 ### 3.7 Endpoint ontology (pre-registered)
@@ -106,7 +106,7 @@ See `docs/PUBLIC_DATA.md` and `reti_pioneer/label_map.py` for the full harmoniza
 - Synthetic cache path must never populate submission Results tables.  
 - UKB-only diseases omitted from public tables.  
 - BRSET requires PhysioNet credentialing; this workspace does not scrape PhysioNet.  
-- E5 quality-conditioned gating deferred (**待补充**).
+- Optional E5 quality-conditioned gating and BRSET `lambda_q` aux are config-gated (`quality_gating`, `lambda_q`).
 
 ### 3.9 Reproducibility hooks
 
@@ -151,7 +151,7 @@ Public ocular+systemic labels enable reproducible methods claims that UKB-gated 
 
 ## 7. Limitations
 
-No UKB / SEED access in this workspace; label mismatch vs ICD systemic endpoints; no prospective trial; Vision Mamba optional on Windows; EyeQ weights external; synthetic caches for CI only; ODIR Kaggle credentials absent; BRSET PhysioNet DUA not completed here; GPU absent for RETFound/Swin extraction; E5 gating and patient-bootstrap CIs **待补充**.
+No UKB / SEED access in this workspace; label mismatch vs ICD systemic endpoints; no prospective trial; Vision Mamba optional on Windows; EyeQ weights external; synthetic caches for CI only; ODIR Kaggle credentials absent; BRSET PhysioNet DUA not completed here; GPU absent for RETFound/Swin extraction.
 
 ---
 

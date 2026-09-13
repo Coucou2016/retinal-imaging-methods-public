@@ -195,6 +195,156 @@ def sensitivity_at_specificity(
     }
 
 
+def binary_metrics_at_threshold(
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    threshold: float,
+) -> dict[str, float]:
+    """Sensitivity / specificity (and Youden J) at a *frozen* decision threshold."""
+    nan = {
+        "threshold": float(threshold) if np.isfinite(threshold) else float("nan"),
+        "sensitivity": float("nan"),
+        "specificity": float("nan"),
+        "youden_j": float("nan"),
+    }
+    y_true, y_prob = _as_1d(y_true, y_prob)
+    if y_true.size == 0 or not np.isfinite(threshold):
+        return nan
+    pred = y_prob >= float(threshold)
+    pos = y_true == 1
+    neg = ~pos
+    tp = float((pred & pos).sum())
+    tn = float((~pred & neg).sum())
+    fp = float((pred & neg).sum())
+    fn = float((~pred & pos).sum())
+    sens = tp / (tp + fn) if (tp + fn) > 0 else float("nan")
+    spec = tn / (tn + fp) if (tn + fp) > 0 else float("nan")
+    j = (
+        float(sens + spec - 1.0)
+        if np.isfinite(sens) and np.isfinite(spec)
+        else float("nan")
+    )
+    return {
+        "threshold": float(threshold),
+        "sensitivity": float(sens),
+        "specificity": float(spec),
+        "youden_j": j,
+    }
+
+
+def fit_operating_point_thresholds(
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    target_specificity: float = 0.95,
+) -> dict[str, float]:
+    """Select Youden / sens@spec thresholds on a fit fold only (do not use for eval claims)."""
+    y_true = np.asarray(y_true)
+    y_prob = np.asarray(y_prob)
+    if y_true.ndim == 1:
+        youden = youden_operating_point(y_true, y_prob)
+        s95 = sensitivity_at_specificity(
+            y_true, y_prob, target_specificity=target_specificity
+        )
+        return {
+            "youden_threshold": youden["threshold"],
+            "sens@95%spec_threshold": s95["threshold"],
+            "sens@95%spec_target_specificity": float(target_specificity),
+        }
+    youden_thrs, s95_thrs = [], []
+    for k in range(y_true.shape[1]):
+        yt = fit_operating_point_thresholds(
+            y_true[:, k], y_prob[:, k], target_specificity=target_specificity
+        )
+        youden_thrs.append(yt["youden_threshold"])
+        s95_thrs.append(yt["sens@95%spec_threshold"])
+    return {
+        "youden_threshold": float(np.nanmean(youden_thrs)) if youden_thrs else float("nan"),
+        "sens@95%spec_threshold": float(np.nanmean(s95_thrs)) if s95_thrs else float("nan"),
+        "sens@95%spec_target_specificity": float(target_specificity),
+        "per_class_youden_threshold": [float(x) for x in youden_thrs],
+        "per_class_sens@95%spec_threshold": [float(x) for x in s95_thrs],
+    }
+
+
+def apply_operating_point_thresholds(
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    thresholds: dict[str, float],
+    target_specificity: float = 0.95,
+) -> dict[str, float]:
+    """Apply frozen thresholds on an evaluation fold (fit ≠ eval protocol)."""
+    y_true = np.asarray(y_true)
+    y_prob = np.asarray(y_prob)
+    target = float(
+        thresholds.get("sens@95%spec_target_specificity", target_specificity)
+    )
+    if y_true.ndim == 1:
+        thr_y = float(thresholds.get("youden_threshold", float("nan")))
+        thr_s = float(thresholds.get("sens@95%spec_threshold", float("nan")))
+        y_m = binary_metrics_at_threshold(y_true, y_prob, thr_y)
+        s_m = binary_metrics_at_threshold(y_true, y_prob, thr_s)
+        met = (
+            1.0
+            if np.isfinite(s_m["specificity"]) and s_m["specificity"] >= target - 1e-12
+            else 0.0
+            if np.isfinite(s_m["specificity"])
+            else float("nan")
+        )
+        return {
+            "youden_threshold": thr_y,
+            "youden_sensitivity": y_m["sensitivity"],
+            "youden_specificity": y_m["specificity"],
+            "youden_j": y_m["youden_j"],
+            "sens@95%spec": s_m["sensitivity"],
+            "sens@95%spec_threshold": thr_s,
+            "sens@95%spec_specificity": s_m["specificity"],
+            "sens@95%spec_met_target": met,
+        }
+    per_y = thresholds.get("per_class_youden_threshold")
+    per_s = thresholds.get("per_class_sens@95%spec_threshold")
+    youden_js, youden_sens, youden_specs, youden_thrs = [], [], [], []
+    s95_sens, s95_specs, s95_thrs, s95_mets = [], [], [], []
+    for k in range(y_true.shape[1]):
+        thr_y = (
+            float(per_y[k])
+            if isinstance(per_y, (list, tuple, np.ndarray)) and k < len(per_y)
+            else float(thresholds.get("youden_threshold", float("nan")))
+        )
+        thr_s = (
+            float(per_s[k])
+            if isinstance(per_s, (list, tuple, np.ndarray)) and k < len(per_s)
+            else float(thresholds.get("sens@95%spec_threshold", float("nan")))
+        )
+        applied = apply_operating_point_thresholds(
+            y_true[:, k],
+            y_prob[:, k],
+            {
+                "youden_threshold": thr_y,
+                "sens@95%spec_threshold": thr_s,
+                "sens@95%spec_target_specificity": target,
+            },
+            target_specificity=target,
+        )
+        youden_js.append(applied["youden_j"])
+        youden_sens.append(applied["youden_sensitivity"])
+        youden_specs.append(applied["youden_specificity"])
+        youden_thrs.append(applied["youden_threshold"])
+        s95_sens.append(applied["sens@95%spec"])
+        s95_specs.append(applied["sens@95%spec_specificity"])
+        s95_thrs.append(applied["sens@95%spec_threshold"])
+        s95_mets.append(applied["sens@95%spec_met_target"])
+    return {
+        "youden_j": float(np.nanmean(youden_js)) if youden_js else float("nan"),
+        "youden_sensitivity": float(np.nanmean(youden_sens)) if youden_sens else float("nan"),
+        "youden_specificity": float(np.nanmean(youden_specs)) if youden_specs else float("nan"),
+        "youden_threshold": float(np.nanmean(youden_thrs)) if youden_thrs else float("nan"),
+        "sens@95%spec": float(np.nanmean(s95_sens)) if s95_sens else float("nan"),
+        "sens@95%spec_threshold": float(np.nanmean(s95_thrs)) if s95_thrs else float("nan"),
+        "sens@95%spec_specificity": float(np.nanmean(s95_specs)) if s95_specs else float("nan"),
+        "sens@95%spec_met_target": float(np.nanmean(s95_mets)) if s95_mets else float("nan"),
+    }
+
+
 def _bce_with_logits(logits: np.ndarray, y_true: np.ndarray) -> float:
     z = np.asarray(logits, dtype=np.float64).ravel()
     y = np.asarray(y_true, dtype=np.float64).ravel()

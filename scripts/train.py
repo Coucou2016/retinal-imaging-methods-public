@@ -196,6 +196,8 @@ def main() -> None:
     )
     cal_fraction = float(split_cfg.get("cal_fraction", 0.1 if val_fraction > 0 else 0.0))
     masked_bce = bool(tcfg.get("masked_bce", True))
+    quality_gating = bool(tcfg.get("quality_gating", False))
+    lambda_q = float(tcfg.get("lambda_q", 0.0) or 0.0)
 
     if dataset_name == "demo" or (args.demo and dataset_name not in PUBLIC_DATASETS):
         demo_cfg = cfg.get("demo", {})
@@ -285,6 +287,9 @@ def main() -> None:
             enable_q=enable_q,
             ensemble=ensemble,
             quality_router=quality_router,
+            quality_gating=quality_gating,
+            quality_aux=lambda_q > 0,
+            lambda_q=lambda_q,
         )
         model = model.to(device)
         base_dataset.set_target(y, target_diseases, incident_exclude_prior=dataset_name not in PUBLIC_DATASETS)
@@ -379,6 +384,8 @@ def main() -> None:
                 "ensemble": ensemble,
                 "multitask": num_classes > 1,
                 "masked_bce": masked_bce,
+                "quality_gating": quality_gating,
+                "lambda_q": lambda_q,
                 "dataset": dataset_name,
                 "fast_mode": tcfg["fast_mode"],
             },
@@ -404,6 +411,7 @@ def main() -> None:
             pos_weight=pos_weight,
             simple_metrics=num_classes > 1,
             masked_bce=masked_bce,
+            lambda_q=lambda_q,
         )
 
 

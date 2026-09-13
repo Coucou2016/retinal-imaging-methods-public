@@ -18,6 +18,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
 
 from utils.metrics import AveragePrecision, SensitivityScore, SpecificityScore
+from model.quality_gate import soft_quality_ce
 
 
 def masked_bce_with_logits(
@@ -125,10 +126,33 @@ def single_fastds_run(model: nn.Module,
     skip_vds = vds is None or not _val_has_positive()
 
     use_amp = str(device).startswith("cuda")
-    trainer = create_supervised_trainer(
-        model, optim, loss, device,
-        prepare_batch=pb, amp_mode="amp" if use_amp else False
-    )
+    lambda_q = float(args.get("lambda_q", 0.0) or 0.0)
+
+    if lambda_q > 0:
+
+        def _train_step(engine: Engine, batch):
+            model.train()
+            optim.zero_grad()
+            x, y = pb(batch, device, False)
+            logits = model(x)
+            loss_d = loss(logits, y)
+            total = loss_d
+            if hasattr(model, "collect_quality_aux_logits"):
+                q_logits = model.collect_quality_aux_logits()
+                if q_logits is not None:
+                    ql, qr = x[2]
+                    q_tgt = 0.5 * (ql.float() + qr.float())
+                    total = loss_d + lambda_q * soft_quality_ce(q_logits, q_tgt)
+            total.backward()
+            optim.step()
+            return total.detach()
+
+        trainer = Engine(_train_step)
+    else:
+        trainer = create_supervised_trainer(
+            model, optim, loss, device,
+            prepare_batch=pb, amp_mode="amp" if use_amp else False
+        )
 
     def binize(py): return (torch.round(F.sigmoid(py[0])), py[1])
     def sig(py): return ((F.sigmoid(py[0]), py[1]))

@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 
 from model.QualityAware import QualityAware, QualityRouter
+from model.quality_gate import QualityAuxHead, QualityConditionedGate, soft_quality_ce
 
 # Ensemble over the three backbone heads:
 #   released_code       — train: softmax-weighted mix (T=0.1); eval: max
@@ -15,6 +16,15 @@ from model.QualityAware import QualityAware, QualityRouter
 # Legacy alias: ensemble="paper" → released_code (DeprecationWarning).
 # For num_classes>1 the mix/max is applied independently per class.
 VALID_ENSEMBLES = ("released_code", "published_soft_vote", "mean", "temp_mean", "paper")
+
+__all__ = [
+    "ComplexModel",
+    "FuseBase",
+    "VALID_ENSEMBLES",
+    "get_reti_pioneer",
+    "normalize_ensemble",
+    "soft_quality_ce",
+]
 
 
 def normalize_ensemble(ensemble: str) -> str:
@@ -44,6 +54,8 @@ class FuseBase(nn.Module):
         learnable_q: bool = False,
         quality_router: QualityRouter | str = "fixed",
         flip_r: bool = True,
+        quality_gating: bool = False,
+        quality_aux: bool = False,
     ) -> None:
         super().__init__()
 
@@ -56,8 +68,13 @@ class FuseBase(nn.Module):
             learnable_q,
             quality_router=quality_router,
         )
+        self.quality_gate = QualityConditionedGate(
+            base_out_size, enabled=bool(quality_gating)
+        )
+        self.quality_aux_head = QualityAuxHead(base_out_size) if quality_aux else None
         self.m_fuse = nn.Bilinear(self.fuse_dim * 2 + 1, meta_size + 1, num_classes, False)
         self.flip_r = flip_r
+        self._last_aux_logits: list[torch.Tensor] = []
 
     def forward(self, xmq: List[torch.Tensor]) -> torch.Tensor:
         lr, m, qs = xmq
@@ -69,9 +86,13 @@ class FuseBase(nn.Module):
         else:
             lr = [lr[0], lr[1]]
 
+        self._last_aux_logits = []
         xqf2 = [torch.ones(bat, 1, device=dev)]
         for x, q in zip(lr, qs):
             xf = self.base(x)
+            xf = self.quality_gate(xf, q)
+            if self.quality_aux_head is not None:
+                self._last_aux_logits.append(self.quality_aux_head(xf))
             xqf2.append(self.quality_aware(xf, q))
         xqf2 = torch.cat(xqf2, dim=1)
         m = torch.cat([torch.ones(bat, 1, device=dev), m], dim=1)
@@ -93,6 +114,9 @@ class ComplexModel(nn.Module):
         enable_q: bool = True,
         ensemble: str = "released_code",
         quality_router: QualityRouter | str = "fixed",
+        quality_gating: bool = False,
+        quality_aux: bool = False,
+        lambda_q: float = 0.0,
     ):
         super().__init__()
         ensemble = normalize_ensemble(ensemble)
@@ -101,6 +125,9 @@ class ComplexModel(nn.Module):
         self.enable_q = enable_q
         self.ensemble = ensemble
         self.quality_router = quality_router
+        self.quality_gating = bool(quality_gating)
+        self.quality_aux = bool(quality_aux) or float(lambda_q) > 0
+        self.lambda_q = float(lambda_q)
         if learnable_q and quality_router == "fixed":
             quality_router = "monotone"
             self.quality_router = quality_router
@@ -117,6 +144,8 @@ class ComplexModel(nn.Module):
                         learnable_q=learnable_q,
                         quality_router=quality_router,
                         flip_r=False,
+                        quality_gating=self.quality_gating,
+                        quality_aux=self.quality_aux,
                     ),
                     nn.SELU(True),
                     nn.Linear(mid_size, num_classes),
@@ -124,6 +153,16 @@ class ComplexModel(nn.Module):
                 for backbone, size in zip(backbones, base_out_sizes)
             ]
         )
+
+    def collect_quality_aux_logits(self) -> torch.Tensor | None:
+        """Mean aux logits over eyes/heads from the last forward (if quality_aux)."""
+        chunks: list[torch.Tensor] = []
+        for seq in self.models:
+            fuse: FuseBase = seq[0]  # type: ignore[assignment]
+            chunks.extend(fuse._last_aux_logits)
+        if not chunks:
+            return None
+        return torch.stack(chunks, dim=0).mean(dim=0)
 
     def forward(self, batch):
         (l, r), m, qs = batch
@@ -157,8 +196,15 @@ def get_reti_pioneer(
     ensemble: str = "released_code",
     quality_router: QualityRouter | str = "fixed",
     n_meta: int = 3 + 7,
+    quality_gating: bool = False,
+    quality_aux: bool = False,
+    lambda_q: float = 0.0,
 ):
-    """Build Reti-Pioneer. K=1 is the paper clone; K>1 is a joint multi-label head."""
+    """Build Reti-Pioneer. K=1 is the paper clone; K>1 is a joint multi-label head.
+
+    ``quality_gating`` enables optional E5 quality-conditioned backbone gates.
+    ``lambda_q`` / ``quality_aux`` enable an auxiliary soft-quality head (BRSET).
+    """
     ensemble = normalize_ensemble(ensemble)
     if learnable_q and quality_router == "fixed":
         quality_router = "monotone"
@@ -182,4 +228,7 @@ def get_reti_pioneer(
         enable_q=enable_q,
         ensemble=ensemble,
         quality_router=quality_router,
+        quality_gating=quality_gating,
+        quality_aux=quality_aux,
+        lambda_q=lambda_q,
     )

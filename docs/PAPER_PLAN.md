@@ -139,7 +139,7 @@ These are independently downloadable. Reviewers can repeat the tables.
 2. Three seeds (42, 43, 44); report mean ± std and 95% bootstrap CI on the pooled or median seed.
 3. Always report the **Reti-Pioneer-clone** on the **same public data** — that is the only fair “improvement” claim.
 4. Primary endpoint: **macro AUROC** on the official or frozen test split.
-5. Co-primary clinical endpoint: **ECE** and **net benefit at 10% threshold** (screening-like).
+5. Utility framework (not co-primary novelty): **ECE** and **per-disease DCA**; **NB@0.10** is illustrative only.
 6. Pre-register in the paper which labels map to which heads (table in Methods). Do not cherry-pick classes after seeing test AUROC.
 7. Never put demo/synthetic AUROC in the paper.
 

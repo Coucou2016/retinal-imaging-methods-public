@@ -34,7 +34,7 @@ Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**�
 | II | 掩码多任务（对照 released independent loops） | 已实现 |
 | III | 端点本体 + 跨队列 alignment 守卫 | 已实现 |
 | IV | 校准/DCA 评估框架（cal ⊥ eval） | 已实现 |
-| E5 | 质量条件门控 | 待补充 |
+| E5 | 质量条件门控 + 可选 λ_q | 已实现（`ablation_e5.yaml`；默认关） |
 
 ## 3. 方法映射
 
@@ -60,7 +60,7 @@ Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**�
 
 ## 5. 讨论与局限
 
-须区分 published multitask vs released independent loops；`diabetes_related` 不得进临床主表。待补充：真实 ODIR/BRSET 像素、GPU 特征、E5 门控、bootstrap CI。
+须区分 published multitask vs released independent loops；`diabetes_related` 不得进临床主表。待补充：真实 ODIR/BRSET 像素、GPU 特征。工程侧已补：val→test 阈值冻结、patient-level bootstrap CI、E5 门控、λ_q、intervention smoke。
 
 ## 6. 验收
 

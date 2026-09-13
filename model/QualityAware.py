@@ -83,9 +83,11 @@ class QualityAware(nn.Module):
         return cum / cum[-1].clamp_min(1e-6)
 
     def quality_scalar(self, q: torch.Tensor) -> torch.Tensor:
-        """Map (B, 3) quality probs → (B, 1) scalar weight."""
+        """Map (B, 3) quality probs in (good, usable, bad) order → (B, 1) scalar weight."""
         if self.quality_router == "monotone":
-            w = self.monotone_weights()
+            # monotone_weights() is (bad, usable, good); align to q's (good, usable, bad).
+            w_bug = self.monotone_weights()
+            w = torch.stack([w_bug[2], w_bug[1], w_bug[0]])
             return (q * w.view(1, 3)).sum(dim=-1, keepdim=True)
         assert self.q_fc is not None
         return self.q_fc(q)

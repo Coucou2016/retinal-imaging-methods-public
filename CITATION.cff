@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+title: "Reti-Pioneer methods extension — monotone quality routing and endpoint-aware multitask"
+message: "If you use this software, please cite both this repository and the upstream Reti-Pioneer paper."
+type: software
+authors:
+  - family-names: Methods extension maintainers
+    name-particle: ""
+repository-code: "https://github.com/Coucou2016/retinal-imaging-methods-public"
+license: MIT
+version: "0.1.0"
+date-released: "2026-09-14"
+references:
+  - type: article
+    title: "AI framework for multidisease detection via retinal imaging"
+    authors:
+      - family-names: Zhang
+        given-names: X.
+      - family-names: Li
+        given-names: Q.
+      - family-names: Liang
+        given-names: Y.
+    year: 2026
+    journal: Nature Medicine
+    volume: 32
+    doi: "10.1038/s41591-026-04359-w"

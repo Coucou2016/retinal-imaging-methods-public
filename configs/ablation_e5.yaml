@@ -1,6 +1,5 @@
-# E4 — Full methods stack: monotone + multitask + disjoint calibration eval protocol.
-# Calibration/DCA are evaluation framework, not novelty claims.
-# E5: see configs/ablation_e5.yaml (quality_gating + optional lambda_q).
+# E5 — Optional quality-conditioned backbone gating (+ optional BRSET λ_q aux).
+# Default-off for E0–E4; enable quality_gating / lambda_q explicitly.
 
 data_dir: data/UKBCompressed
 pretrained_dir: pretrained
@@ -28,6 +27,8 @@ training:
   pos_weight: true
   enable_q: true
   ensemble: released_code
+  quality_gating: true
+  lambda_q: 0.1
   calibrate: true
 
 eval:

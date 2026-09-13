@@ -45,18 +45,19 @@ from reti_pioneer.split import (
     resolve_split_indices,
     subset_for_split,
 )
+from utils.bootstrap import patient_level_bootstrap_ci
 from utils.calibration import (
+    apply_operating_point_thresholds,
     apply_temperature,
     brier_score,
     expected_calibration_error,
     fit_calibration_intercept_slope,
+    fit_operating_point_thresholds,
     fit_temperature,
     net_benefit_at_threshold,
     per_class_decision_curves,
-    sensitivity_at_specificity,
     treat_all_net_benefit,
     treat_none_net_benefit,
-    youden_operating_point,
 )
 from utils.functional import pb_l_r_m_q_y
 
@@ -280,28 +281,85 @@ def _binary_scores(labels: np.ndarray, probs: np.ndarray) -> tuple[float, float]
     return float(roc_auc_score(labels, probs)), float(average_precision_score(labels, probs))
 
 
-def _merge_operating_points(out: dict[str, float], labels: np.ndarray, probs: np.ndarray) -> None:
-    """Attach Youden and sens@95%spec keys (binary)."""
-    youden = youden_operating_point(labels, probs)
-    out["youden_threshold"] = youden["threshold"]
-    out["youden_sensitivity"] = youden["sensitivity"]
-    out["youden_specificity"] = youden["specificity"]
-    out["youden_j"] = youden["youden_j"]
-    s95 = sensitivity_at_specificity(labels, probs, target_specificity=0.95)
-    out["sens@95%spec"] = s95["sensitivity"]
-    out["sens@95%spec_threshold"] = s95["threshold"]
-    out["sens@95%spec_specificity"] = s95["specificity"]
-    out["sens@95%spec_met_target"] = s95["met_target"]
+def resolve_threshold_fit_ids(
+    bundle: dict,
+    eval_split: str,
+    *,
+    paper_mode: bool,
+) -> tuple[list[int] | None, str]:
+    """Pick indices for operating-point selection (val/cal), disjoint from eval when possible.
+
+    Returns ``(fit_ids, source)``. ``fit_ids is None`` means fit-on-eval (allowed only
+    outside paper_mode, with a warning).
+    """
+    cal = list(bundle.get("calibration_idx") or [])
+    val = list(bundle.get("val_idx") or [])
+    test = list(bundle.get("test_idx") or [])
+    train = list(bundle.get("train_idx") or [])
+    split_key = "calibration" if eval_split == "cal" else eval_split
+    if split_key == "all":
+        eval_ids = train + val + test + cal
+    else:
+        eval_ids = list(resolve_split_indices(split_key, train, val, test, cal or None))
+
+    # Prefer validation fold for threshold selection; calibration is primarily for temperature.
+    for cand, src in ((val, "val"), (cal, "calibration_idx")):
+        if not cand:
+            continue
+        overlap = set(cand) & set(eval_ids)
+        if not overlap:
+            return list(cand), src
+        # Nested: use non-overlapping portion if large enough
+        disjoint = [i for i in cand if i not in set(eval_ids)]
+        if len(disjoint) >= 4:
+            return disjoint, f"{src}_disjoint"
+
+    msg = (
+        "Operating-point thresholds (Youden / sens@95%spec) would be fit on the same "
+        "fold used for scoring (fit-on-eval). Provide val/calibration indices disjoint "
+        "from --split, or score --split test after fitting on val."
+    )
+    if paper_mode:
+        raise ValueError(msg + " (paper_mode refuses fit-on-eval operating points.)")
+    print(f"WARNING: {msg}")
+    return None, "eval"
 
 
 def score_predictions(
     labels: np.ndarray,
     probs: np.ndarray,
     class_names: list[str] | None = None,
+    *,
+    operating_thresholds: dict[str, float] | None = None,
+    fit_labels: np.ndarray | None = None,
+    fit_probs: np.ndarray | None = None,
+    allow_fit_on_eval: bool = True,
 ) -> dict[str, float]:
+    """Score discrimination / calibration / utility.
+
+    Operating points: fit thresholds on ``fit_*`` (or ``operating_thresholds``), then
+    *apply* them on ``labels``/``probs``. Fitting on the eval fold is allowed only when
+    ``allow_fit_on_eval=True`` (default for backward-compatible exploratory scores).
+    """
     labels = np.asarray(labels)
     probs = np.asarray(probs)
     out: dict[str, float] = {}
+    op_source = "provided"
+    thr = operating_thresholds
+    if thr is None:
+        if fit_labels is not None and fit_probs is not None:
+            thr = fit_operating_point_thresholds(fit_labels, fit_probs)
+            op_source = "fit_fold"
+        elif allow_fit_on_eval:
+            thr = fit_operating_point_thresholds(labels, probs)
+            op_source = "eval"
+        else:
+            raise ValueError(
+                "Operating points require a fit fold or precomputed thresholds "
+                "(allow_fit_on_eval=False)."
+            )
+    applied = apply_operating_point_thresholds(labels, probs, thr)
+
     if labels.ndim == 1:
         auc, ap = _binary_scores(labels, probs)
         out["auroc"] = auc
@@ -311,13 +369,12 @@ def score_predictions(
         out["nb@0.10"] = net_benefit_at_threshold(labels, probs, 0.10)
         out["treat_all_nb@0.10"] = treat_all_net_benefit(labels, 0.10)
         out["treat_none_nb@0.10"] = treat_none_net_benefit(labels, 0.10)
-        _merge_operating_points(out, labels, probs)
+        out.update(applied)
+        out["operating_points_source"] = op_source  # type: ignore[assignment]
         if class_names:
             out[f"class_{class_names[0]}_auroc"] = auc
         return out
     aucs, aps, eces, briers, nbs = [], [], [], [], []
-    youden_js, youden_sens, youden_specs, youden_thrs = [], [], [], []
-    s95_sens, s95_specs, s95_thrs, s95_mets = [], [], [], []
     for k in range(labels.shape[1]):
         auc, ap = _binary_scores(labels[:, k], probs[:, k])
         aucs.append(auc)
@@ -325,16 +382,6 @@ def score_predictions(
         eces.append(expected_calibration_error(labels[:, k], probs[:, k]))
         briers.append(brier_score(labels[:, k], probs[:, k]))
         nbs.append(net_benefit_at_threshold(labels[:, k], probs[:, k], 0.10))
-        youden = youden_operating_point(labels[:, k], probs[:, k])
-        youden_js.append(youden["youden_j"])
-        youden_sens.append(youden["sensitivity"])
-        youden_specs.append(youden["specificity"])
-        youden_thrs.append(youden["threshold"])
-        s95 = sensitivity_at_specificity(labels[:, k], probs[:, k], target_specificity=0.95)
-        s95_sens.append(s95["sensitivity"])
-        s95_specs.append(s95["specificity"])
-        s95_thrs.append(s95["threshold"])
-        s95_mets.append(s95["met_target"])
         out[f"class_{k}_auroc"] = auc
         if class_names and k < len(class_names):
             out[f"class_{class_names[k]}_auroc"] = auc
@@ -343,14 +390,8 @@ def score_predictions(
     out["ece"] = float(np.nanmean(eces)) if eces else float("nan")
     out["brier"] = float(np.nanmean(briers)) if briers else float("nan")
     out["nb@0.10"] = float(np.nanmean(nbs)) if nbs else float("nan")
-    out["youden_j"] = float(np.nanmean(youden_js)) if youden_js else float("nan")
-    out["youden_sensitivity"] = float(np.nanmean(youden_sens)) if youden_sens else float("nan")
-    out["youden_specificity"] = float(np.nanmean(youden_specs)) if youden_specs else float("nan")
-    out["youden_threshold"] = float(np.nanmean(youden_thrs)) if youden_thrs else float("nan")
-    out["sens@95%spec"] = float(np.nanmean(s95_sens)) if s95_sens else float("nan")
-    out["sens@95%spec_threshold"] = float(np.nanmean(s95_thrs)) if s95_thrs else float("nan")
-    out["sens@95%spec_specificity"] = float(np.nanmean(s95_specs)) if s95_specs else float("nan")
-    out["sens@95%spec_met_target"] = float(np.nanmean(s95_mets)) if s95_mets else float("nan")
+    out.update(applied)
+    out["operating_points_source"] = op_source  # type: ignore[assignment]
     # Macro treat-all / treat-none over classes for DCA context.
     ta, tn = [], []
     for k in range(labels.shape[1]):
@@ -498,6 +539,19 @@ def main() -> None:
         default=None,
         help="Write metrics JSON (AUROC/AP/ECE/Brier/Youden/sens@95%spec/DCA curves + calibrated if --calibrate)",
     )
+    parser.add_argument(
+        "--bootstrap",
+        type=int,
+        default=None,
+        help="Patient-level bootstrap resamples for AUROC 95%% CI (0/omit to skip). "
+        "Default: 1000 in --paper-mode when patient IDs exist.",
+    )
+    parser.add_argument(
+        "--bootstrap-seed",
+        type=int,
+        default=0,
+        help="RNG seed for patient-level bootstrap",
+    )
     args = parser.parse_args()
 
     dataset_name = args.dataset
@@ -561,6 +615,8 @@ def main() -> None:
         "quality_router",
         tcfg.get("quality_router", "monotone" if learnable_q else "fixed"),
     )
+    quality_gating = bool(meta.get("quality_gating", tcfg.get("quality_gating", False)))
+    lambda_q = float(meta.get("lambda_q", tcfg.get("lambda_q", 0.0)) or 0.0)
     fast_mode = bool(meta.get("fast_mode", tcfg["fast_mode"]))
     paper_mode = bool(args.paper_mode or eval_cfg.get("paper_mode", False))
     clinical_tables = bool(args.clinical_tables or eval_cfg.get("clinical_tables", False) or paper_mode)
@@ -595,6 +651,9 @@ def main() -> None:
         enable_q=enable_q,
         ensemble=ensemble,
         quality_router=quality_router,
+        quality_gating=quality_gating,
+        quality_aux=lambda_q > 0,
+        lambda_q=lambda_q,
     ).to(device)
     ckpt_path = resolve_ckpt_path(args.ckpt)
     model.load_state_dict(torch.load(ckpt_path, map_location=device, weights_only=True))
@@ -678,7 +737,46 @@ def main() -> None:
     else:
         score_names = [diseases[0]] if diseases else None
 
-    scores = score_predictions(labels, probs, class_names=score_names)
+    # Operating points: fit on val/cal only; apply frozen on eval (paper_mode forbids fit-on-eval).
+    op_fit_labels = op_fit_probs = None
+    op_thr_source = "eval"
+    thr_fit_ids: list[int] | None = None
+    if not cross and base_ds is not None:
+        thr_fit_ids, op_thr_source = resolve_threshold_fit_ids(
+            split_bundle, args.split, paper_mode=paper_mode
+        )
+        if thr_fit_ids is not None:
+            from torch.utils.data import Subset
+
+            thr_ds = Subset(base_ds, thr_fit_ids)
+            op_fit_probs, op_fit_labels = collect_probs(model, thr_ds, device)
+            if mapped_heads:
+                op_fit_probs, op_fit_labels = slice_mapped(
+                    op_fit_probs, op_fit_labels, mapped_heads
+                )
+            print(
+                f"Operating points fit on {op_thr_source} (n={len(thr_fit_ids)}); "
+                f"applied frozen on split={split_name}"
+            )
+        elif paper_mode:
+            # resolve_threshold_fit_ids already raises in paper_mode; keep guard.
+            raise ValueError("paper_mode requires disjoint fold for operating-point selection")
+    elif cross and paper_mode:
+        print(
+            "WARNING: cross-dataset eval has no source val fold for threshold selection; "
+            "operating points fitted on the scored cohort (exploratory)."
+        )
+
+    scores = score_predictions(
+        labels,
+        probs,
+        class_names=score_names,
+        fit_labels=op_fit_labels,
+        fit_probs=op_fit_probs,
+        allow_fit_on_eval=not paper_mode,
+    )
+    if op_fit_labels is not None:
+        scores["operating_points_source"] = op_thr_source  # type: ignore[index]
     disease_tag = "multitask" if num_classes > 1 else diseases[0]
     if mapped_heads:
         disease_tag = ",".join(h.task for h in mapped_heads)
@@ -703,6 +801,36 @@ def main() -> None:
             print(f"  {name}  AUROC={auc:.4f}  AP={ap:.4f}")
             per_head[name] = {"auroc": auc, "ap": ap}
     print_subgroups(eval_ds, labels, probs)
+
+    # Patient-level bootstrap AUROC CI
+    bootstrap_payload: dict | None = None
+    n_boot = args.bootstrap
+    if n_boot is None and paper_mode:
+        n_boot = 1000
+    if n_boot is None:
+        n_boot = 0
+    pids_eval = None
+    if not cross and split_bundle.get("patient_ids") is not None:
+        all_pids = np.asarray(split_bundle["patient_ids"])
+        if hasattr(eval_ds, "indices"):
+            pids_eval = all_pids[list(eval_ds.indices)]
+        elif args.split == "all":
+            pids_eval = all_pids
+    if n_boot and pids_eval is not None and len(pids_eval) == n_eval:
+        bootstrap_payload = patient_level_bootstrap_ci(
+            labels,
+            probs,
+            pids_eval,
+            n_boot=int(n_boot),
+            seed=int(args.bootstrap_seed),
+        )
+        print(
+            f"bootstrap AUROC={bootstrap_payload['estimate']:.4f} "
+            f"95% CI [{bootstrap_payload['ci_low']:.4f}, {bootstrap_payload['ci_high']:.4f}] "
+            f"(n_patients={bootstrap_payload['n_patients']}, n_boot={bootstrap_payload['n_boot']})"
+        )
+    elif n_boot and paper_mode:
+        print("WARNING: --bootstrap requested but patient IDs unavailable for this eval set")
 
     cal_scores: dict[str, float] | None = None
     temperature: float | None = None
@@ -753,7 +881,25 @@ def main() -> None:
         temperature = float(fit_temperature(fit_logits, fit_y))
         intercept, slope = fit_calibration_intercept_slope(fit_logits, fit_y)
         cal_probs = apply_temperature(logits, temperature)
-        cal_scores = score_predictions(labels, cal_probs, class_names=score_names)
+        cal_fit_probs = op_fit_probs
+        if op_fit_labels is not None and thr_fit_ids is not None and base_ds is not None:
+            from torch.utils.data import Subset
+
+            thr_ds = Subset(base_ds, thr_fit_ids)
+            _, _, fit_logits_op = collect_probs(model, thr_ds, device, return_logits=True)
+            if mapped_heads:
+                fit_logits_op, _ = slice_mapped(fit_logits_op, op_fit_labels, mapped_heads)
+            cal_fit_probs = apply_temperature(fit_logits_op, temperature)
+        cal_scores = score_predictions(
+            labels,
+            cal_probs,
+            class_names=score_names,
+            fit_labels=op_fit_labels,
+            fit_probs=cal_fit_probs,
+            allow_fit_on_eval=not paper_mode,
+        )
+        if op_fit_labels is not None:
+            cal_scores["operating_points_source"] = op_thr_source  # type: ignore[index]
         print(
             f"temperature T={temperature:.4f} fitted on {t_src}; "
             f"intercept={intercept:.4f} slope={slope:.4f}"
@@ -777,8 +923,10 @@ def main() -> None:
             "temperature_fit": t_src,
             "calibration_intercept": intercept,
             "calibration_slope": slope,
+            "operating_points_fit": op_thr_source,
             "raw": scores,
             "calibrated": cal_scores,
+            "bootstrap_auroc": bootstrap_payload,
             "per_head": per_head or None,
             "dca_curves": dca_curves,
             "nb@0.10_note": (

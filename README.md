@@ -53,7 +53,7 @@ python scripts/run_ablations.py --quick
 | `ablation_e2.yaml` | Multitask + masked BCE |
 | `ablation_e3.yaml` | Monotone + multitask |
 | `ablation_e4.yaml` | Full + disjoint calibration eval protocol |
-| E5 quality-conditioned gating | 待补充 |
+| E5 quality-conditioned gating | Optional (`configs/ablation_e5.yaml`; `quality_gating` / `lambda_q`) |
 
 `quality_router`: `fixed` | `free_linear` (ablation) | `monotone` (default when `learnable_q`).  
 Ensemble: `released_code` (train soft / eval max; legacy alias `paper`), `published_soft_vote`, `mean`, `temp_mean`.

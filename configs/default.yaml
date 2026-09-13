@@ -43,6 +43,8 @@ training:
   enable_q: true
   ensemble: released_code  # released_code | published_soft_vote | mean | temp_mean
   quality_router: fixed  # fixed | free_linear | monotone (monotone default when learnable_q)
+  quality_gating: false  # E5 optional quality-conditioned backbone gate
+  lambda_q: 0.0  # BRSET aux soft-quality CE weight (0 = off)
   calibrate: false
 
 longitudinal_years:
