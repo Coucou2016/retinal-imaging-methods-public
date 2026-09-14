@@ -33,6 +33,41 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+# Windows Miniconda often ships a broken `_lzma` DLL; torchvision imports lzma
+# via datasets.utils. Install a no-op shim before any torchvision/timm import.
+def _ensure_lzma_shim() -> None:
+    try:
+        import lzma as _lzma_mod  # noqa: F401
+
+        if hasattr(_lzma_mod, "open"):
+            return
+    except Exception:
+        pass
+    import types
+
+    lz = types.ModuleType("lzma")
+    lz.FORMAT_XZ = 1
+    lz.FORMAT_ALONE = 2
+    lz.FORMAT_RAW = 3
+    lz.CHECK_NONE = 0
+    lz.CHECK_CRC32 = 1
+    lz.CHECK_CRC64 = 2
+    lz.CHECK_SHA256 = 3
+
+    class LZMAError(Exception):
+        pass
+
+    lz.LZMAError = LZMAError
+
+    def _open(*_a, **_k):
+        raise LZMAError("lzma compression unavailable in this Python build")
+
+    lz.open = _open  # type: ignore[attr-defined]
+    sys.modules["lzma"] = lz
+
+
+_ensure_lzma_shim()
+
 from dataset.public_common import assert_feature_row_count, load_pairs_manifest
 
 BACKBONE_OUT = {
@@ -131,7 +166,7 @@ def write_backbone_npz(out_path: Path, left: np.ndarray, right: np.ndarray) -> N
     print(f"Saved {out_path}  shape left={left.shape} right={right.shape}")
 
 
-def clear_synthetic_marker(cache_dir: Path, stub: bool) -> None:
+def clear_synthetic_marker(cache_dir: Path, stub: bool, *, complete: bool = True) -> None:
     marker = cache_dir / "SYNTHETIC_FEATURES.txt"
     if stub:
         marker.write_text(
@@ -141,23 +176,40 @@ def clear_synthetic_marker(cache_dir: Path, stub: bool) -> None:
             encoding="utf-8",
         )
         return
+    if not complete:
+        marker.write_text(
+            "PARTIAL extract: not all foundation backbones replaced.\n"
+            "clinical_claim_allowed: false\n",
+            encoding="utf-8",
+        )
+        return
     if marker.is_file():
         marker.unlink()
         print(f"Removed {marker.name} (real backbone features written)")
 
 
-def update_cache_provenance(cache_dir: Path, *, stub: bool) -> None:
+def update_cache_provenance(
+    cache_dir: Path,
+    *,
+    stub: bool,
+    complete: bool = True,
+    extra: dict | None = None,
+) -> None:
     """Keep label_map.json in sync with feature reality after extract."""
     from reti_pioneer.label_map import update_label_map_provenance
 
+    payload = {
+        "extractor": "scripts/extract_features.py",
+        "stub_identity": bool(stub),
+        "extract_complete": bool(complete) and not stub,
+    }
+    if extra:
+        payload.update(extra)
     update_label_map_provenance(
         cache_dir,
-        synthetic_features=False,
+        synthetic_features=False if (complete and not stub) else True,
         stub_features=bool(stub),
-        extra={
-            "extractor": "scripts/extract_features.py",
-            "stub_identity": bool(stub),
-        },
+        extra=payload,
     )
 
 
@@ -195,6 +247,12 @@ def main() -> None:
         help="CPU stub backbone (correct shapes only). NOT for paper tables.",
     )
     parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Optional max pairs to extract (CPU smoke / subset pilot).",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Validate manifest ↔ UKB_mqd row counts; do not load models",
@@ -210,9 +268,12 @@ def main() -> None:
     pairs = load_pairs_manifest(manifest_path)
     if not pairs:
         raise SystemExit(f"Empty manifest: {manifest_path}")
+    if args.limit is not None:
+        pairs = pairs[: max(1, int(args.limit))]
+        print(f"Limiting extract to first {len(pairs)} pairs (--limit)")
 
     n = len(pairs)
-    if cache_dir is not None:
+    if cache_dir is not None and args.limit is None:
         n_mqd = mqd_row_count(cache_dir)
         if n_mqd is not None and n_mqd != n:
             raise SystemExit(
@@ -267,10 +328,20 @@ def main() -> None:
         write_backbone_npz(out_path, left, right)
 
     if cache_dir is not None:
-        clear_synthetic_marker(cache_dir, stub=args.stub_identity)
-        update_cache_provenance(cache_dir, stub=args.stub_identity)
-        assert_feature_row_count(cache_dir, n)
-        print(f"Aligned cache OK under {cache_dir} (N={n})")
+        complete = bool(args.all_backbones) or args.limit is None
+        # Single-backbone or --limit extracts are not a full clinical feature cache.
+        if args.limit is not None or not args.all_backbones:
+            complete = False
+        clear_synthetic_marker(cache_dir, stub=args.stub_identity, complete=complete)
+        update_cache_provenance(
+            cache_dir,
+            stub=args.stub_identity,
+            complete=complete,
+            extra={"backbones_written": names, "n": n},
+        )
+        if args.limit is None and complete:
+            assert_feature_row_count(cache_dir, n)
+        print(f"Aligned cache OK under {cache_dir} (N={n}, complete={complete})")
 
 
 if __name__ == "__main__":

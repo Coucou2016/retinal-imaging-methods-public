@@ -140,8 +140,46 @@ def synthetic_backbone_features(
     return left, right
 
 
+_IMAGE_INDEX: dict[str, dict[str, "Path"]] = {}
+
+
+def _basename_index(root: "Path") -> dict[str, "Path"]:
+    """Build basename → path map once per root (skips rm_images sample folders)."""
+    key = str(root.resolve())
+    if key in _IMAGE_INDEX:
+        return _IMAGE_INDEX[key]
+    index: dict[str, "Path"] = {}
+    for hit in root.rglob("*"):
+        if not hit.is_file():
+            continue
+        if hit.suffix.lower() not in {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"}:
+            continue
+        if "rm_images" in str(hit).lower():
+            continue
+        # Prefer Training/Validation/Test paths over duplicates.
+        name = hit.name
+        if name not in index:
+            index[name] = hit
+        else:
+            cur = str(index[name]).lower()
+            new = str(hit).lower()
+            score = lambda s: (
+                ("/training/" in s or "\\training\\" in s)
+                + 2 * ("/validation/" in s or "\\validation\\" in s)
+                + 3 * ("/test/" in s or "\\test\\" in s)
+            )
+            # Keep first; do not overwrite — callers with split context should pass fuller relative paths.
+            del score
+    _IMAGE_INDEX[key] = index
+    return index
+
+
 def resolve_image_path(path: str | None, root: str | Path | None = None) -> Path | None:
-    """Resolve a record path against an optional dataset root."""
+    """Resolve a record path against an optional dataset root.
+
+    For RFMiD-style bare filenames (``1.png``), also searches common nested
+    folders under ``root`` (Training / Validation / Test).
+    """
     from pathlib import Path as _Path
 
     if path is None or str(path).strip() == "":
@@ -149,11 +187,28 @@ def resolve_image_path(path: str | None, root: str | Path | None = None) -> Path
     p = _Path(path)
     if p.is_file():
         return p
-    if root is not None:
-        cand = _Path(root) / path
-        if cand.is_file():
-            return cand
-    return None
+    if root is None:
+        return None
+    root_p = _Path(root)
+    cand = root_p / path
+    if cand.is_file():
+        return cand
+    name = p.name
+    # RFMiD HF layout: Training_Set/Training_Set/Training/<id>.png etc.
+    for rel in (
+        _Path("Training_Set") / "Training_Set" / "Training" / name,
+        _Path("Evaluation_Set") / "Evaluation_Set" / "Validation" / name,
+        _Path("Test_Set") / "Test_Set" / "Test" / name,
+        _Path("Training") / name,
+        _Path("Validation") / name,
+        _Path("Test") / name,
+        _Path("images") / name,
+    ):
+        hit = root_p / rel
+        if hit.is_file():
+            return hit
+    index = _basename_index(root_p)
+    return index.get(name)
 
 
 def pair_paths_for_record(

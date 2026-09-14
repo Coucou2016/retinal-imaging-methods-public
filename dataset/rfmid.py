@@ -75,8 +75,14 @@ def parse_rfmid_csv(
     path: str | Path,
     split: str | None = None,
     label_names: list[str] | None = None,
+    image_root: str | Path | None = None,
 ) -> tuple[list[PatientRecord], list[str]]:
-    """Parse one official RFMiD labels CSV. Single image → copied to both eyes."""
+    """Parse one official RFMiD labels CSV. Single image → copied to both eyes.
+
+    When ``split`` is train/val/test, image paths are rewritten to the HF nested
+    layout (``.../Training/<id>.png`` etc.) when ``image_root`` is provided or
+    inferred from the CSV location.
+    """
     path = Path(path)
     records: list[PatientRecord] = []
     with open(path, newline="", encoding="utf-8-sig") as f:
@@ -88,6 +94,7 @@ def parse_rfmid_csv(
                 continue
             labels = np.array([parse_binary(row.get(c, 0)) for c in names], dtype=np.float32)
             img = find_column(row, "filename", "file", "path", default=f"{pid}.png")
+            img = _rfmid_image_relpath(img, split=split, csv_path=path, image_root=image_root)
             records.append(
                 PatientRecord(
                     patient_id=str(pid),
@@ -103,6 +110,40 @@ def parse_rfmid_csv(
             )
     return records, names
 
+
+def _rfmid_image_relpath(
+    img: str,
+    *,
+    split: str | None,
+    csv_path: Path,
+    image_root: str | Path | None,
+) -> str:
+    """Prefer split-specific nested paths so train/val/test IDs do not collide."""
+    name = Path(img).name
+    split_folder = {
+        "train": ("Training_Set", "Training_Set", "Training"),
+        "val": ("Evaluation_Set", "Evaluation_Set", "Validation"),
+        "test": ("Test_Set", "Test_Set", "Test"),
+    }.get(split or "", None)
+    candidates: list[Path] = []
+    roots: list[Path] = []
+    if image_root is not None:
+        roots.append(Path(image_root))
+    # CSV lives under .../Training_Set/Training_Set/RFMiD_Training_Labels.csv
+    roots.append(csv_path.parent)
+    roots.append(csv_path.parent.parent)
+    roots.append(csv_path.parent.parent.parent)
+    if split_folder:
+        for root in roots:
+            cand = root.joinpath(*split_folder, name)
+            candidates.append(cand)
+            # Also relative to dataset root if root already includes Training_Set
+            candidates.append(root / split_folder[-1] / name)
+    for cand in candidates:
+        if cand.is_file():
+            return str(cand.resolve())
+    # Fall back to bare filename (resolve_image_path may still find it).
+    return img
 
 def parse_rfmid_splits(
     train_csv: str | Path | None = None,

@@ -22,3 +22,11 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Unit tests
         run: python -m unittest discover -s tests -v
+      - name: Config build + 1-epoch E5 smoke
+        run: |
+          python -c "from pathlib import Path; from reti_pioneer.config import load_config, build_model_from_config; cfgs=list(Path('configs').glob('*.yaml')); assert cfgs; [build_model_from_config(load_config(p)) for p in cfgs]; print('built', len(cfgs), 'configs')"
+          python -c "import torch; from model.RetiPioneer import get_reti_pioneer; from utils.run import masked_bce_with_logits; from model.quality_gate import soft_quality_ce; m=get_reti_pioneer(True,2,learnable_q=True,quality_router='monotone',quality_gating=True,lambda_q=0.1,quality_aux=True); B=4; l=[torch.randn(B,1024),torch.randn(B,1024),torch.randn(B,384)]; r=[torch.randn(B,1024),torch.randn(B,1024),torch.randn(B,384)]; meta=torch.randn(B,10); q=(torch.ones(B,3)/3,torch.ones(B,3)/3); y=torch.tensor([[1.,-1.],[0.,1.],[1.,0.],[0.,-1.]]); logits=m(((l,r),meta,q)); loss=masked_bce_with_logits(logits,y); aux=m.collect_quality_aux_logits(); loss=loss+0.1*soft_quality_ce(aux,0.5*(q[0]+q[1])); loss.backward(); print('e5-smoke-ok', float(loss))"
+      - name: Ablations quick (synthetic)
+        run: python scripts/run_ablations.py --quick
+      - name: Intervention figures
+        run: python scripts/intervention_quality.py --out-json artifacts/intervention_smoke.json

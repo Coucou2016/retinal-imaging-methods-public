@@ -14,10 +14,20 @@ SplitName = Literal["train", "val", "calibration", "cal", "test", "all"]
 
 
 def _label_scalar(y) -> float:
+    """Any-positive among supervised entries (ignore missing <0 / NaN)."""
     if hasattr(y, "numel"):
-        return float(y.sum().item() if y.numel() > 1 else y.item())
-    arr = np.asarray(y)
-    return float(arr.sum() if arr.size > 1 else arr.item())
+        import torch
+
+        yy = y.detach().float().reshape(-1)
+        present = yy[torch.isfinite(yy) & (yy >= 0)]
+        if present.numel() == 0:
+            return 0.0
+        return float((present >= 0.5).any().item())
+    arr = np.asarray(y, dtype=np.float64).reshape(-1)
+    present = arr[np.isfinite(arr) & (arr >= 0)]
+    if present.size == 0:
+        return 0.0
+    return float((present >= 0.5).any())
 
 
 def dataset_labels(dataset, max_samples: int | None = None) -> np.ndarray:
@@ -169,6 +179,90 @@ def assert_calibration_disjoint(
             f"Calibration/evaluation leakage: {len(leak)} shared indices. "
             "Fit temperature on calibration_ids only; score evaluation_ids only."
         )
+
+
+def assert_split_label_coverage(
+    labels: np.ndarray,
+    indices: list[int] | np.ndarray,
+    *,
+    fold_name: str,
+    require_both_classes: bool = True,
+    per_class: bool = True,
+) -> None:
+    """Fail if a formal fold is missing positives/negatives (or per-class).
+
+    For multilabel ``labels`` (N, K), when ``per_class`` is True each column with
+    any finite supervised entries must contain both 0 and 1 among ``indices``.
+    Missing labels (``<0`` / NaN) are ignored per column.
+    """
+    y = np.asarray(labels)
+    idx = np.asarray(indices, dtype=np.int64)
+    if idx.size == 0:
+        raise ValueError(f"{fold_name} fold is empty")
+    if y.ndim == 1:
+        vals = y[idx]
+        present = vals[np.isfinite(vals) & (vals >= 0)]
+        if present.size == 0:
+            raise ValueError(f"{fold_name}: no supervised labels")
+        if require_both_classes and len(np.unique((present >= 0.5).astype(int))) < 2:
+            raise ValueError(
+                f"{fold_name}: need both positive and negative labels for formal endpoints "
+                f"(got unique={np.unique(present)})"
+            )
+        return
+    # Multilabel
+    sub = y[idx]
+    for k in range(sub.shape[1]):
+        col = sub[:, k]
+        present = col[np.isfinite(col) & (col >= 0)]
+        if present.size == 0:
+            continue  # fully masked column — OK for partial-label
+        if per_class and require_both_classes and len(np.unique((present >= 0.5).astype(int))) < 2:
+            raise ValueError(
+                f"{fold_name}: class column {k} missing pos or neg "
+                f"(n={present.size}, unique={np.unique(present)})"
+            )
+
+
+def patient_level_multilabel_train_val_indices(
+    patient_ids: np.ndarray,
+    label_matrix: np.ndarray,
+    val_fraction: float,
+    seed: int,
+) -> tuple[list[int], list[int]]:
+    """Patient split stratified on any-positive OR first informative column.
+
+    Improves multilabel balance vs collapsing only by sum: prefers patients that
+    cover rare positive columns when possible via iterative rare-class priority.
+    """
+    patient_ids = np.asarray(patient_ids)
+    y = np.asarray(label_matrix, dtype=np.float32)
+    if y.ndim == 1:
+        return patient_level_train_val_indices(patient_ids, y, val_fraction, seed)
+    n = y.shape[0]
+    if len(patient_ids) != n:
+        raise ValueError("patient_ids and label_matrix length mismatch")
+
+    # Prevalence per class among supervised entries.
+    prev = []
+    for k in range(y.shape[1]):
+        col = y[:, k]
+        present = col[np.isfinite(col) & (col >= 0)]
+        if present.size == 0:
+            prev.append(1.0)
+        else:
+            prev.append(float((present >= 0.5).mean()))
+    # Stratify on the rarest supervised class (most fragile for AUROC).
+    rare_k = int(np.argmin(prev)) if prev else 0
+    rare_labels = np.zeros(n, dtype=np.float32)
+    col = y[:, rare_k]
+    mask = np.isfinite(col) & (col >= 0)
+    rare_labels[mask] = (col[mask] >= 0.5).astype(np.float32)
+    # Patients with no supervised rare label fall back to any-positive.
+    any_pos = _row_positive(y)
+    unset = ~mask
+    rare_labels[unset] = any_pos[unset]
+    return patient_level_train_val_indices(patient_ids, rare_labels, val_fraction, seed)
 
 
 def patient_level_train_val_test_indices(

@@ -1,6 +1,31 @@
 import os
+import sys
+import types
 import warnings
 from functools import partial
+
+# Broken Miniconda `_lzma` DLL breaks torchvision → datasets → lzma.open.
+try:
+    import lzma as _lzma_check
+
+    if not hasattr(_lzma_check, "open"):
+        raise ImportError("lzma.open missing")
+except Exception:
+    _lz = types.ModuleType("lzma")
+    _lz.FORMAT_XZ = 1
+    _lz.FORMAT_ALONE = 2
+    _lz.FORMAT_RAW = 3
+    _lz.CHECK_NONE = 0
+    _lz.CHECK_CRC32 = 1
+    _lz.CHECK_CRC64 = 2
+    _lz.CHECK_SHA256 = 3
+
+    class _LZMAError(Exception):
+        pass
+
+    _lz.LZMAError = _LZMAError
+    _lz.open = lambda *a, **k: (_ for _ in ()).throw(_LZMAError("lzma unavailable"))
+    sys.modules["lzma"] = _lz
 
 import huggingface_hub as hf
 import timm.models.vision_transformer
@@ -10,18 +35,24 @@ import torch.nn.functional as F
 import torchvision
 from torchvision.models import Swin_V2_B_Weights, swin_v2_b
 
-# mamba-ssm
-# causal-conv1d
-# rope
+# mamba-ssm / Vision Mamba are optional — only required for get_VimS().
+VisionMamba = None  # type: ignore
+vim_small_patch16_stride8_224_bimambav2_final_pool_mean_abs_pos_embed_with_midclstok_div2 = None  # type: ignore
 
-with warnings.catch_warnings():
-    warnings.filterwarnings(
-        "ignore",
-        message="",
-        category=FutureWarning
-    )
-    from model.mamba import (VisionMamba,
-                             vim_small_patch16_stride8_224_bimambav2_final_pool_mean_abs_pos_embed_with_midclstok_div2)
+
+def _load_vim_symbols():
+    global VisionMamba
+    global vim_small_patch16_stride8_224_bimambav2_final_pool_mean_abs_pos_embed_with_midclstok_div2
+    if VisionMamba is not None:
+        return
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="", category=FutureWarning)
+        from model.mamba import (  # noqa: WPS433
+            VisionMamba as _VM,
+            vim_small_patch16_stride8_224_bimambav2_final_pool_mean_abs_pos_embed_with_midclstok_div2 as _vim,
+        )
+    VisionMamba = _VM
+    vim_small_patch16_stride8_224_bimambav2_final_pool_mean_abs_pos_embed_with_midclstok_div2 = _vim
 
 
 class DenseNet121_v0(nn.Module):
@@ -261,6 +292,8 @@ def get_RETFound():
 
 
 def get_VimS():
+    _load_vim_symbols()
+
     class VimFeat(nn.Module):
         def __init__(self, vim: VisionMamba):
             super().__init__()

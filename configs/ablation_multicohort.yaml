@@ -1,12 +1,11 @@
-# E5 — Quality-conditioned backbone routing (softmax over backbones from q).
-# Optional λ_q aux soft-quality CE. Legacy feature_attenuation is off by default.
+# MultiCohort — ODIR+BRSET+RFMiD joint vocabulary (partial-label masked BCE).
 
-data_dir: data/UKBCompressed
+data_dir: data/odir
 pretrained_dir: pretrained
 ckpt_dir: ckpt
 
 clinic_variables: [baselineage, gender, weight, ethnicity]
-diseases: [t2dm, thyroid, osteoporosis, gout, hyperlipemia, hypertension]
+diseases: [diabetes_ocular, diabetes_systemic, hypertension_ocular]
 pretrain_features: [RETF, SwinB, VimS]
 
 training:
@@ -27,23 +26,27 @@ training:
   pos_weight: true
   enable_q: true
   ensemble: released_code
-  quality_gating: true
-  feature_attenuation: false
-  lambda_q: 0.1
+  quality_gating: false
+  lambda_q: 0.0
   calibrate: true
 
 eval:
   calibrate: true
   decision_threshold: 0.10
   paper_mode: false
-  bootstrap: 200
-  delong: true
 
 longitudinal_years: [0]
 split:
   val_fraction: 0.25
   cal_fraction: 0.1
+  test_fraction: 0.2
   seed: 42
 demo:
-  n_samples: 256
+  n_samples: 64
   seed: 42
+
+multi_cohort:
+  dirs:
+    odir: data/odir
+    brset: data/brset
+    rfmid: data/rfmid

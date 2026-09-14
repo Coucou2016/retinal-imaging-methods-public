@@ -23,7 +23,9 @@ from reti_pioneer.config import load_config
 from reti_pioneer.constants import DISEASE_NAMES, PUBLIC_DATASETS
 from reti_pioneer.data_paths import ukb_compressed_ready
 from model.RetiPioneer import normalize_ensemble
+from reti_pioneer.joint_vocab import JOINT_VOCAB
 from reti_pioneer.split import (
+    assert_split_label_coverage,
     dataset_label_matrix,
     dataset_labels,
     dataset_patient_ids,
@@ -31,6 +33,7 @@ from reti_pioneer.split import (
     load_split,
     load_test_idx,
     make_subsets,
+    patient_level_multilabel_train_val_indices,
     patient_level_train_cal_val_indices,
     patient_level_train_cal_val_test_indices,
     patient_level_train_val_indices,
@@ -121,8 +124,18 @@ def main() -> None:
     parser.add_argument("--disease", default=None, help="Single disease name or 'all'")
     parser.add_argument("--horizon", type=int, default=None, choices=[0, 5, 10])
     parser.add_argument("--demo", action="store_true", help="Use synthetic demo data")
-    parser.add_argument("--dataset", default=None, choices=["odir", "brset", "rfmid", "ukb", "demo"])
+    parser.add_argument(
+        "--dataset",
+        default=None,
+        choices=["odir", "brset", "rfmid", "ukb", "demo", "multicohort"],
+    )
     parser.add_argument("--data-dir", default=None, help="Override config data_dir")
+    parser.add_argument(
+        "--multi-cohort",
+        action="store_true",
+        dest="multi_cohort",
+        help="Train on ODIR+BRSET+RFMiD joint vocabulary (partial-label masks)",
+    )
     parser.add_argument("--multitask", action="store_true", help="Joint K-class head (BCE)")
     parser.add_argument("--learnable-q", action="store_true", dest="learnable_q")
     parser.add_argument(
@@ -157,6 +170,8 @@ def main() -> None:
     args = parser.parse_args()
 
     dataset_name = args.dataset
+    if args.multi_cohort:
+        dataset_name = "multicohort"
     if args.demo and dataset_name is None:
         dataset_name = "demo"
     if dataset_name is None:
@@ -234,23 +249,54 @@ def main() -> None:
     clinic_variables = cfg["clinic_variables"]
     pretrain = cfg["pretrain_features"]
     horizons = [args.horizon] if args.horizon is not None else list(cfg["longitudinal_years"])
-    if dataset_name in PUBLIC_DATASETS:
+    if dataset_name in (*PUBLIC_DATASETS, "multicohort"):
         if any(h != 0 for h in horizons):
             print("Public caches store prevalence only (y5/y10 copy y0); using horizon=0")
         horizons = [0]
 
-    base_dataset = UKBDatasetFast(
-        cfg["data_dir"],
-        None,
-        clinic_variables,
-        disease=[0],
-        use_pretrain=pretrain,
-        incident_exclude_prior=dataset_name not in PUBLIC_DATASETS,
-    )
+    if dataset_name == "multicohort":
+        from dataset.multi_cohort import MultiCohortDataset
 
-    if dataset_name in PUBLIC_DATASETS:
+        mc_cfg = cfg.get("multi_cohort") or {}
+        roots = mc_cfg.get("dirs") or {
+            "odir": os.path.join(ROOT, "data", "odir"),
+            "brset": os.path.join(ROOT, "data", "brset"),
+            "rfmid": os.path.join(ROOT, "data", "rfmid"),
+        }
+        roots = {
+            k: (v if os.path.isabs(v) else os.path.join(ROOT, v))
+            for k, v in roots.items()
+        }
+        present = {k: v for k, v in roots.items() if ukb_compressed_ready(v)}
+        if len(present) < 2:
+            raise FileNotFoundError(
+                f"MultiCohort needs ≥2 UKB-style caches; found {list(present)}. "
+                "Run prepare_public_npz for odir/brset/rfmid first."
+            )
+        base_dataset = MultiCohortDataset(
+            present, clinic_variables, pretrain=pretrain, horizon=0
+        )
+        multitask = True
+        masked_bce = True
+        if val_fraction <= 0:
+            val_fraction = 0.25
+        print(
+            f"MultiCohort joint vocab {list(JOINT_VOCAB)} from cohorts={list(present)} "
+            f"n={len(base_dataset)}"
+        )
+    else:
+        base_dataset = UKBDatasetFast(
+            cfg["data_dir"],
+            None,
+            clinic_variables,
+            disease=[0],
+            use_pretrain=pretrain,
+            incident_exclude_prior=dataset_name not in PUBLIC_DATASETS,
+        )
+
+    if dataset_name in PUBLIC_DATASETS or dataset_name == "multicohort":
         available = list(base_dataset.disease_names)
-        if multitask:
+        if multitask or dataset_name == "multicohort":
             diseases = available
         elif args.disease and args.disease != "all" and args.disease in available:
             diseases = [args.disease]
@@ -292,7 +338,7 @@ def main() -> None:
             lambda_q=lambda_q,
         )
         model = model.to(device)
-        base_dataset.set_target(y, target_diseases, incident_exclude_prior=dataset_name not in PUBLIC_DATASETS)
+        base_dataset.set_target(y, target_diseases, incident_exclude_prior=dataset_name not in (*PUBLIC_DATASETS, "multicohort"))
 
         tbdir = os.path.join(cfg["ckpt_dir"], ftime, tag, f"y{y}")
         tds = base_dataset
@@ -303,12 +349,16 @@ def main() -> None:
         calibration_idx: list[int] | None = None
         frozen_split = os.path.join(cfg["data_dir"], "split.npz")
         # Prefer cache-level frozen split (official RFMiD / prepare_public_npz).
-        use_split = val_fraction > 0 or os.path.isfile(frozen_split)
+        use_split = val_fraction > 0 or os.path.isfile(frozen_split) or dataset_name == "multicohort"
+        formal_endpoints = bool(tcfg.get("paper_mode", False)) or bool(
+            cfg.get("eval", {}).get("paper_mode", False)
+        )
         if use_split:
             labels = dataset_labels(base_dataset)
+            label_mat = dataset_label_matrix(base_dataset)
             pids = dataset_patient_ids(base_dataset)
             n_patients = len(np.unique(pids))
-            if os.path.isfile(frozen_split):
+            if os.path.isfile(frozen_split) and dataset_name != "multicohort":
                 train_idx, val_idx = load_split(frozen_split)
                 test_idx = load_test_idx(frozen_split)
                 calibration_idx = load_calibration_idx(frozen_split)
@@ -326,7 +376,7 @@ def main() -> None:
                     )
             elif (
                 test_fraction > 0
-                and dataset_name in PUBLIC_DATASETS
+                and dataset_name in (*PUBLIC_DATASETS, "multicohort")
                 and n_patients >= 8
                 and cal_fraction > 0
             ):
@@ -340,7 +390,7 @@ def main() -> None:
                         split_seed,
                     )
                 )
-            elif test_fraction > 0 and dataset_name in PUBLIC_DATASETS and n_patients >= 6:
+            elif test_fraction > 0 and dataset_name in (*PUBLIC_DATASETS, "multicohort") and n_patients >= 6:
                 train_idx, val_idx, test_idx = patient_level_train_val_test_indices(
                     pids, labels, val_fraction, test_fraction, split_seed
                 )
@@ -348,10 +398,23 @@ def main() -> None:
                 train_idx, calibration_idx, val_idx = patient_level_train_cal_val_indices(
                     pids, labels, max(val_fraction, 0.05), cal_fraction, split_seed
                 )
+            elif label_mat.ndim == 2 and label_mat.shape[1] > 1:
+                train_idx, val_idx = patient_level_multilabel_train_val_indices(
+                    pids, label_mat, max(val_fraction, 0.05), split_seed
+                )
             else:
                 train_idx, val_idx = patient_level_train_val_indices(
                     pids, labels, max(val_fraction, 0.05), split_seed
                 )
+            if formal_endpoints:
+                assert_split_label_coverage(label_mat, train_idx, fold_name="train")
+                assert_split_label_coverage(label_mat, val_idx, fold_name="val")
+                if calibration_idx:
+                    assert_split_label_coverage(
+                        label_mat, calibration_idx, fold_name="calibration"
+                    )
+                if test_idx:
+                    assert_split_label_coverage(label_mat, test_idx, fold_name="test")
             tds, vds = make_subsets(base_dataset, train_idx, val_idx)
             os.makedirs(tbdir, exist_ok=True)
             save_split(

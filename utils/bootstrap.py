@@ -109,6 +109,94 @@ def patient_level_bootstrap_ci(
     }
 
 
+def delong_auroc_ci(
+    y_true: np.ndarray,
+    y_score: np.ndarray,
+    *,
+    alpha: float = 0.05,
+) -> dict[str, float]:
+    """DeLong asymptotic AUROC 95% CI (binary). Falls back to NaN CI if degenerate.
+
+    Implements the structural-components variance of DeLong et al. (1988) for a
+    single classifier. For multilabel input, returns macro-mean of per-class CIs
+    estimates (estimate/ci averaged over finite classes).
+    """
+    y_true = np.asarray(y_true)
+    y_score = np.asarray(y_score)
+    if y_true.ndim == 2:
+        rows = [
+            delong_auroc_ci(y_true[:, k], y_score[:, k], alpha=alpha)
+            for k in range(y_true.shape[1])
+        ]
+        finite = [r for r in rows if np.isfinite(r["estimate"])]
+        if not finite:
+            return {
+                "estimate": float("nan"),
+                "ci_low": float("nan"),
+                "ci_high": float("nan"),
+                "se": float("nan"),
+                "method": "delong_macro",
+                "alpha": float(alpha),
+                "n_classes": int(y_true.shape[1]),
+            }
+        return {
+            "estimate": float(np.mean([r["estimate"] for r in finite])),
+            "ci_low": float(np.mean([r["ci_low"] for r in finite if np.isfinite(r["ci_low"])])),
+            "ci_high": float(np.mean([r["ci_high"] for r in finite if np.isfinite(r["ci_high"])])),
+            "se": float(np.mean([r["se"] for r in finite if np.isfinite(r["se"])])),
+            "method": "delong_macro",
+            "alpha": float(alpha),
+            "n_classes": int(y_true.shape[1]),
+            "n_classes_finite": len(finite),
+        }
+
+    y = np.asarray(y_true, dtype=np.float64).ravel()
+    s = np.asarray(y_score, dtype=np.float64).ravel()
+    pos = s[y >= 0.5]
+    neg = s[y < 0.5]
+    m, n = int(pos.size), int(neg.size)
+    point = _safe_auroc(y, s)
+    if m < 1 or n < 1 or not np.isfinite(point):
+        return {
+            "estimate": point,
+            "ci_low": float("nan"),
+            "ci_high": float("nan"),
+            "se": float("nan"),
+            "method": "delong",
+            "alpha": float(alpha),
+            "n_pos": m,
+            "n_neg": n,
+        }
+    # Structural components V10 / V01
+    v10 = np.empty(m, dtype=np.float64)
+    for i, xi in enumerate(pos):
+        v10[i] = (np.sum(neg < xi) + 0.5 * np.sum(neg == xi)) / n
+    v01 = np.empty(n, dtype=np.float64)
+    for j, yj in enumerate(neg):
+        v01[j] = (np.sum(pos > yj) + 0.5 * np.sum(pos == yj)) / m
+    s10 = float(np.var(v10, ddof=1)) if m > 1 else 0.0
+    s01 = float(np.var(v01, ddof=1)) if n > 1 else 0.0
+    se = float(np.sqrt(s10 / m + s01 / n))
+    try:
+        from scipy.stats import norm
+
+        z = float(norm.ppf(1.0 - alpha / 2.0))
+    except Exception:
+        z = 1.95996398454  # Phi^{-1}(0.975)
+    lo = float(np.clip(point - z * se, 0.0, 1.0))
+    hi = float(np.clip(point + z * se, 0.0, 1.0))
+    return {
+        "estimate": float(point),
+        "ci_low": lo,
+        "ci_high": hi,
+        "se": se,
+        "method": "delong",
+        "alpha": float(alpha),
+        "n_pos": m,
+        "n_neg": n,
+    }
+
+
 def paired_delta_auroc_bootstrap(
     y_true: np.ndarray,
     y_score_a: np.ndarray,

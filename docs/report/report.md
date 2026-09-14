@@ -1,7 +1,7 @@
 # 研究报告：基于 Reti-Pioneer 的单调质量路由与端点感知多任务学习扩展
 
-**日期：** 2026-09-14（review-fixes）  
-**项目路径：** `E:\Projects\20260522-retinal-imaging`  
+**日期：** 2026-09-15（review-fixes）  
+**项目路径：** 见仓库根目录（clone path varies by machine）  
 **性质：** 方法学跟进 / 工程可复现报告（非临床试验报告）  
 **公开代码：** https://github.com/Coucou2016/retinal-imaging-methods-public  
 **工作标题：** Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning

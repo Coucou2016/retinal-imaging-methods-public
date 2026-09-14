@@ -28,6 +28,7 @@ _TOP_LEVEL_KEYS = frozenset(
         "split",
         "demo",
         "eval",
+        "multi_cohort",
     }
 )
 
@@ -53,6 +54,8 @@ _TRAINING_KEYS = frozenset(
         "lambda_q",
         "masked_bce",
         "calibrate",
+        "feature_attenuation",
+        "paper_mode",
     }
 )
 
@@ -73,12 +76,15 @@ _EVAL_KEYS = frozenset(
         "paper_mode",
         "clinical_tables",
         "bootstrap",
+        "delong",
     }
 )
 
 _DEMO_KEYS = frozenset({"n_samples", "seed"})
 
 _INFERENCE_KEYS = frozenset({"image_size", "ukb_center_crop", "thresholds"})
+
+_MULTI_COHORT_KEYS = frozenset({"dirs"})
 
 _VALID_ENSEMBLES = frozenset(
     {"released_code", "published_soft_vote", "mean", "temp_mean", "paper"}
@@ -159,6 +165,12 @@ def validate_config(cfg: dict[str, Any], *, strict: bool = True) -> dict[str, An
         if strict:
             _forbid_unknown("inference", cfg["inference"], _INFERENCE_KEYS)
 
+    if "multi_cohort" in cfg and cfg["multi_cohort"] is not None:
+        if not isinstance(cfg["multi_cohort"], dict):
+            raise TypeError("'multi_cohort' must be a mapping")
+        if strict:
+            _forbid_unknown("multi_cohort", cfg["multi_cohort"], _MULTI_COHORT_KEYS)
+
     return cfg
 
 
@@ -183,6 +195,7 @@ def build_model_from_config(cfg: dict[str, Any], *, num_classes: int | None = No
         quality_gating=bool(tcfg.get("quality_gating", False)),
         quality_aux=float(tcfg.get("lambda_q", 0.0) or 0.0) > 0,
         lambda_q=float(tcfg.get("lambda_q", 0.0) or 0.0),
+        feature_attenuation=bool(tcfg.get("feature_attenuation", False)),
     )
 
 

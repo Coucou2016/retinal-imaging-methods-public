@@ -45,7 +45,7 @@ from reti_pioneer.split import (
     resolve_split_indices,
     subset_for_split,
 )
-from utils.bootstrap import patient_level_bootstrap_ci
+from utils.bootstrap import delong_auroc_ci, patient_level_bootstrap_ci
 from utils.calibration import (
     apply_operating_point_thresholds,
     apply_temperature,
@@ -846,6 +846,15 @@ def main() -> None:
     elif n_boot and paper_mode:
         print("WARNING: --bootstrap requested but patient IDs unavailable for this eval set")
 
+    delong_payload = delong_auroc_ci(labels, probs)
+    if np.isfinite(delong_payload.get("estimate", float("nan"))):
+        print(
+            f"DeLong AUROC={delong_payload['estimate']:.4f} "
+            f"95% CI [{delong_payload.get('ci_low', float('nan')):.4f}, "
+            f"{delong_payload.get('ci_high', float('nan')):.4f}] "
+            f"(method={delong_payload.get('method')})"
+        )
+
     cal_scores: dict[str, float] | None = None
     temperature: float | None = None
     intercept: float | None = None
@@ -941,8 +950,10 @@ def main() -> None:
             "raw": scores,
             "calibrated": cal_scores,
             "bootstrap_auroc": bootstrap_payload,
+            "delong_auroc": delong_payload,
             "per_head": per_head or None,
             "dca_curves": dca_curves,
+            "primary_utility": "dca_curves",
             "nb@0.10_note": (
                 "Illustrative single-threshold net benefit only; "
                 "prefer per-disease dca_curves for primary narrative."

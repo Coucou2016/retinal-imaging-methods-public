@@ -15,11 +15,15 @@ See [docs/paper/manuscript.md](docs/paper/manuscript.md), [docs/PAPER.md](docs/P
 | Monotone bounded quality router (`bad ≤ usable ≤ good`) | Methods contribution |
 | Masked partial-label multitask vs **released-code** independent loops | Methods contribution |
 | Endpoint ontology + endpoint-aware cross-cohort evaluation | Methods / protocol |
-| Calibration / ECE / DCA | **Evaluation framework** (not novelty) |
-| UKB / clinical AUROCs from this workspace | **Not claimed** (待补充) |
+| MultiCohort joint vocabulary (ODIR+BRSET+RFMiD masks) | Methods / protocol (`--multi-cohort`) |
+| E5 quality-conditioned **backbone** routing (softmax over heads from q) | Optional (`quality_gating`) |
+| Calibration / ECE / DCA | **Evaluation framework** (not novelty); per-disease DCA is primary utility |
+| UKB / clinical AUROCs from this workspace | **Not claimed** (待补充 until real features) |
 | Synthetic feature-cache metrics | CI only (`clinical_claim_allowed: false`) |
 
 **Published vs released:** the Reti-Pioneer *article* describes multitask screening; the *released* `main.py` trains per-disease binary loops. Our clone control matches the released code.
+
+**Upstream `inference.py`:** UKB TorchScript / EyeQ demo path — **reference only**. Do **not** use it for methods-extension checkpoints. Use `scripts/predict_extension.py` (config + `run_meta.json`, calibration T, frozen thresholds, endpoints).
 
 ## Quick start (demo, CPU-friendly)
 
@@ -36,14 +40,18 @@ python -m unittest discover -s tests -v
 
 Training uses **pre-extracted foundation features** (`fast_mode: true`). Demo AUROC is pipeline sanity only.
 
-## Ablations (E0–E4)
+## Ablations (E0–E5)
 
 ```powershell
 python scripts/train.py --config configs/ablation_e0.yaml --demo --disease t2dm --horizon 0
 python scripts/train.py --config configs/ablation_e1.yaml --demo --disease t2dm --horizon 0
 python scripts/train.py --config configs/ablation_e4.yaml --demo --multitask --horizon 0
+python scripts/train.py --config configs/ablation_e5.yaml --demo --multitask --horizon 0
+python scripts/train.py --config configs/ablation_multicohort.yaml --multi-cohort --horizon 0
 python scripts/evaluate.py --demo --split val --ckpt ckpt/<run>/multitask/y0 --calibrate --out-json results/metrics.json
+python scripts/predict_extension.py --ckpt ckpt/<run>/multitask/y0 --split test --calibrate --out-json results/pred.json
 python scripts/run_ablations.py --quick
+python scripts/intervention_quality.py
 ```
 
 | Config | Role |
@@ -53,11 +61,12 @@ python scripts/run_ablations.py --quick
 | `ablation_e2.yaml` | Multitask + masked BCE |
 | `ablation_e3.yaml` | Monotone + multitask |
 | `ablation_e4.yaml` | Full + disjoint calibration eval protocol |
-| E5 quality-conditioned gating | Optional (`configs/ablation_e5.yaml`; `quality_gating` / `lambda_q`) |
+| `ablation_e5.yaml` | E5 backbone routing (`quality_gating`) + optional `lambda_q` |
+| `ablation_multicohort.yaml` | Joint ODIR+BRSET+RFMiD vocabulary |
 
 `quality_router`: `fixed` | `free_linear` (ablation) | `monotone` (default when `learnable_q`).  
-Ensemble: `released_code` (train soft / eval max; legacy alias `paper`), `published_soft_vote`, `mean`, `temp_mean`.
-
+Ensemble: `released_code` (train soft / eval max; legacy alias `paper`), `published_soft_vote`, `mean`, `temp_mean`.  
+E5: `quality_gating` = softmax over backbone heads from q (not feature attenuation; optional `feature_attenuation` ablation).
 ## Public datasets
 
 See [docs/PUBLIC_DATA.md](docs/PUBLIC_DATA.md). Default cross-cohort endpoints: `hypertension_ocular`, `diabetes_ocular`. `--clinical-tables` refuses non-direct alignments.

@@ -1,54 +1,37 @@
-# ACCEPTANCE — 2026-09-15 contract sync (YAML→code)
+# ACCEPTANCE — 2026-09-15 no-tails (software-complete)
 
-**Workspace:** repository root (path machine-local)  
-**Public GitHub:** https://github.com/Coucou2016/retinal-imaging-methods-public  
-**Date:** 2026-09-15
+**Public:** https://github.com/Coucou2016/retinal-imaging-methods-public  
+**Detail matrix:** `docs/chatgpt-runs/2026-09-15-no-tails/ACCEPTANCE.md`  
+**Data blockers:** `docs/DATA_BLOCKERS.md`
 
-## Mission
+## Software (Done)
 
-Close P0 docs/YAML ↔ code contract gaps so reviewer claims about monotone router, ensembles, cal splits, endpoint ontology, and E5 gating match **actual** `main`. Prefer implementation sync over new paper prose. Do **not** invent clinical AUROCs.
+| Item | Status |
+|------|--------|
+| E5 quality-conditioned **backbone routing** + λ_q + intervention figures | **Done** |
+| MultiCohort joint vocabulary (ODIR+BRSET+RFMiD masks) | **Done** |
+| `scripts/predict_extension.py` | **Done** |
+| `inference.py` marked upstream-reference only | **Done** |
+| Per-disease DCA + bootstrap CI + DeLong in evaluate JSON | **Done** |
+| Multilabel stratification + paper_mode class-coverage fail | **Done** |
+| Strict YAML build + CI 1-epoch E5 smoke | **Done** |
+| Manuscript / README / report sync | **Done** |
+| Unittest **82 OK**; `run_ablations.py --quick` 8/8 | **Done** |
 
-## Checklist
+## Real data
 
-| Item | Status | Evidence |
-|------|--------|----------|
-| Audit local vs remote HEAD | **Done** | `docs/chatgpt-runs/2026-09-15-contract-sync/AUDIT.md` |
-| Strict config schema (unknown keys fail) | **Done** | `reti_pioneer/config.py:validate_config` |
-| Every ablation YAML builds a model | **Done** | `build_model_from_config` + `TestStrictConfigSchema` |
-| Monotone router `fixed\|free_linear\|monotone` | **Done** (already on remote; reconfirmed) | `QualityAware.py` |
-| Ensemble `released_code` / `published_soft_vote` / `mean` / `temp_mean`; `paper` deprecated | **Done** | `RetiPioneer.normalize_ensemble` |
-| train/val/cal/test + cal ⊥ eval; paper_mode no val-fit+score | **Done** | `split.py` / `evaluate.resolve_calibration_fit_ids` |
-| `EndpointSpec` + diabetes/hypertension ocular vs systemic | **Done** | `label_map.py` |
-| paper_mode fail-closed on non-direct **and** synthetic features | **Done** | `assert_clinical_alignment` + `features_clinical_claim_allowed` |
-| `masked_bce` / `lambda_q` / `quality_gating` wired | **Done** | `train.py` / `RetiPioneer` / `ablation_e5.yaml` |
-| Provenance: `clinical_claim_allowed` only after real features | **Done** | `update_label_map_provenance`; extract updates JSON |
-| `prepare_public_npz` never destroys official test | **Done** | carve val from train only |
-| README no local Windows path | **Done** | `cd <repo-root>` |
-| `pyproject.toml` no local wheel paths | **Done** (confirmed) | PyPI + pytorch index only |
-| Hard-gate tests | **Done** | `tests/test_contract_sync.py` |
-| Full unittest | **Done** | **73 OK** |
-| Clinical Results AUROC | **待补充** | No Kaggle/PhysioNet/CUDA — not invented |
+| Item | Status |
+|------|--------|
+| RFMiD images + labels + pairs.csv (N=3200) | **Done** |
+| CPU Swin subset features (N=64, partial) | **Done** (not clinical 3-backbone) |
+| ODIR (Kaggle) | **Impossible** — no credentials |
+| BRSET (PhysioNet) | **Impossible** — no credentials |
+| CUDA foundation extract | **Impossible** — torch CPU-only despite GTX 950M |
+| Clinical Results AUROCs | **待补充** — not invented |
 
 ## Unittest
 
 ```text
 python -m unittest discover -s tests -v
-# Ran 73 tests in ~279 s — OK
+# Ran 82 tests — OK
 ```
-
-## Data honesty
-
-| Asset | Status |
-|-------|--------|
-| ODIR | Not downloaded (no Kaggle creds) |
-| BRSET | Blocked (no PhysioNet creds) |
-| RFMiD labels | Real CSVs where present; backbone features may be SYNTHETIC |
-| Foundation extract | 待补充 (no CUDA) |
-| Manuscript clinical tables | 待补充 |
-
-## Git / public snapshot
-
-**Contract-sync code:** `cc70b8d6a30a8f5c194f7e211948c5ec7bb21cc4`  
-**Public tip:** whatever is on `origin/main` after this file is pushed (verify with `git rev-parse origin/main` or https://github.com/Coucou2016/retinal-imaging-methods-public).
-
-Policy: code + docs only; no secrets, patient images, or large npz/ckpt.

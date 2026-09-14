@@ -156,7 +156,7 @@ a { color: var(--accent); }
 <pre>| Backbones | Frozen; train fusion + head on caches |</pre>
 <pre>| Split | Patient-level; train/cal/val/(test); both eyes co-located |</pre>
 <pre>| Seeds (final tables) | {42, 43, 44} — **待补充** on real data |</pre>
-<pre>| Ablation arms | E0–E4 (`configs/ablation_e*.yaml`); optional E5 quality-conditioned gating (`ablation_e5.yaml`) |</pre>
+<pre>| Ablation arms | E0–E5 (`configs/ablation_e*.yaml`); E5 = quality-conditioned **backbone routing** (softmax over foundation heads from q) + optional BRSET `lambda_q` |</pre>
 <pre>| Software (this workspace) | PyTorch 2.x CPU build; CUDA **unavailable** → foundation extraction blocked |</pre>
 
 <h3>3.7 Endpoint ontology (pre-registered)</h3>
@@ -177,7 +177,9 @@ a { color: var(--accent); }
 <li>Synthetic cache path must never populate submission Results tables.  </li>
 <li>UKB-only diseases omitted from public tables.  </li>
 <li>BRSET requires PhysioNet credentialing; this workspace does not scrape PhysioNet.  </li>
-<li>Optional E5 quality-conditioned gating and BRSET `lambda_q` aux are config-gated (`quality_gating`, `lambda_q`).</li>
+<li>Optional E5 quality-conditioned **backbone routing** (`quality_gating`: softmax over heads from q) and BRSET `lambda_q` aux are config-gated. MultiCohort joint vocabulary (ODIR+BRSET+RFMiD partial-label masks) is available via `--multi-cohort`.</li>
+<li>Extension inference: `scripts/predict_extension.py` (not upstream `inference.py`).</li>
+<li>Discrimination CIs: patient-level bootstrap and DeLong asymptotic CI in evaluate JSON; primary utility plots are **per-disease DCA curves**.</li>
 
 <h3>3.9 Reproducibility hooks</h3>
 
@@ -263,7 +265,7 @@ a { color: var(--accent); }
 <h2>Assumptions or missing inputs</h2>
 
 <li>Real ODIR/BRSET full-image downloads not completed (no Kaggle auth; BRSET PhysioNet credentialed).  </li>
-<li>RFMiD: label CSVs downloadable via Hugging Face; full images + foundation features **待补充** (CPU-only; no CUDA).  </li>
+<li>RFMiD: **images + official CSVs present** under `data/raw/rfmid` (N=3200); labels prepared with `pairs.csv`. Full 3-backbone foundation features for clinical tables remain **待补充** (CPU torch only; see `docs/DATA_BLOCKERS.md`). ODIR (Kaggle) / BRSET (PhysioNet) downloads blocked without credentials.  </li>
 <li>No invented UKB / clinical AUROCs.  </li>
 <li>ChatGPT live consultation optional/blocked; local engineering prioritized.</li>
 </article></div></body></html>

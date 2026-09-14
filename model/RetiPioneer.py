@@ -5,7 +5,12 @@ import torch
 import torch.nn as nn
 
 from model.QualityAware import QualityAware, QualityRouter
-from model.quality_gate import QualityAuxHead, QualityConditionedGate, soft_quality_ce
+from model.quality_gate import (
+    QualityAuxHead,
+    QualityBackboneRouter,
+    QualityConditionedGate,
+    soft_quality_ce,
+)
 
 # Ensemble over the three backbone heads:
 #   released_code       — train: softmax-weighted mix (T=0.1); eval: max
@@ -15,6 +20,8 @@ from model.quality_gate import QualityAuxHead, QualityConditionedGate, soft_qual
 #   temp_mean           — temperature-scaled softmax mix at train and eval
 # Legacy alias: ensemble="paper" → released_code (DeprecationWarning).
 # For num_classes>1 the mix/max is applied independently per class.
+# When quality_gating=True (E5), QualityBackboneRouter softmax(q) overrides
+# the ensemble mix with quality-conditioned backbone weights.
 VALID_ENSEMBLES = ("released_code", "published_soft_vote", "mean", "temp_mean", "paper")
 
 __all__ = [
@@ -54,8 +61,8 @@ class FuseBase(nn.Module):
         learnable_q: bool = False,
         quality_router: QualityRouter | str = "fixed",
         flip_r: bool = True,
-        quality_gating: bool = False,
         quality_aux: bool = False,
+        feature_attenuation: bool = False,
     ) -> None:
         super().__init__()
 
@@ -68,8 +75,9 @@ class FuseBase(nn.Module):
             learnable_q,
             quality_router=quality_router,
         )
+        # Legacy per-feature attenuation (ablation); E5 primary path is backbone router.
         self.quality_gate = QualityConditionedGate(
-            base_out_size, enabled=bool(quality_gating)
+            base_out_size, enabled=bool(feature_attenuation)
         )
         self.quality_aux_head = QualityAuxHead(base_out_size) if quality_aux else None
         self.m_fuse = nn.Bilinear(self.fuse_dim * 2 + 1, meta_size + 1, num_classes, False)
@@ -117,6 +125,7 @@ class ComplexModel(nn.Module):
         quality_gating: bool = False,
         quality_aux: bool = False,
         lambda_q: float = 0.0,
+        feature_attenuation: bool = False,
     ):
         super().__init__()
         ensemble = normalize_ensemble(ensemble)
@@ -128,6 +137,7 @@ class ComplexModel(nn.Module):
         self.quality_gating = bool(quality_gating)
         self.quality_aux = bool(quality_aux) or float(lambda_q) > 0
         self.lambda_q = float(lambda_q)
+        self.feature_attenuation = bool(feature_attenuation)
         if learnable_q and quality_router == "fixed":
             quality_router = "monotone"
             self.quality_router = quality_router
@@ -144,8 +154,8 @@ class ComplexModel(nn.Module):
                         learnable_q=learnable_q,
                         quality_router=quality_router,
                         flip_r=False,
-                        quality_gating=self.quality_gating,
                         quality_aux=self.quality_aux,
+                        feature_attenuation=self.feature_attenuation,
                     ),
                     nn.SELU(True),
                     nn.Linear(mid_size, num_classes),
@@ -153,6 +163,11 @@ class ComplexModel(nn.Module):
                 for backbone, size in zip(backbones, base_out_sizes)
             ]
         )
+        n_bb = len(backbones)
+        self.backbone_router = QualityBackboneRouter(
+            n_backbones=n_bb, enabled=self.quality_gating
+        )
+        self._last_backbone_weights: torch.Tensor | None = None
 
     def collect_quality_aux_logits(self) -> torch.Tensor | None:
         """Mean aux logits over eyes/heads from the last forward (if quality_aux)."""
@@ -171,6 +186,14 @@ class ComplexModel(nn.Module):
             head_logits.append(self.models[i](((l[i], r[i]), m, qs)))
         # (batch, n_heads, num_classes) — K=1 stays (B, H, 1) → (B, 1) after reduce
         heads = torch.stack(head_logits, dim=1)
+
+        # E5: quality-conditioned softmax over backbones (primary gating path).
+        if self.quality_gating:
+            ql, qr = qs
+            q_mean = 0.5 * (ql.float() + qr.float())
+            w = self.backbone_router(q_mean)  # (B, H)
+            self._last_backbone_weights = w
+            return (w.unsqueeze(-1) * heads).sum(dim=1)
 
         if self.ensemble == "mean":
             return heads.mean(dim=1)
@@ -199,10 +222,13 @@ def get_reti_pioneer(
     quality_gating: bool = False,
     quality_aux: bool = False,
     lambda_q: float = 0.0,
+    feature_attenuation: bool = False,
 ):
     """Build Reti-Pioneer. K=1 is the paper clone; K>1 is a joint multi-label head.
 
-    ``quality_gating`` enables optional E5 quality-conditioned backbone gates.
+    ``quality_gating`` enables E5 quality-conditioned **backbone routing**
+    (softmax over foundation heads from q). Optional ``feature_attenuation``
+    keeps the legacy per-feature sigmoid gate for ablation.
     ``lambda_q`` / ``quality_aux`` enable an auxiliary soft-quality head (BRSET).
     """
     ensemble = normalize_ensemble(ensemble)
@@ -231,4 +257,5 @@ def get_reti_pioneer(
         quality_gating=quality_gating,
         quality_aux=quality_aux,
         lambda_q=lambda_q,
+        feature_attenuation=feature_attenuation,
     )
