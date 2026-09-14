@@ -621,6 +621,20 @@ def main() -> None:
     paper_mode = bool(args.paper_mode or eval_cfg.get("paper_mode", False))
     clinical_tables = bool(args.clinical_tables or eval_cfg.get("clinical_tables", False) or paper_mode)
 
+    if paper_mode:
+        from reti_pioneer.label_map import features_clinical_claim_allowed
+
+        claim_dirs = [cfg["data_dir"]]
+        if args.test_data_dir:
+            claim_dirs.append(os.path.abspath(args.test_data_dir))
+        for d in claim_dirs:
+            if ukb_compressed_ready(d) and not features_clinical_claim_allowed(d):
+                raise ValueError(
+                    f"paper_mode refuses synthetic/stub features under {d}. "
+                    "clinical_claim_allowed requires real foundation extract "
+                    "(no SYNTHETIC_FEATURES.txt / stub)."
+                )
+
     cross = args.test_data_dir is not None
     if cross and not args.test_dataset:
         raise ValueError("--test-dataset is required with --test-data-dir")

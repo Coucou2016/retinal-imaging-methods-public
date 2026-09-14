@@ -24,7 +24,7 @@ See [docs/paper/manuscript.md](docs/paper/manuscript.md), [docs/PAPER.md](docs/P
 ## Quick start (demo, CPU-friendly)
 
 ```powershell
-cd E:\Projects\20260522-retinal-imaging
+cd <repo-root>
 python -m pip install -r requirements.txt
 python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 

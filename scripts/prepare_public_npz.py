@@ -16,7 +16,6 @@ Public sets have no 5/10-year incidence: y5/y10 are copies of prevalence y0.
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import sys
 from pathlib import Path
@@ -156,8 +155,21 @@ def write_public_npz(
         val_idx = [i for i, s in enumerate(splits) if s == "val"]
         test_idx = [i for i, s in enumerate(splits) if s == "test"]
         if not val_idx:
-            train_idx, val_idx = patient_level_train_val_indices(pid, y, 0.2, seed)
-            test_idx = []
+            # Carve val from *train only*; never destroy / resplit official test.
+            if len(train_idx) < 4:
+                raise ValueError(
+                    f"Need ≥4 train rows to carve a val fold; got {len(train_idx)}. "
+                    "Provide an official val split or more train patients."
+                )
+            train_pid = pid[np.asarray(train_idx, dtype=np.int64)]
+            train_y = y[np.asarray(train_idx, dtype=np.int64)]
+            local_tr, local_va = patient_level_train_val_indices(
+                train_pid, train_y, 0.2, seed
+            )
+            train_arr = np.asarray(train_idx, dtype=np.int64)
+            train_idx = train_arr[np.asarray(local_tr, dtype=np.int64)].tolist()
+            val_idx = train_arr[np.asarray(local_va, dtype=np.int64)].tolist()
+            # test_idx kept as official test (may be empty if dataset has none).
         save_split(
             str(out_dir / "split.npz"),
             train_idx,
@@ -177,6 +189,7 @@ def write_public_npz(
         "n": len(records),
         "label_names": label_names,
         "synthetic_features": bool(marker.is_file()),
+        "stub_features": False,
         "clinical_claim_allowed": False,
         "labels_only": labels_only,
         "honesty": HONESTY.get(dataset_name, ""),
@@ -190,7 +203,15 @@ def write_public_npz(
         text = marker.read_text(encoding="utf-8")
         if "clinical_claim_allowed" not in text:
             marker.write_text(text + "clinical_claim_allowed: false\n", encoding="utf-8")
-    (out_dir / "label_map.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    # clinical_claim_allowed stays false until real extract updates provenance.
+    from reti_pioneer.label_map import update_label_map_provenance
+
+    update_label_map_provenance(
+        out_dir,
+        synthetic_features=bool(marker.is_file()),
+        stub_features=False,
+        extra={k: v for k, v in meta.items() if k not in ("synthetic_features", "stub_features", "clinical_claim_allowed")},
+    )
     print(f"Wrote {dataset_name} cache ({len(records)} rows, K={len(label_names)}) to {out_dir}")
     return out_dir
 

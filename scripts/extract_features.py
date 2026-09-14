@@ -136,13 +136,29 @@ def clear_synthetic_marker(cache_dir: Path, stub: bool) -> None:
     if stub:
         marker.write_text(
             "STUB-IDENTITY features from scripts/extract_features.py --stub-identity.\n"
-            "Not foundation-model features. Not for manuscript AUROC.\n",
+            "Not foundation-model features. Not for manuscript AUROC.\n"
+            "clinical_claim_allowed: false\n",
             encoding="utf-8",
         )
         return
     if marker.is_file():
         marker.unlink()
         print(f"Removed {marker.name} (real backbone features written)")
+
+
+def update_cache_provenance(cache_dir: Path, *, stub: bool) -> None:
+    """Keep label_map.json in sync with feature reality after extract."""
+    from reti_pioneer.label_map import update_label_map_provenance
+
+    update_label_map_provenance(
+        cache_dir,
+        synthetic_features=False,
+        stub_features=bool(stub),
+        extra={
+            "extractor": "scripts/extract_features.py",
+            "stub_identity": bool(stub),
+        },
+    )
 
 
 def main() -> None:
@@ -252,6 +268,7 @@ def main() -> None:
 
     if cache_dir is not None:
         clear_synthetic_marker(cache_dir, stub=args.stub_identity)
+        update_cache_provenance(cache_dir, stub=args.stub_identity)
         assert_feature_row_count(cache_dir, n)
         print(f"Aligned cache OK under {cache_dir} (N={n})")
 

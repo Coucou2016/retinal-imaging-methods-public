@@ -13,8 +13,10 @@ Alignment levels
 
 from __future__ import annotations
 
+import os
 import warnings
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 Alignment = Literal["direct", "partial", "related_not_equivalent"]
@@ -31,8 +33,8 @@ class DatasetLabelRef:
 
 
 @dataclass(frozen=True)
-class Endpoint:
-    """Canonical screening endpoint with per-dataset alignment metadata."""
+class EndpointSpec:
+    """Canonical screening endpoint with kind + per-dataset alignment metadata."""
 
     id: str
     kind: EndpointKind
@@ -58,9 +60,13 @@ class Endpoint:
         return a.alignment if order[a.alignment] >= order[b.alignment] else b.alignment
 
 
+# Backward-compatible alias used in older docs / imports.
+Endpoint = EndpointSpec
+
+
 # Canonical endpoints (pre-registered). Keep related mappings only with explicit flags.
-ENDPOINTS: dict[str, Endpoint] = {
-    "diabetes_ocular": Endpoint(
+ENDPOINTS: dict[str, EndpointSpec] = {
+    "diabetes_ocular": EndpointSpec(
         id="diabetes_ocular",
         kind="ocular_manifestation",
         description=(
@@ -73,7 +79,7 @@ ENDPOINTS: dict[str, Endpoint] = {
             DatasetLabelRef("rfmid", "DR", "direct"),
         ),
     ),
-    "diabetes_systemic": Endpoint(
+    "diabetes_systemic": EndpointSpec(
         id="diabetes_systemic",
         kind="systemic",
         description=(
@@ -87,7 +93,7 @@ ENDPOINTS: dict[str, Endpoint] = {
         ),
     ),
     # Kept for exploratory cross-eval only — never a clinical-claim head.
-    "diabetes_related": Endpoint(
+    "diabetes_related": EndpointSpec(
         id="diabetes_related",
         kind="systemic",
         description=(
@@ -102,7 +108,7 @@ ENDPOINTS: dict[str, Endpoint] = {
             DatasetLabelRef("demo", "t2dm", "related_not_equivalent"),
         ),
     ),
-    "hypertension_ocular": Endpoint(
+    "hypertension_ocular": EndpointSpec(
         id="hypertension_ocular",
         kind="ocular_manifestation",
         description=(
@@ -114,6 +120,20 @@ ENDPOINTS: dict[str, Endpoint] = {
             DatasetLabelRef("brset", "hypertensive_retinopathy", "direct"),
             DatasetLabelRef("ukb", "hypertension", "related_not_equivalent"),
             DatasetLabelRef("demo", "hypertension", "related_not_equivalent"),
+        ),
+    ),
+    "hypertension_systemic": EndpointSpec(
+        id="hypertension_systemic",
+        kind="systemic",
+        description=(
+            "Systemic hypertension diagnosis when the dataset records it. "
+            "Distinct from hypertensive retinopathy ocular signs."
+        ),
+        refs=(
+            DatasetLabelRef("ukb", "hypertension", "direct"),
+            DatasetLabelRef("demo", "hypertension", "direct"),
+            # BRSET records hypertensive retinopathy, not systemic HTN diagnosis.
+            DatasetLabelRef("brset", "hypertensive_retinopathy", "related_not_equivalent"),
         ),
     ),
 }
@@ -164,14 +184,74 @@ def _index_in(names: list[str], wanted: str) -> int | None:
     return None
 
 
-def get_endpoint(task: str) -> Endpoint:
+def get_endpoint(task: str) -> EndpointSpec:
     if task not in ENDPOINTS:
         raise ValueError(f"Unknown endpoint {task!r}; known: {list(ENDPOINTS)}")
     return ENDPOINTS[task]
 
 
 def clinical_claim_allowed(alignment: Alignment) -> bool:
+    """Alignment-only gate. Feature provenance is a separate AND (see provenance helpers)."""
     return alignment == "direct"
+
+
+def cache_features_are_real(cache_dir: str | os.PathLike[str] | Path) -> bool:
+    """True only when backbone features look real (no SYNTHETIC/STUB marker)."""
+    from pathlib import Path as _Path
+
+    root = _Path(cache_dir)
+    marker = root / "SYNTHETIC_FEATURES.txt"
+    if marker.is_file():
+        text = marker.read_text(encoding="utf-8", errors="ignore").lower()
+        if "synthetic" in text or "stub" in text:
+            return False
+    meta_path = root / "label_map.json"
+    if meta_path.is_file():
+        import json
+
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        if meta.get("synthetic_features") is True:
+            return False
+        if meta.get("stub_features") is True:
+            return False
+        if meta.get("clinical_claim_allowed") is True and not marker.is_file():
+            return True
+    # Real extract removes the marker; require all three backbone caches.
+    from reti_pioneer.data_paths import ukb_compressed_ready
+
+    return ukb_compressed_ready(str(root)) and not marker.is_file()
+
+
+def features_clinical_claim_allowed(cache_dir: str | os.PathLike[str] | Path) -> bool:
+    """clinical_claim_allowed is true only after real (non-synthetic) features exist."""
+    return cache_features_are_real(cache_dir)
+
+
+def update_label_map_provenance(
+    cache_dir: str | os.PathLike[str] | Path,
+    *,
+    synthetic_features: bool,
+    stub_features: bool = False,
+    extra: dict | None = None,
+) -> Path:
+    """Merge provenance flags into ``label_map.json`` (create if missing)."""
+    import json
+    from pathlib import Path as _Path
+
+    root = _Path(cache_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    path = root / "label_map.json"
+    meta: dict = {}
+    if path.is_file():
+        meta = json.loads(path.read_text(encoding="utf-8"))
+    meta["synthetic_features"] = bool(synthetic_features)
+    meta["stub_features"] = bool(stub_features)
+    # Real features required before any clinical claim flag may be true.
+    meta["clinical_claim_allowed"] = (not synthetic_features) and (not stub_features)
+    if extra:
+        meta.update(extra)
+    path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    return path
 
 
 def assert_clinical_alignment(
