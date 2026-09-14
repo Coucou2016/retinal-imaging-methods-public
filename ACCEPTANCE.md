@@ -35,3 +35,8 @@
 python -m unittest discover -s tests -v
 # Ran 82 tests — OK
 ```
+
+## Git / public snapshot
+
+Local tip: `a1b1216` (includes no-tails `30ef160`).  
+`git push origin HEAD` **failed** (GitHub 443) — retry when network allows. No force-push.
