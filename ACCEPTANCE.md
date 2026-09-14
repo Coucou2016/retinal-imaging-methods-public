@@ -48,6 +48,7 @@ python -m unittest discover -s tests -v
 
 ## Git / public snapshot
 
-**Pushed commit:** `51e81212f2f8a65f4c4481047615fa86ccdd8419` — *Close P0 YAML-code contract gaps for reviewer sync.* on `main`.
+**Contract-sync commit:** `cc70b8d6a30a8f5c194f7e211948c5ec7bb21cc4` — *Close P0 YAML-code contract gaps for reviewer sync.* on `main`.  
+*(Tip SHA updated after successful push if a follow-up record commit is added.)*
 
 Policy: code + docs only; no secrets, patient images, or large npz/ckpt.
