@@ -58,6 +58,9 @@ Hard-gates added in `tests/test_contract_sync.py`: all YAML parse+build, monoton
 
 ## Post-sync push
 
-Local commits pushed to `origin/main`: `2595a34..93170c6`  
+Local commits pushed to `origin/main`: `2595a34..47fa0fc`  
 - `cc70b8d` Close P0 YAML-code contract gaps for reviewer sync.  
-- `93170c6` Record contract-sync commit SHA in ACCEPTANCE.
+- `93170c6` / `69ef661` / `10afcf3` / `47fa0fc` ACCEPTANCE + audit bookkeeping  
+
+**Public tip:** `47fa0fc03eae79d057ce0a10b3e8ddf4ad857d40`  
+Remote `QualityAware.py` confirmed: `QualityRouter = Literal["fixed", "free_linear", "monotone"]`.
