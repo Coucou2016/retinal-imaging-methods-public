@@ -18,7 +18,7 @@
 | A7 | Multilabel patient stratification + fail missing classes | **Done** | `patient_level_multilabel_train_val_indices`; `assert_split_label_coverage` (paper_mode); masked-aware `_label_scalar` |
 | A8 | Strict config: every YAML builds + 1-epoch smoke | **Done** | `TestAllConfigsBuildAndOneEpoch`; CI job steps strengthened |
 | A9 | Sync manuscript/report/README; regenerate figures/report | **Done** | manuscript E5/MultiCohort wording; `build_paper_report.py`; `plot_paper_figures.py`; intervention figure |
-| A10 | Push public GitHub (no secrets/large private data) | **Done** | see Git section below |
+| A10 | Push public GitHub (no secrets/large private data) | **Blocked (network)** | Local commit `30ef160` ahead of `origin/main`; `git push` fails GitHub 443 — retry when network allows |
 | B1 | Download RFMiD images | **Done** (already present) | `data/raw/rfmid` N=3200; labels+`pairs.csv` via prepare |
 | B1b | CPU Swin subset features | **Done** (partial) | `data/rfmid_cpu_subset` UKB_swin.npz (64,1024); RETF/Vim still synthetic; `clinical_claim_allowed: false` |
 | B2 | ODIR via Kaggle | **Impossible** | No `~/.kaggle/kaggle.json`; no `kaggle` CLI — see `docs/DATA_BLOCKERS.md` |
@@ -45,3 +45,8 @@ python scripts/build_paper_report.py
 - Clinical AUROC / ECE / DCA **tables not filled with invented numbers**.
 - RFMiD pixels exist; full 3-backbone clinical feature cache still blocked by CPU-only torch + missing RETFound/Vim weights for complete extract.
 - Software release is **complete** relative to peer-review engineering tails; clinical efficacy claims remain locked behind real multi-backbone features + ODIR/BRSET credentials.
+
+## Git
+
+- Local commit: `30ef160c3d5900bbaf54825784710f4de1f7dcab` on `main`.
+- Public push to `origin/main` **blocked** this session (GitHub HTTPS 443 connection reset/timeout). Retry: `git push origin HEAD`.
