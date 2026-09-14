@@ -55,3 +55,9 @@ python -m unittest discover -s tests -v
 ```
 
 Hard-gates added in `tests/test_contract_sync.py`: all YAML parse+build, monotone bounds, ensemble rename, endpoint systemic/ocular split, official test never resplit, provenance gate, paper_mode val-calibrate refuse.
+
+## Post-sync push
+
+Local commits pushed to `origin/main`: `2595a34..93170c6`  
+- `cc70b8d` Close P0 YAML-code contract gaps for reviewer sync.  
+- `93170c6` Record contract-sync commit SHA in ACCEPTANCE.

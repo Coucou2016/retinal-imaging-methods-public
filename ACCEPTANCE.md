@@ -48,7 +48,7 @@ python -m unittest discover -s tests -v
 
 ## Git / public snapshot
 
-**Contract-sync commit:** `cc70b8d6a30a8f5c194f7e211948c5ec7bb21cc4` — *Close P0 YAML-code contract gaps for reviewer sync.* on `main`.  
-*(Tip SHA updated after successful push if a follow-up record commit is added.)*
+**Pushed tip:** `93170c6a` on `main` (includes contract-sync `cc70b8d6` + ACCEPTANCE SHA record).  
+Verify: https://github.com/Coucou2016/retinal-imaging-methods-public/commit/93170c6
 
 Policy: code + docs only; no secrets, patient images, or large npz/ckpt.
