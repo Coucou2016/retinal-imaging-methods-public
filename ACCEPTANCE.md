@@ -48,7 +48,7 @@ python -m unittest discover -s tests -v
 
 ## Git / public snapshot
 
-**Pushed tip:** `69ef661a144aa18fa1d8f2c0cad19a3ab01ddd88` on `main`.  
-Contract-sync code commit: `cc70b8d6`. Verify: https://github.com/Coucou2016/retinal-imaging-methods-public/commit/69ef661
+**Contract-sync code:** `cc70b8d6a30a8f5c194f7e211948c5ec7bb21cc4`  
+**Public tip:** whatever is on `origin/main` after this file is pushed (verify with `git rev-parse origin/main` or https://github.com/Coucou2016/retinal-imaging-methods-public).
 
 Policy: code + docs only; no secrets, patient images, or large npz/ckpt.
