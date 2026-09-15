@@ -212,17 +212,19 @@ def report_md(rows: list[dict], uris: dict[str, str]) -> str:
     table = ablation_table_md(rows)
     return f"""# 研究报告：基于 Reti-Pioneer 的单调质量路由与端点感知多任务学习扩展
 
-**日期：** {date.today().isoformat()}（review-fixes）  
-**项目路径：** 见仓库根目录（clone path varies by machine）  
-**性质：** 方法学跟进 / 工程可复现报告（非临床试验报告）  
+**日期：** {date.today().isoformat()}  
+**项目路径：** `E:/Projects/20260522-retinal-imaging`（本机；公开 clone 路径可变）  
+**性质：** 方法学跟进 / 工程可复现报告（非临床试验报告；可含过程与本地路径）  
 **公开代码：** https://github.com/Coucou2016/retinal-imaging-methods-public  
+**论文主线：** `docs/paper/manuscript.md`  
+**真实性审查：** `docs/paper/AUTHENTICITY_AUDIT.md`  
 **工作标题：** Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning
 
-<span class="badge">SYNTHETIC metrics ≠ clinical AUROC</span>
-<span class="badge">Calibration/DCA = evaluation framework (not novelty)</span>
-<span class="badge">Published multitask ≠ released independent loops</span>
-<span class="badge">clinical_claim_allowed: false on synthetic</span>
-<span class="badge">no UKB AUROC</span>
+- SYNTHETIC metrics ≠ clinical AUROC
+- Calibration/DCA = evaluation framework (not novelty)
+- Published multitask ≠ released independent loops
+- clinical_claim_allowed: false on synthetic
+- no invented UKB AUROC
 
 ## 封面信息
 
@@ -231,43 +233,75 @@ def report_md(rows: list[dict], uris: dict[str, str]) -> str:
 | 基线论文 | Zhang et al., Nat Med 2026, Reti-Pioneer, DOI 10.1038/s41591-026-04359-w |
 | 本文定位 | Methods extension：monotone quality router + masked multitask + endpoint-aware cross-cohort；校准/DCA 为**评估框架** |
 | 目标期刊（无 UKB） | npj Digital Medicine / MedIA / IEEE JBHI·TMI / CIBM |
-| 写作架构 | Nature-family methods 论证链 |
+| 写作架构 | Nature-family methods 论证链（nature-writing） |
+| 出图 | SciencePlots + Times New Roman（`scripts/plot_paper_figures.py`） |
 | 数据诚实性 | ODIR-D ≠ UKB T2DM；`diabetes_related` 仅 exploratory；合成 AUROC 仅流水线自检 |
 
 ## 1. 摘要
 
-Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**为疾病独立二分类循环，质量权重固定 1/0.5/0。本仓库实现单调有界质量路由、掩码多任务 BCE、endpoint-aware cross-cohort evaluation。校准/ECE/按病种 DCA 为**评估框架**（非新颖性主卖点）；NB@0.10 仅示意。**当前数值为 SYNTHETIC 流水线自检，不得作为临床性能。**
+Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**为疾病独立二分类循环，质量权重固定 1/0.5/0。本仓库实现单调有界质量路由、掩码多任务 BCE、endpoint-aware cross-cohort evaluation；可选 E5 质量条件骨干路由。校准/ECE/按病种 DCA 为**评估框架**（非新颖性主卖点）；NB@0.10 仅示意。**当前数值为 SYNTHETIC 流水线自检，不得作为临床性能。**
 
-## 2. 创新边界
+## 2. 术语表（首次展开）
+
+| 缩写 | 全称 |
+|------|------|
+| CFP | Color fundus photograph，彩色眼底照片 |
+| AUROC | Area under the ROC curve |
+| ECE | Expected calibration error，期望校准误差 |
+| DCA | Decision curve analysis，决策曲线分析 |
+| BCE | Binary cross-entropy |
+| MTL | Multi-task learning |
+| UKB | UK Biobank |
+| ODIR / BRSET / RFMiD | 公开眼底多标签数据集 |
+
+## 3. 创新边界
 
 | ID | 创新 | 状态 |
 |----|------|------|
-| I | 单调有界质量路由 | 已实现 |
+| I | 单调有界质量路由（`quality_router=monotone`） | 已实现 |
 | II | 掩码多任务（对照 released independent loops） | 已实现 |
 | III | 端点本体 + 跨队列 alignment 守卫 | 已实现 |
 | IV | 校准/DCA 评估框架（cal ⊥ eval） | 已实现 |
-| E5 | 质量条件门控 + 可选 λ_q | 已实现（`ablation_e5.yaml`；默认关） |
+| E5 | 质量条件门控 + 可选 λ_q | 已实现（`configs/ablation_e5.yaml`；默认关） |
 
-## 3. 方法映射
+## 4. 方法与代码映射
 
-`QualityAware.quality_router` · `ensemble=released_code` · `label_map.Endpoint` · `split.calibration_idx` · masked BCE · `evaluate --paper-mode` · `configs/ablation_e0..e4.yaml`。详见 `docs/paper/manuscript.md`。
+| 概念 | 路径 |
+|------|------|
+| Monotone router | `model/QualityAware.py` |
+| Masked BCE | `utils/run.py::masked_bce_with_logits` |
+| E5 gating | `model/quality_gate.py` + `configs/ablation_e5.yaml` |
+| Endpoint map | `reti_pioneer/label_map.py` |
+| 消融跑数 | `scripts/run_ablations.py` → `results/ablation_summary.csv` |
+| 评估 | `scripts/evaluate.py`（disclaimer / paper_mode） |
 
-## 4. 结果（SYNTHETIC）
+## 5. 研究过程（本机）
+
+1. 以 2026-09-13 审稿修订后的 `docs/paper/manuscript.md` 为论文主线（未另发现独立用户上传稿）。  
+2. 安装 SciencePlots；`python scripts/plot_paper_figures.py` 重绘 Fig1–4。  
+3. 数字仅取自 `results/ablation_summary.csv` 与 `results/metrics_*.json`（2026-09-15T02:45 批次）。  
+4. `python scripts/build_paper_report.py` 生成论文/报告 HTML·MD·PDF。  
+5. 撰写 `docs/paper/AUTHENTICITY_AUDIT.md` 证据链。
+
+## 6. 结果（SYNTHETIC；本仓库计算）
 
 {table}
 
-<figure><img src="{uris.get('fig1_architecture.png','')}" alt="Fig1"/><figcaption>图 1. 方法概览（示意；无性能数字）。</figcaption></figure>
-<figure><img src="{uris.get('fig2_ablation_bars.png','')}" alt="Fig2"/><figcaption>图 2. 消融（SYNTHETIC）。</figcaption></figure>
-<figure><img src="{uris.get('fig3_calibration.png','')}" alt="Fig3"/><figcaption>图 3. 校准/ECE（SYNTHETIC；评估框架）。</figcaption></figure>
-<figure><img src="{uris.get('fig4_cross_domain.png','')}" alt="Fig4"/><figcaption>图 4. 跨队列（SYNTHETIC；endpoint-aware）。</figcaption></figure>
+**读表：** `auroc_D` 便于跨臂对比；ECE 变化而 AUROC 不变符合温度缩放语义；n=10/48 时禁止方法优劣结论。旗标见 `data/odir|brset|rfmid/SYNTHETIC_FEATURES.txt`。
 
-## 5. 讨论与局限
+<figure><img src="{uris.get('fig1_architecture.png','')}" alt="Fig1"/><figcaption>图 1. 方法概览（示意；无性能数字）。黄框=单调质量路由；绿框=部分标签 MTL + 校准/DCA 评估。</figcaption></figure>
+<figure><img src="{uris.get('fig2_ablation_bars.png','')}" alt="Fig2"/><figcaption>图 2. 消融柱状图（SYNTHETIC）。问什么：四臂是否跑通？怎么读：左 AUROC_D，右 ECE；虚线 0.5=随机。结论：流水线健全，非临床主张。</figcaption></figure>
+<figure><img src="{uris.get('fig3_calibration.png','')}" alt="Fig3"/><figcaption>图 3. 温度缩放与 ECE（SYNTHETIC）。问什么：校准链路是否可压低 ECE？结论：评估框架动机成立，≠临床已校准可用。</figcaption></figure>
+<figure><img src="{uris.get('fig4_cross_domain.png','')}" alt="Fig4"/><figcaption>图 4. 跨队列落差（SYNTHETIC）。问什么：是否强制报告 domain drop？结论：协议层必须画跨库，数值不可作运输性估计。</figcaption></figure>
 
-须区分 published multitask vs released independent loops；`diabetes_related` 不得进临床主表。待补充：真实 ODIR/BRSET 像素、GPU 特征。工程侧已补：val→test 阈值冻结、patient-level bootstrap CI、E5 门控、λ_q、intervention smoke。
+## 7. 讨论与局限
 
-## 6. 验收
+须区分 published multitask vs released independent loops；`diabetes_related` 不得进临床主表。待补充：真实 ODIR/BRSET 像素、GPU 三骨干特征、多 seed 临床表。RFMiD 影像本地有（N=3200）但仍带 SYNTHETIC 特征旗标。
 
-见 `docs/chatgpt-runs/2026-09-13-review-fixes/ACCEPTANCE.md`。
+## 8. 验收与审查
+
+- 审稿修复验收：`docs/chatgpt-runs/2026-09-13-review-fixes/ACCEPTANCE.md`  
+- 真实性审查：`docs/paper/AUTHENTICITY_AUDIT.md`
 """
 
 
@@ -417,59 +451,61 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
 <div class="wrap">
   <header class="cover">
     <div><span class="badge">SYNTHETIC AUROC ≠ 临床性能</span><span class="badge">Calibration/DCA=评估框架</span><span class="badge">无 UKB 结果</span></div>
-    <h1>研究报告：Quality-Adaptive Multi-Task Oculomics<br/>（Reti-Pioneer 方法学扩展）</h1>
-    <p class="meta">日期：{date.today().isoformat()} · 仓库：20260522-retinal-imaging · 写作技能：nature-writing（methods）</p>
-    <p>本报告自包含（CSS 内联、图片 Base64）。图表中的性能数字来自合成特征缓存，仅流水线自检；论文可比临床 AUROC <span class="pending">待补充</span>。</p>
+    <h1>研究报告：单调质量路由与端点感知多任务学习<br/>（Reti-Pioneer 方法学扩展）</h1>
+    <p class="meta">日期：{date.today().isoformat()} · 本机路径：E:/Projects/20260522-retinal-imaging · nature-writing（methods）· SciencePlots</p>
+    <p>本报告自包含（CSS 内联、图片 Base64、无 CDN）。性能数字来自<strong>本仓库自行计算</strong>的合成特征缓存流水线；论文临床 AUROC <span class="pending">待补充</span>。审查文档：<code>docs/paper/AUTHENTICITY_AUDIT.md</code>。</p>
   </header>
 
   <nav class="toc">
     <strong>目录</strong>
     <ol>
       <li><a href="#abstract">摘要</a></li>
-      <li><a href="#bg">背景</a></li>
-      <li><a href="#methods">方法</a></li>
-      <li><a href="#process">过程</a></li>
-      <li><a href="#results">结果</a></li>
-      <li><a href="#discussion">讨论</a></li>
-      <li><a href="#conclusion">结论</a></li>
-      <li><a href="#limits">局限</a></li>
+      <li><a href="#bg">背景与目的</a></li>
+      <li><a href="#methods">数据与方法</a></li>
+      <li><a href="#process">研究过程</a></li>
+      <li><a href="#results">结果展示</a></li>
+      <li><a href="#discussion">分析与讨论</a></li>
+      <li><a href="#conclusion">主要结论</a></li>
+      <li><a href="#limits">不足与展望</a></li>
     </ol>
   </nav>
 
   <section id="abstract">
     <h2>1. 摘要</h2>
-    <p>Reti-Pioneer（Zhang 等，<em>Nature Medicine</em>，2026）展示了冻结基础模型特征与质量感知融合用于系统性代谢病筛查的可行性，但采用<strong>固定</strong>质量权重与<strong>独立</strong>二分类头，且公开可复核的校准/决策曲线协议不足。本工作在保留其骨架前提下实现：可学习质量路由（learnable quality routing）、共享多任务头（multi-task head），以及温度缩放（temperature scaling）、期望校准误差（ECE）、Brier 分数与决策曲线（DCA）净收益评估，并规划在 ODIR-5K、BRSET、RFMiD 等公开队列上做患者级验证。当前消融数字为<strong>SYNTHETIC</strong>，不得与论文内部检验 AUROC 0.699–0.833 比较。</p>
+    <p>Reti-Pioneer（Zhang 等，<em>Nature Medicine</em>，2026）展示了冻结基础模型特征与质量感知融合用于系统性代谢病筛查的可行性。发表文本描述多任务筛查，但<strong>发布训练代码</strong>采用疾病独立二分类循环，质量权重固定为 good=1 / usable=0.5 / bad=0。本工作在保留冻结三骨干骨架前提下实现：（i）<strong>单调有界质量路由</strong>（bad ≤ usable ≤ good ∈ [0,1]）；（ii）共享头 + <strong>掩码 BCE</strong> 的部分标签多任务学习；（iii）端点感知跨队列评估与校准/DCA<strong>评估框架</strong>；可选 E5 质量条件骨干路由。当前消融数字为<strong>SYNTHETIC</strong>，不得与 Reti-Pioneer 内部检验 AUROC 0.699–0.833 比较。</p>
   </section>
 
   <section id="bg">
-    <h2>2. 背景</h2>
-    <p class="abbr">缩略语首次展开：CFP=彩色眼底照片；AUROC=受试者工作特征曲线下面积；ECE=期望校准误差；DCA=决策曲线分析；UKB=英国生物银行；BCE=二元交叉熵。</p>
-    <p>眼底微血管改变可反映全身代谢与血管状态（oculomics）。RETFound（Zhou 等，<em>Nature</em>，2023）提供可迁移视网膜表征；Reti-Pioneer 进一步集成多骨干与质量感知融合，并在 UKB/医院数据上报告六病种筛查性能与静默试验。作者讨论指出精度、纵向建模、病种范围、混杂与前瞻验证仍有缺口。本跟进选择其中可用<strong>公开数据消融</strong>关闭的方法学缺口（质量路由、多任务、校准/效用、跨库泛化），而不是重复实现原论文。</p>
-    <div class="warnbox">诚实边界：ODIR「Diabetes」主要为眼部证据/糖尿病视网膜病变相关标签，<strong>不是</strong> UKB ICD 式 2 型糖尿病；不得用合成 AUROC 宣称超越 0.833。</div>
+    <h2>2. 背景与目的</h2>
+    <p class="abbr">缩略语：CFP=彩色眼底照片；AUROC=ROC 曲线下面积；ECE=期望校准误差；DCA=决策曲线分析；UKB=英国生物银行；BCE=二元交叉熵；MTL=多任务学习。</p>
+    <p>眼底微血管改变可反映全身代谢与血管状态（oculomics）。RETFound（Zhou 等，<em>Nature</em>，2023）提供可迁移视网膜表征；Reti-Pioneer 进一步集成多骨干与质量感知融合。本跟进关闭可用公开数据推进的方法学缺口（质量路由约束、部分标签 MTL、端点对齐、校准协议），而不是在无 UKB 时复现旗舰临床表。</p>
+    <div class="warnbox">诚实边界：ODIR「Diabetes」主要为眼部证据/糖尿病视网膜病变相关标签，<strong>不是</strong> UKB ICD 式 2 型糖尿病；合成 AUROC 不得宣称超越 0.833。真实性审查见 <code>docs/paper/AUTHENTICITY_AUDIT.md</code>。</div>
   </section>
 
   <section id="methods">
-    <h2>3. 方法</h2>
+    <h2>3. 数据与方法</h2>
     <h3>3.1 写作与实验架构</h3>
-    <p>采用 Nature-family <strong>methods paper</strong> 论证链：任务/问题 → 既有方法边界 → 提议方法 → 公平消融与效用指标 → 可复现证据 → 边界。目标期刊定位数字医学/医学影像方法刊物，而非无 UKB 时冲击旗舰 <em>Nature Medicine</em>。</p>
-    <h3>3.2 模型改动</h3>
+    <p>采用 Nature-family <strong>methods paper</strong> 论证链：任务/问题 → 既有方法边界 → 提议方法 → 公平消融与效用指标 → 可复现证据 → 边界。论文（academic）与报告（可含路径/过程）分流；论文不写本机绝对路径。</p>
+    <h3>3.2 模型改动（与代码一一对应）</h3>
     <ul>
-      <li><code>QualityAware(learnable_q=True)</code>：以 1/0.5/0 初始化并解冻 <code>q_fc</code>。</li>
-      <li><code>ComplexModel(num_classes=K)</code>：共享融合 + 联合 BCE。</li>
-      <li><code>evaluate.py --calibrate</code>：验证集拟合温度 T，报告 ECE/Brier/NB@0.10。</li>
-      <li>患者级划分避免同一患者双眼泄漏到训练与测试。</li>
+      <li><code>QualityAware(quality_router='monotone')</code>：softplus 增量 + cumsum 归一化，强制 bad≤usable≤good 且 good=1（<code>model/QualityAware.py</code>）。</li>
+      <li><code>masked_bce_with_logits</code>：仅监督 y≥0 的部分标签（<code>utils/run.py</code>）。</li>
+      <li>可选 E5：<code>QualityBackboneRouter</code> 由 q 生成三骨干 softmax（<code>model/quality_gate.py</code>；<code>configs/ablation_e5.yaml</code>）。</li>
+      <li><code>evaluate.py --calibrate</code>：温度 T 拟合于 calibration_idx ⊥ eval；报告 ECE/Brier/按病种 DCA；NB@0.10 示意。</li>
+      <li>患者级划分，避免同一患者双眼泄漏。</li>
     </ul>
-    <h3>3.3 消融臂</h3>
-    <p>baseline（固定 q，单任务）→ learnq → multitask → full（learnq+multitask，评估含校准）。</p>
+    <h3>3.3 消融臂与数据</h3>
+    <p>baseline（固定 q，单任务）→ learnq（monotone）→ multitask → full（monotone+MTL+校准评估）。特征缓存：<code>data/odir|brset/SYNTHETIC_FEATURES.txt</code>；RFMiD 影像可本地存在但仍带合成特征旗标时 <code>clinical_claim_allowed: false</code>。</p>
   </section>
 
   <section id="process">
-    <h2>4. 过程</h2>
+    <h2>4. 研究过程</h2>
     <ol>
-      <li>仓库基线核对；按用户授权准备<strong>公开</strong> GitHub 代码+文档快照（排除 data/ckpt/results 大缓存与密钥）。</li>
-      <li>安装/确认 SciencePlots；运行 <code>scripts/plot_paper_figures.py</code>（Times New Roman + science 样式；中文说明放图注）重绘结果图。</li>
-      <li>nature-writing（methods）升级论文稿与本报告；图注按「问什么 / 怎么读 / 含义 / 结论 / 待补充」加深。</li>
-      <li>ChatGPT：粘贴文本简报 + 公开仓库 URL（启用 web search）；本会话 MCP 缺失且 Playwright 遇 Cloudflare，见 <code>docs/chatgpt-runs/2026-08-16-gh-consult/</code>；顾问建议经独立核实后才采纳。</li>
+      <li>以审稿修订后的 <code>docs/paper/manuscript.md</code> 为论文主线；Results 仅对齐本仓库计算的 SYNTHETIC 指标。</li>
+      <li><code>pip install SciencePlots</code>；<code>python scripts/plot_paper_figures.py</code>（Times New Roman）重绘 Fig1–4，写入 <code>docs/paper_assets/</code>。</li>
+      <li>核对 <code>results/ablation_summary.csv</code>（2026-09-15T02:45）与 <code>results/metrics_*.json</code> disclaimer。</li>
+      <li><code>python scripts/build_paper_report.py</code> 产出论文/报告 HTML·MD·PDF；撰写 <code>AUTHENTICITY_AUDIT.md</code>。</li>
+      <li>公开快照（无密钥/无患者影像）：https://github.com/Coucou2016/retinal-imaging-methods-public</li>
     </ol>
   </section>
 
@@ -485,23 +521,23 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
   </section>
 
   <section id="discussion">
-    <h2>6. 讨论</h2>
-    <p>方法学创新点 I–III 与仓库实现一致，具备可投稿叙事潜力；但<strong>证据强度</strong>目前停在工程与合成自检层。公开队列一旦接入，应优先报告：相对 Reti-Pioneer-clone 的同数据提升、校准改善、跨库落差与亚组公平性，而不是与 UKB 内部 AUROC 硬比。</p>
-    <p>诚实措辞优先使用 “unfreeze quality routing initialized at fixed weights + multi-label + calibration/DCA on public cohorts”，避免在无 UKB 终点时声称 “outperform Reti-Pioneer”。</p>
-    <p><strong>当前稿件风险（独立审计）：</strong> Results 仍为待补充；勿把 SYNTHETIC 图当临床主张；需写清 Reti-Pioneer 摘要 “multitask” 与代码侧独立二分类头差异；learnable_q 无监督可能退化；DCA 阈值需按患病率再标定。</p>
+    <h2>6. 分析与讨论</h2>
+    <p>方法学创新点（单调路由、掩码 MTL、端点感知跨评）与仓库实现一致；但<strong>证据强度</strong>目前停在工程与合成自检层。公开队列一旦接入真实三骨干特征，应优先报告：相对 released-code clone 的同数据提升、校准改善、跨库落差与亚组公平性，而不是与 UKB 内部 AUROC 硬比。</p>
+    <p>诚实措辞：prefer “monotone bounded quality router + masked partial-label MTL + endpoint-aware evaluation”，avoid “outperform Reti-Pioneer” without UKB endpoints。</p>
+    <p><strong>稿件风险：</strong> 临床 Results 仍为待补充；勿把 SYNTHETIC 图当临床主张；须写清 published multitask vs released independent loops；无质量监督时 monotone 权重可能贴近 (0,0.5,1)；DCA@0.10 仅示意。</p>
   </section>
 
   <section id="conclusion">
-    <h2>7. 结论</h2>
-    <p>已形成可复核的方法扩展论文草稿、SciencePlots 图件与自包含研究报告，并准备公开代码+文档供外部顾问阅读。真实性能数字仍为 <span class="pending">待补充</span>；合成指标不得进入投稿主表。</p>
+    <h2>7. 主要结论</h2>
+    <p>已形成可复核的方法扩展论文草稿（主线：审稿修订后的 manuscript）、SciencePlots 图件、自包含研究报告与真实性审查文档。本仓库计算的 SYNTHETIC 消融表证明 train/eval/校准链路可运行；真实临床 AUROC 仍为 <span class="pending">待补充</span>，不得进入投稿主表。</p>
   </section>
 
   <section id="limits">
-    <h2>8. 局限</h2>
+    <h2>8. 不足与展望</h2>
     <ul>
-      <li>无 UKB/SEED；无真实 ODIR/BRSET 像素特征（待补充）。</li>
-      <li>公开快照不含私有数据、权重与大结果缓存；未上传任何患者级影像。</li>
-      <li>ChatGPT 顾问输出需独立核实；浏览器自动化若失败则以 TASK_BRIEF 人工粘贴兜底。</li>
+      <li>无 UKB/SEED；ODIR/BRSET 真实像素与 GPU 三骨干提取待补充；RFMiD 影像本地有但合成特征旗标仍在。</li>
+      <li>公开快照不含私有数据、权重与患者级影像。</li>
+      <li>展望：凭据齐备后重跑 E0–E5 多 seed，填充论文 §5.2 临床表，并刷新本报告图 2–4。</li>
     </ul>
   </section>
 </div>
@@ -511,40 +547,114 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
 
 
 def build_manuscript_html(md_text: str, uris: dict[str, str]) -> str:
-    # embed figures referenced by filename if any; manuscript mostly text
-    body = []
-    for line in md_text.splitlines():
+    """Render manuscript.md to self-contained HTML (tables + embedded figures)."""
+
+    def fmt_inline(t: str) -> str:
+        parts: list[str] = []
+        i = 0
+        while i < len(t):
+            if t.startswith("**", i):
+                j = t.find("**", i + 2)
+                if j != -1:
+                    parts.append("<strong>" + html.escape(t[i + 2 : j]) + "</strong>")
+                    i = j + 2
+                    continue
+            if t[i] == "`":
+                j = t.find("`", i + 1)
+                if j != -1:
+                    parts.append("<code>" + html.escape(t[i + 1 : j]) + "</code>")
+                    i = j + 1
+                    continue
+            parts.append(html.escape(t[i]))
+            i += 1
+        return "".join(parts)
+
+    body: list[str] = []
+    lines = md_text.splitlines()
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if (
+            line.startswith("|")
+            and i + 1 < len(lines)
+            and lines[i + 1].startswith("|")
+            and set(lines[i + 1].replace("|", "").replace("-", "").replace(":", "").strip()) <= {""}
+        ):
+            rows_html: list[str] = []
+            while i < len(lines) and lines[i].startswith("|"):
+                cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
+                if all(set(c) <= {"-", ":", " "} for c in cells):
+                    i += 1
+                    continue
+                tag = "th" if not rows_html else "td"
+                rows_html.append(
+                    "<tr>" + "".join(f"<{tag}>{fmt_inline(c)}</{tag}>" for c in cells) + "</tr>"
+                )
+                i += 1
+            if rows_html:
+                body.append(
+                    "<table><thead>"
+                    + rows_html[0]
+                    + "</thead><tbody>"
+                    + "".join(rows_html[1:])
+                    + "</tbody></table>"
+                )
+            continue
         if line.startswith("# "):
             body.append(f"<h1>{html.escape(line[2:])}</h1>")
         elif line.startswith("## "):
             body.append(f"<h2>{html.escape(line[3:])}</h2>")
         elif line.startswith("### "):
             body.append(f"<h3>{html.escape(line[4:])}</h3>")
-        elif line.startswith("|"):
-            body.append(f"<pre>{html.escape(line)}</pre>")
         elif line.strip() == "---":
             body.append("<hr/>")
         elif line.startswith("> "):
-            body.append(f"<blockquote>{html.escape(line[2:])}</blockquote>")
+            body.append(f"<blockquote>{fmt_inline(line[2:])}</blockquote>")
         elif line.startswith("- ") or line.startswith("* "):
-            body.append(f"<li>{html.escape(line[2:])}</li>")
+            body.append(f"<li>{fmt_inline(line[2:])}</li>")
+        elif line.startswith("```"):
+            lang = line[3:].strip()
+            i += 1
+            code_lines: list[str] = []
+            while i < len(lines) and not lines[i].startswith("```"):
+                code_lines.append(lines[i])
+                i += 1
+            body.append(
+                f"<pre><code class=\"{html.escape(lang)}\">"
+                + html.escape("\n".join(code_lines))
+                + "</code></pre>"
+            )
         elif line.strip() == "":
             body.append("")
         else:
-            body.append(f"<p>{html.escape(line)}</p>")
-    # insert architecture figure after Methods header area
-    fig = (
+            body.append(f"<p>{fmt_inline(line)}</p>")
+        i += 1
+
+    fig1 = (
         f"<figure><img src=\"{uris['fig1_architecture.png']}\" alt=\"Figure 1\"/>"
-        f"<figcaption>Figure 1. Method overview (English labels; SYNTHETIC metrics elsewhere).</figcaption></figure>"
+        f"<figcaption>Figure 1. Method overview (English labels; SYNTHETIC metrics in Figures 2–4).</figcaption></figure>"
     )
+    result_figs = ""
+    for name, cap in [
+        ("fig2_ablation_bars.png", "Figure 2. Ablation bars (SYNTHETIC; pipeline sanity)."),
+        ("fig3_calibration.png", "Figure 3. Temperature scaling vs ECE (SYNTHETIC)."),
+        ("fig4_cross_domain.png", "Figure 4. Cross-cohort AUROC_D drop (SYNTHETIC)."),
+    ]:
+        if name in uris:
+            result_figs += (
+                f"<figure><img src=\"{uris[name]}\" alt=\"{html.escape(cap)}\"/>"
+                f"<figcaption>{html.escape(cap)}</figcaption></figure>"
+            )
     joined = "\n".join(body)
-    joined = joined.replace("<h2>3. Methods</h2>", "<h2>3. Methods</h2>\n" + fig, 1)
+    joined = re.sub(r"(?:<li>.*?</li>\n?)+", lambda m: "<ul>" + m.group(0) + "</ul>", joined)
+    joined = joined.replace("<h2>3. Methods</h2>", "<h2>3. Methods</h2>\n" + fig1, 1)
+    joined = joined.replace("<h2>5. Results</h2>", "<h2>5. Results</h2>\n" + result_figs, 1)
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Manuscript — Quality-Adaptive Multi-Task Oculomics</title>
+<title>Manuscript — Monotone Quality Routing and Endpoint-Aware MTL</title>
 <style>{CSS}</style>
 </head>
 <body><div class="wrap"><article>
@@ -661,31 +771,38 @@ def main() -> None:
 
 **Emulate:** Nature-family *methods* article (gap → method → fair ablation → calibration/utility as **evaluation** → reproducibility → boundary).
 
-**Title direction:** Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning
+**Title:** Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning
 
-**Innovation claims (bounded):** monotone bounded quality routing; masked partial-label multitask vs released-code independent loops; endpoint ontology + endpoint-aware cross-cohort evaluation.
+**Spine:** peer-review-aligned `docs/paper/manuscript.md` (post–2026-09-13 rewrite + 2026-09-15 Results alignment).
+
+**Innovation claims (bounded):** monotone bounded quality routing; masked partial-label multitask vs released-code independent loops; endpoint ontology + endpoint-aware cross-cohort evaluation; optional E5 gating.
 
 **Evaluation framework (not novelty):** temperature scaling, ECE, Brier, per-disease DCA (NB@0.10 illustrative only).
 
-**Non-claims:** synthetic AUROC; beating 0.833 T2DM; ODIR-D as UKB T2DM; `diabetes_related` as clinical head; calibration/DCA as methodological novelty.
+**Non-claims:** synthetic AUROC as clinical evidence; beating 0.833 T2DM; ODIR-D as UKB T2DM; `diabetes_related` as clinical head; calibration/DCA as methodological novelty.
 
-## Section map (bounded novelty)
+## Section map
 
 | Section | Job | Claim ceiling |
 |---------|-----|---------------|
 | Abstract / Intro | Gap vs fixed-q + released independent heads | Methods extension |
-| Methods | monotone router, masked BCE, endpoint ontology, disjoint cal | Mechanism + protocol |
-| Experiments | E0–E4 + endpoint-aware transfer | Real-data tables 待补充 |
-| Results | Empty / deferred | No SYNTHETIC in submission tables |
+| Methods | monotone router (math), masked BCE, endpoint ontology, E5 optional, disjoint cal | Mechanism + protocol |
+| Experiments | E0–E5 + endpoint-aware transfer | Real-data tables 待补充 |
+| Results §5.1 | Our computed SYNTHETIC ablation table | Pipeline sanity only |
+| Results §5.2 | Clinical real-feature tables | 待补充 |
 | Discussion | Published vs released multitask; endpoint drift | Honest novelty only |
 
-## Draft risks (keep visible)
+## Draft risks
 
-1. SYNTHETIC companion figures mistaken for clinical evidence.  
-2. Published “multitask” vs released independent-head loops.  
-3. Endpoint drift (`diabetes_related` / ocular ≠ UKB ICD).  
-4. Monotone router without quality supervision may stay near (0, 0.5, 1).  
+1. SYNTHETIC figures mistaken for clinical evidence.
+2. Published “multitask” vs released independent-head loops.
+3. Endpoint drift (`diabetes_related` / ocular ≠ UKB ICD).
+4. Monotone router without quality supervision may stay near (0, 0.5, 1).
 5. Single DCA threshold — keep per-disease curves primary.
+
+## Authenticity
+
+See `docs/paper/AUTHENTICITY_AUDIT.md`.
 """,
         encoding="utf-8",
     )
