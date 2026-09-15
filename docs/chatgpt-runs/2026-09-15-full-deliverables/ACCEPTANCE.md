@@ -39,17 +39,17 @@ python scripts/build_paper_report.py
 | Ref | Value |
 |-----|-------|
 | Content commit | `1a71d64083e0bb18addc3ddfcf0c39912b0ad010` |
-| Local / public tip | `f12faaa545ea8dad601f103901c5c80d505e6f5c` |
+| Public tip (confirmed) | `8291781f58e8116adf7c1d815c9d3956e7f8cb50` |
 
 ## Push
 
 - Remote: `https://github.com/Coucou2016/retinal-imaging-methods-public.git`
 - HTTPS `git push` failed (`Recv failure: Connection was reset` on :443)
 - Fallback: Git Data API non-force `PATCH refs/heads/main` via `_api_push.py` → **SUCCESS**
-- Confirmed: `gh api .../commits/main` = `f12faaa545ea8dad601f103901c5c80d505e6f5c`
+- Confirmed: `gh api .../commits/main` = `8291781f58e8116adf7c1d815c9d3956e7f8cb50`
 - No force-push; no secrets; no patient images / UKB extracts
 
 ## Public URLs
 
-- Tip: https://github.com/Coucou2016/retinal-imaging-methods-public/commit/f12faaa545ea8dad601f103901c5c80d505e6f5c
+- Tip: https://github.com/Coucou2016/retinal-imaging-methods-public/commit/8291781f58e8116adf7c1d815c9d3956e7f8cb50
 - Repo: https://github.com/Coucou2016/retinal-imaging-methods-public
