@@ -38,7 +38,7 @@ python scripts/build_paper_report.py
 
 | Ref | Value |
 |-----|-------|
-| Local HEAD (this acceptance) | _filled after commit_ |
+| Local HEAD (this acceptance) | `ee4273cc6c12f9dba482f38da759b378f01ed6b4` |
 | Public `origin/main` tip | _filled after push confirm_ |
 
 ## Push
