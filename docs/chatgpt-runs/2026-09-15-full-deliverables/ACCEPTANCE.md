@@ -1,6 +1,6 @@
 # ACCEPTANCE — 2026-09-15 full deliverables
 
-**Status:** shipped locally; public tip confirmed after push (see §Push).  
+**Status:** shipped; public tip confirmed.  
 **Date:** 2026-09-15  
 **Axes:** nature-writing / nature-polishing · task=manuscript · paper_type=methods · language=en · journal=generic
 
@@ -38,11 +38,18 @@ python scripts/build_paper_report.py
 
 | Ref | Value |
 |-----|-------|
-| Local HEAD (this acceptance) | `ee4273cc6c12f9dba482f38da759b378f01ed6b4` |
-| Public `origin/main` tip | _filled after push confirm_ |
+| Content commit | `1a71d64083e0bb18addc3ddfcf0c39912b0ad010` |
+| Local / public tip | `f12faaa545ea8dad601f103901c5c80d505e6f5c` |
 
 ## Push
 
 - Remote: `https://github.com/Coucou2016/retinal-imaging-methods-public.git`
-- Policy: no force-push; no secrets; no patient images / UKB extracts / large private data
-- Strategy: HTTPS `git push` first; on 443 failure, Git Data API non-force ref update (see `docs/chatgpt-runs/2026-09-15-paper-revise/_api_push.py`)
+- HTTPS `git push` failed (`Recv failure: Connection was reset` on :443)
+- Fallback: Git Data API non-force `PATCH refs/heads/main` via `_api_push.py` → **SUCCESS**
+- Confirmed: `gh api .../commits/main` = `f12faaa545ea8dad601f103901c5c80d505e6f5c`
+- No force-push; no secrets; no patient images / UKB extracts
+
+## Public URLs
+
+- Tip: https://github.com/Coucou2016/retinal-imaging-methods-public/commit/f12faaa545ea8dad601f103901c5c80d505e6f5c
+- Repo: https://github.com/Coucou2016/retinal-imaging-methods-public

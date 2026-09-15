@@ -2,7 +2,7 @@
 
 **目的：** 证明本稿结果数字来自本仓库自行计算的流水线，而非抄录 *Nature Medicine* Reti-Pioneer 临床表。  
 **日期：** 2026-09-15（full-deliverables 刷新）  
-**仓库 HEAD（本轮交付）：** `1a71d64083e0bb18addc3ddfcf0c39912b0ad010`  
+**仓库 HEAD（本轮交付）：** `f12faaa545ea8dad601f103901c5c80d505e6f5c`  
 **公开快照：** https://github.com/Coucou2016/retinal-imaging-methods-public
 
 ---
@@ -129,7 +129,8 @@ python scripts/build_paper_report.py
 | `cc70b8d` | YAML–code contract sync |
 | `30ef160` | E5 backbone routing、MultiCohort、eval CIs |
 | `0816710` | 方法稿 / 自包含报告 / 审查文档（上一轮公开 tip） |
-| `1a71d64` | 学术语气重写、强化 monotone / MTL / E5、全图 PDF、full-deliverables ACCEPTANCE |
+| `1a71d64` | 学术语气重写、强化 monotone / MTL / E5、全图 PDF、full-deliverables |
+| `f12faaa` | ACCEPTANCE / 审查文档 SHA 锚定（公开 tip） |
 
 完整历史以 `git log` 为准；本文件不替代 ACCEPTANCE 清单。
 
