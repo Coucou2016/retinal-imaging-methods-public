@@ -6,15 +6,22 @@
 |------|--------|
 | Remote | `https://github.com/Coucou2016/retinal-imaging-methods-public.git` |
 | Branch | `main` |
-| Tip | `f12faaa545ea8dad601f103901c5c80d505e6f5c` |
-| Range | `0816710..f12faaa` (2 commits at push time: `1a71d64`, `f12faaa`) |
-| URL | https://github.com/Coucou2016/retinal-imaging-methods-public/commit/f12faaa545ea8dad601f103901c5c80d505e6f5c |
+| **Public tip (confirmed)** | `0194dd101496d2e6b2ce47817e4cfb8fc3f8f8c1` |
+| Content commit | `1a71d64083e0bb18addc3ddfcf0c39912b0ad010` |
+| Range from prior public tip | `0816710..0194dd1` |
+| Tip URL | https://github.com/Coucou2016/retinal-imaging-methods-public/commit/0194dd101496d2e6b2ce47817e4cfb8fc3f8f8c1 |
+| Content URL | https://github.com/Coucou2016/retinal-imaging-methods-public/commit/1a71d64083e0bb18addc3ddfcf0c39912b0ad010 |
 
 ## Attempts
 
 1. `git push origin main` (HTTPS) — failed: `Recv failure: Connection was reset`
-2. `python docs/chatgpt-runs/2026-09-15-full-deliverables/_api_push.py` — SUCCESS; non-force ref update
+2. Repeated `python docs/chatgpt-runs/2026-09-15-full-deliverables/_api_push.py` — SUCCESS; non-force ref updates
 
-## Notes
+## Confirmation command
 
-Follow-up commit may refresh ACCEPTANCE/audit text to cite tip `f12faaa` explicitly after this confirmation.
+```text
+gh api repos/Coucou2016/retinal-imaging-methods-public/commits/main --jq .sha
+# -> 0194dd101496d2e6b2ce47817e4cfb8fc3f8f8c1
+```
+
+If a subsequent bookkeeping-only commit advances tip, update this file; content SHA `1a71d64` remains the scientific payload.

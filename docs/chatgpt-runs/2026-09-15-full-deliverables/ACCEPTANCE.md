@@ -38,18 +38,20 @@ python scripts/build_paper_report.py
 
 | Ref | Value |
 |-----|-------|
-| Content commit | `1a71d64083e0bb18addc3ddfcf0c39912b0ad010` |
-| Public tip (confirmed) | `8291781f58e8116adf7c1d815c9d3956e7f8cb50` |
+| Content commit (manuscript/report/figures/scripts) | `1a71d64083e0bb18addc3ddfcf0c39912b0ad010` |
+| Public `origin/main` tip at acceptance freeze | see `PUSH.md` (updated after each API push) |
+
+Primary scientific payload is in `1a71d64`. Later commits only refresh ACCEPTANCE / audit / PUSH tip bookkeeping.
 
 ## Push
 
 - Remote: `https://github.com/Coucou2016/retinal-imaging-methods-public.git`
 - HTTPS `git push` failed (`Recv failure: Connection was reset` on :443)
 - Fallback: Git Data API non-force `PATCH refs/heads/main` via `_api_push.py` → **SUCCESS**
-- Confirmed: `gh api .../commits/main` = `8291781f58e8116adf7c1d815c9d3956e7f8cb50`
 - No force-push; no secrets; no patient images / UKB extracts
 
 ## Public URLs
 
-- Tip: https://github.com/Coucou2016/retinal-imaging-methods-public/commit/8291781f58e8116adf7c1d815c9d3956e7f8cb50
 - Repo: https://github.com/Coucou2016/retinal-imaging-methods-public
+- Content: https://github.com/Coucou2016/retinal-imaging-methods-public/commit/1a71d64083e0bb18addc3ddfcf0c39912b0ad010
+- Tip bookkeeping: see `PUSH.md`

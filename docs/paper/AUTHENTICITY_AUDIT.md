@@ -2,8 +2,8 @@
 
 **目的：** 证明本稿结果数字来自本仓库自行计算的流水线，而非抄录 *Nature Medicine* Reti-Pioneer 临床表。  
 **日期：** 2026-09-15（full-deliverables 刷新）  
-**仓库 HEAD（本轮交付）：** `8291781f58e8116adf7c1d815c9d3956e7f8cb50`  
-**内容主提交：** `1a71d64083e0bb18addc3ddfcf0c39912b0ad010`  
+**仓库内容主提交：** `1a71d64083e0bb18addc3ddfcf0c39912b0ad010`  
+**公开 tip（见 PUSH.md；可因验收书记账提交前移）：** `0194dd101496d2e6b2ce47817e4cfb8fc3f8f8c1`  
 **公开快照：** https://github.com/Coucou2016/retinal-imaging-methods-public
 
 ---
