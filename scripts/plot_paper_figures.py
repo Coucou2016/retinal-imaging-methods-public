@@ -208,7 +208,8 @@ def plot_architecture_schematic(out: Path) -> Path:
     box(2.5, 3.75, 1.65, 0.7, "Frozen\nRETFound")
     box(2.5, 2.75, 1.65, 0.7, "Frozen\nSwin V2-B")
     box(2.5, 1.75, 1.65, 0.7, "Frozen\nVim-S")
-    box(4.55, 2.15, 2.05, 1.7, "Monotone bounded\nquality routing\n+ bilinear fusion", fc="#fff2cc", ec="#b45f06")
+    box(4.55, 2.35, 2.05, 1.5, "Monotone bounded\nquality routing\n+ bilinear fusion", fc="#fff2cc", ec="#b45f06")
+    box(4.55, 0.95, 2.05, 1.15, "Optional E5:\nq→softmax over\nbackbone heads", fc="#fce4d6", ec="#c65911")
     box(7.0, 2.45, 2.55, 1.25, "Partial-label MTL\n(masked BCE)\n+ cal/DCA eval", fc="#e2efda", ec="#548235")
 
     # Input → each backbone
@@ -221,16 +222,17 @@ def plot_architecture_schematic(out: Path) -> Path:
         )
     ax.annotate("", xy=(4.55, 3.0), xytext=(4.15, 3.1), arrowprops=dict(arrowstyle="->", color="#444", lw=0.9))
     ax.annotate("", xy=(7.0, 3.1), xytext=(6.6, 3.1), arrowprops=dict(arrowstyle="->", color="#444", lw=0.9))
+    ax.annotate("", xy=(4.55, 1.5), xytext=(4.15, 2.1), arrowprops=dict(arrowstyle="->", color="#c65911", lw=0.9))
 
     ax.text(
         5.0,
-        0.55,
-        "This work: monotone quality routing; masked partial-label multi-task head;\n"
+        0.28,
+        "This work: monotone quality routing; masked partial-label MTL; optional E5 backbone routing;\n"
         "endpoint-aware public cohorts; calibration/DCA as evaluation framework\n"
-        "(Yellow/green = extensions; blue backbones = shared Reti-Pioneer skeleton)",
+        "(Yellow/orange/green = extensions; blue backbones = shared Reti-Pioneer skeleton)",
         ha="center",
         va="center",
-        fontsize=8.5,
+        fontsize=8.2,
     )
     ax.set_title("Figure 1. Method overview (architecture schematic)", fontsize=11, pad=6)
     out.parent.mkdir(parents=True, exist_ok=True)

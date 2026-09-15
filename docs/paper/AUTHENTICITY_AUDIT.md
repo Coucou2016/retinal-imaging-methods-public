@@ -1,8 +1,8 @@
 # 审查文档 · Authenticity Audit
 
 **目的：** 证明本稿结果数字来自本仓库自行计算的流水线，而非抄录 *Nature Medicine* Reti-Pioneer 临床表。  
-**日期：** 2026-09-15  
-**仓库 HEAD（起草时）：** `f1a7a0353280928e1c7e7c96416de90fb42e2521`  
+**日期：** 2026-09-15（full-deliverables 刷新）  
+**仓库 HEAD（本轮交付前本地）：** 见文末验收写入的最终 SHA  
 **公开快照：** https://github.com/Coucou2016/retinal-imaging-methods-public
 
 ---
@@ -14,7 +14,7 @@
 | 消融 AUROC / ECE / \(T\) / \(n\) | **本仓库 `run_ablations.py` 计算**，见 `results/ablation_summary.*` 与 `results/metrics_*.json` |
 | Reti-Pioneer UKB AUROC 0.699–0.833 | **仅作背景引用**（Zhang et al. 2026），**未写入我们的结果表** |
 | 临床主表（真实三骨干特征） | **待补充**；当前 `clinical_claim_allowed=false` |
-| 图 2–4 | SciencePlots 由 `scripts/plot_paper_figures.py` **从上述 CSV 重绘** |
+| 图 1–4 | SciencePlots + Times New Roman，由 `scripts/plot_paper_figures.py` **从上述 CSV 重绘**（Fig1 含 E5 示意） |
 
 ---
 
@@ -64,7 +64,7 @@ python scripts/run_ablations.py --quick
 | Monotone router | `quality_router: monotone`；`QualityAware.monotone_weights`（softplus + cumsum 归一化） |
 | Partial-label MTL | `masked_bce: true`；`utils/run.py::masked_bce_with_logits` |
 | Released-code control | `ensemble: released_code`；独立病种循环 vs `multitask: true` |
-| E5 gating | `configs/ablation_e5.yaml` → `quality_gating: true`, `lambda_q: 0.1`；`model/quality_gate.py` |
+| E5 backbone routing | `configs/ablation_e5.yaml` → `quality_gating: true`, `lambda_q: 0.1`；`model/quality_gate.py::QualityBackboneRouter` |
 | Endpoint alignment | `reti_pioneer/label_map.py`；跨评 `clinical_claim_allowed` |
 | 校准折不相交 | `split.cal_fraction` + `evaluate.py` `temperature_fit=calibration_idx` |
 
@@ -87,15 +87,17 @@ python scripts/run_ablations.py --quick
 
 ---
 
-## 4. 图件生成链
+## 4. 图件与交付物生成链
 
-| 图 | 脚本 | 输入 | 输出 | 样式 |
-|----|------|------|------|------|
-| Fig 1 architecture | `scripts/plot_paper_figures.py::plot_architecture_schematic` | 无性能数字 | `docs/paper_assets/fig1_architecture.{png,pdf}` | SciencePlots + Times New Roman |
+| 产物 | 脚本 | 输入 | 输出 | 样式 / 约束 |
+|------|------|------|------|-------------|
+| Fig 1 architecture | `plot_architecture_schematic` | 无性能数字 | `docs/paper_assets/fig1_architecture.{png,pdf}` | SciencePlots + Times New Roman；含 E5 橙框 |
 | Fig 2 ablation bars | `plot_ablation_bars` | `results/ablation_summary.csv` | `fig2_ablation_bars.*` | 标题含 SYNTHETIC |
 | Fig 3 calibration | `plot_calibration_effect` | 同上 | `fig3_calibration.*` | 同上 |
 | Fig 4 cross-domain | `plot_cross_domain` | 同上 | `fig4_cross_domain.*` | 同上 |
 | Base64 sidecar | `write_uri_sidecar` | PNG | `docs/paper_assets/embedded_png_uris.json` | 供 HTML 内嵌 |
+| Paper md/html/pdf | `build_paper_report.py` | `manuscript.md` + URIs | `docs/paper/manuscript.{md,html,pdf}` | 论文无本机绝对路径；PDF 含 Fig1–4 |
+| Report md/html/pdf | 同上 | CSV + URIs | `docs/report/report.{md,html,pdf}` | HTML：内联 CSS、Base64、无 CDN；可含路径 |
 
 命令：
 
@@ -126,6 +128,8 @@ python scripts/build_paper_report.py
 | `3584cb7` | threshold lock、bootstrap CI、E5 / λ_q |
 | `cc70b8d` | YAML–code contract sync |
 | `30ef160` | E5 backbone routing、MultiCohort、eval CIs |
+| `0816710` | 方法稿 / 自包含报告 / 审查文档（上一轮公开 tip） |
+| （本轮） | 学术语气重写、强化方法三模块、全图 PDF、full-deliverables ACCEPTANCE |
 
 完整历史以 `git log` 为准；本文件不替代 ACCEPTANCE 清单。
 
@@ -139,7 +143,7 @@ python scripts/build_paper_report.py
 | ODIR Kaggle | 无凭据 |
 | BRSET PhysioNet | DUA / 凭据未完成 |
 | RFMiD 影像 | 本地有（\(N=3200\)）；合成特征旗标仍在 → 不得 clinical claim |
-| 论文稿主线 | `docs/paper/manuscript.md`（2026-09-13 审稿修订后的方法学叙事 + 2026-09-15 Results 对齐） |
+| 论文稿主线 | `docs/paper/manuscript.md`（2026-09-15 full-deliverables：学术语气 + 强化 monotone / MTL / E5） |
 
 ---
 
@@ -148,11 +152,7 @@ python scripts/build_paper_report.py
 1. 打开 `results/ablation_summary.csv`，确认 `disclaimer` 列全为 SYNTHETIC。  
 2. 打开任一 `results/metrics_*_odir_val.json`，确认 `disclaimer` 与 `n`。  
 3. 打开 `data/*/SYNTHETIC_FEATURES.txt`。  
-4. 运行 `python scripts/plot_paper_figures.py`，确认图中数值与 CSV 一致。  
-5. 全文搜索 `0.833`：应只出现在 Reti-Pioneer **引用**语境，不在“我们的结果”表。
-
----
-
-## 9. 签名式声明
-
-> 本仓库投稿/汇报用性能数字（消融表与图 2–4）均由本仓库训练与评估脚本在合成特征缓存上生成；未从 Zhang et al., *Nat Med* 2026 结果表抄录临床 AUROC。真实公开队列三骨干临床表仍为 **待补充**。
+4. 确认论文结果表 **没有** 把 0.833 等 UKB AUROC 写成本方法成绩。  
+5. 确认 §5.2 / 报告临床表为 **待补充**。  
+6. 运行 `python scripts/plot_paper_figures.py && python scripts/build_paper_report.py` 应可重生图与 HTML/PDF。  
+7. 确认公开 tip SHA 与 `docs/chatgpt-runs/2026-09-15-full-deliverables/ACCEPTANCE.md` 一致。

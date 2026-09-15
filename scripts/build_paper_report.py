@@ -220,39 +220,46 @@ def report_md(rows: list[dict], uris: dict[str, str]) -> str:
 **真实性审查：** `docs/paper/AUTHENTICITY_AUDIT.md`  
 **工作标题：** Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning
 
-- SYNTHETIC metrics ≠ clinical AUROC
-- Calibration/DCA = evaluation framework (not novelty)
-- Published multitask ≠ released independent loops
-- clinical_claim_allowed: false on synthetic
-- no invented UKB AUROC
+**诚实边界（展开）：**
+
+- SYNTHETIC metrics ≠ clinical AUROC（合成特征缓存上的流水线自检，不是临床性能）
+- Calibration / DCA = evaluation framework（评估框架，非方法学新颖性主卖点）
+- Published multitask ≠ released independent loops（发表文本多任务 ≠ 发布训练代码独立病种循环）
+- `clinical_claim_allowed: false` on synthetic（存在 `SYNTHETIC_FEATURES.txt` 时拒绝临床主表）
+- no invented UKB AUROC（不编造英国生物银行临床表）
 
 ## 封面信息
 
 | 项 | 内容 |
 |----|------|
 | 基线论文 | Zhang et al., Nat Med 2026, Reti-Pioneer, DOI 10.1038/s41591-026-04359-w |
-| 本文定位 | Methods extension：monotone quality router + masked multitask + endpoint-aware cross-cohort；校准/DCA 为**评估框架** |
+| 本文定位 | Methods extension：monotone quality router + masked partial-label MTL + optional E5 backbone routing + endpoint-aware cross-cohort；校准/DCA 为**评估框架** |
 | 目标期刊（无 UKB） | npj Digital Medicine / MedIA / IEEE JBHI·TMI / CIBM |
-| 写作架构 | Nature-family methods 论证链（nature-writing） |
-| 出图 | SciencePlots + Times New Roman（`scripts/plot_paper_figures.py`） |
+| 写作架构 | Nature-family methods 论证链（nature-writing / nature-polishing） |
+| 出图 | SciencePlots + Times New Roman（`scripts/plot_paper_figures.py`；可读字号） |
 | 数据诚实性 | ODIR-D ≠ UKB T2DM；`diabetes_related` 仅 exploratory；合成 AUROC 仅流水线自检 |
 
 ## 1. 摘要
 
-Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**为疾病独立二分类循环，质量权重固定 1/0.5/0。本仓库实现单调有界质量路由、掩码多任务 BCE、endpoint-aware cross-cohort evaluation；可选 E5 质量条件骨干路由。校准/ECE/按病种 DCA 为**评估框架**（非新颖性主卖点）；NB@0.10 仅示意。**当前数值为 SYNTHETIC 流水线自检，不得作为临床性能。**
+Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**为疾病独立二分类循环，质量权重固定 good=1 / usable=0.5 / bad=0。本仓库在保留冻结三骨干骨架前提下实现：（i）**单调有界质量路由**（bad ≤ usable ≤ good ∈ [0,1]，good=1）；（ii）共享头 + **掩码 BCE** 的端点感知部分标签多任务学习；（iii）可选 **E5 质量条件骨干路由**（质量分布 → 三骨干 softmax，可选 λ_q）；（iv）端点感知跨队列评估与校准/DCA **评估框架**。当前消融数字为 **SYNTHETIC**，样本 ODIR val n=10、跨库 n=48，不得与 Reti-Pioneer 内部检验 AUROC 0.699–0.833 比较。临床真实特征表 **待补充**。
 
 ## 2. 术语表（首次展开）
 
 | 缩写 | 全称 |
 |------|------|
 | CFP | Color fundus photograph，彩色眼底照片 |
-| AUROC | Area under the ROC curve |
+| AUROC | Area under the ROC curve，受试者工作特征曲线下面积 |
 | ECE | Expected calibration error，期望校准误差 |
 | DCA | Decision curve analysis，决策曲线分析 |
-| BCE | Binary cross-entropy |
-| MTL | Multi-task learning |
-| UKB | UK Biobank |
-| ODIR / BRSET / RFMiD | 公开眼底多标签数据集 |
+| BCE | Binary cross-entropy，二元交叉熵 |
+| MTL | Multi-task learning，多任务学习 |
+| UKB | UK Biobank，英国生物银行 |
+| ODIR | Ocular Disease Intelligent Recognition（ODIR-5K），眼底多标签公开集 |
+| BRSET | Brazilian Multilabel Ophthalmological Dataset，巴西多标签眼底集 |
+| RFMiD | Retinal Fundus Multi-Disease Image Dataset，视网膜多病种影像集 |
+| T2DM | Type 2 diabetes mellitus，2 型糖尿病 |
+| RETFound / Swin / Vim | 冻结视觉基础模型骨干（RETFound、Swin Transformer V2-B、Vision Mamba-S） |
+| E5 | 本仓库消融配置：质量条件骨干路由（`quality_gating`） |
 
 ## 3. 创新边界
 
@@ -261,47 +268,81 @@ Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**�
 | I | 单调有界质量路由（`quality_router=monotone`） | 已实现 |
 | II | 掩码多任务（对照 released independent loops） | 已实现 |
 | III | 端点本体 + 跨队列 alignment 守卫 | 已实现 |
-| IV | 校准/DCA 评估框架（cal ⊥ eval） | 已实现 |
-| E5 | 质量条件门控 + 可选 λ_q | 已实现（`configs/ablation_e5.yaml`；默认关） |
+| IV | 校准/DCA 评估框架（cal ⊥ eval） | 已实现（非新颖性主卖点） |
+| E5 | 质量条件骨干路由 + 可选 λ_q | 已实现（`configs/ablation_e5.yaml`；默认关；临床表待补充） |
 
-## 4. 方法与代码映射
+## 4. 方法与代码映射（来龙去脉）
 
-| 概念 | 路径 |
-|------|------|
-| Monotone router | `model/QualityAware.py` |
-| Masked BCE | `utils/run.py::masked_bce_with_logits` |
-| E5 gating | `model/quality_gate.py` + `configs/ablation_e5.yaml` |
-| Endpoint map | `reti_pioneer/label_map.py` |
-| 消融跑数 | `scripts/run_ablations.py` → `results/ablation_summary.csv` |
-| 评估 | `scripts/evaluate.py`（disclaimer / paper_mode） |
+| 概念 | 动机 | 机制 | 代码路径 |
+|------|------|------|----------|
+| Monotone router | 固定权重无法适应站点质量分布；无约束线性可倒置好坏排序 | softplus 增量 + cumsum 归一化，强制 bad≤usable≤good 且 good=1 | `model/QualityAware.py` |
+| Masked BCE / partial-label MTL | 公开集标签词汇仅部分重叠 | 仅监督 y≥0；缺失项不进损失分母 | `utils/run.py::masked_bce_with_logits` |
+| E5 backbone routing | 均匀/固定 soft-vote 忽略质量对骨干可靠性的调制 | MLP(q)→softmax over H heads；可选 soft-quality CE（λ_q） | `model/quality_gate.py` + `configs/ablation_e5.yaml` |
+| Endpoint map | 避免把 ODIR-D 当 UKB T2DM | `direct`/`partial`/`related_not_equivalent`；非 direct 拒临床表 | `reti_pioneer/label_map.py` |
+| 消融跑数 | 可复核臂对比 | `run_ablations.py --quick` | → `results/ablation_summary.csv` |
+| 评估 | 校准折不相交 | temperature on calibration_ids ⊥ eval；disclaimer | `scripts/evaluate.py` |
 
-## 5. 研究过程（本机）
+## 5. 研究过程（本机路径可保留）
 
-1. 以 2026-09-13 审稿修订后的 `docs/paper/manuscript.md` 为论文主线（未另发现独立用户上传稿）。  
-2. 安装 SciencePlots；`python scripts/plot_paper_figures.py` 重绘 Fig1–4。  
-3. 数字仅取自 `results/ablation_summary.csv` 与 `results/metrics_*.json`（2026-09-15T02:45 批次）。  
-4. `python scripts/build_paper_report.py` 生成论文/报告 HTML·MD·PDF。  
-5. 撰写 `docs/paper/AUTHENTICITY_AUDIT.md` 证据链。
+1. 以 nature-writing（methods）架构重写 `docs/paper/manuscript.md`：强化单调路由、部分标签 MTL、E5 三模块的动机–机制–消融角色；去除报告腔/答辩腔。  
+2. `pip install SciencePlots`；`python scripts/plot_paper_figures.py` 重绘 Fig1–4（Times New Roman；Fig1 含 E5 橙框）。  
+3. 数字仅取自 `results/ablation_summary.csv` 与 `results/metrics_*.json`（2026-09-15T02:45 批次）；核对 `data/*/SYNTHETIC_FEATURES.txt`。  
+4. `python scripts/build_paper_report.py` 生成论文/报告 **md + html + pdf**（报告 HTML 内联 CSS + Base64 图，无 CDN）。  
+5. 刷新 `docs/paper/AUTHENTICITY_AUDIT.md` 证据链；写入 `docs/chatgpt-runs/2026-09-15-full-deliverables/ACCEPTANCE.md`。  
+6. 推送公开仓 https://github.com/Coucou2016/retinal-imaging-methods-public（无密钥/无患者影像）。
 
 ## 6. 结果（SYNTHETIC；本仓库计算）
 
 {table}
 
-**读表：** `auroc_D` 便于跨臂对比；ECE 变化而 AUROC 不变符合温度缩放语义；n=10/48 时禁止方法优劣结论。旗标见 `data/odir|brset|rfmid/SYNTHETIC_FEATURES.txt`。
+**读表：** `auroc_D` 便于跨臂对比糖尿病相关头；ECE 降而 AUROC 不变符合温度缩放语义；n=10/48 时禁止方法优劣结论。旗标见 `data/odir|brset|rfmid/SYNTHETIC_FEATURES.txt`。临床真实特征表 **待补充**。
 
-<figure><img src="{uris.get('fig1_architecture.png','')}" alt="Fig1"/><figcaption>图 1. 方法概览（示意；无性能数字）。黄框=单调质量路由；绿框=部分标签 MTL + 校准/DCA 评估。</figcaption></figure>
-<figure><img src="{uris.get('fig2_ablation_bars.png','')}" alt="Fig2"/><figcaption>图 2. 消融柱状图（SYNTHETIC）。问什么：四臂是否跑通？怎么读：左 AUROC_D，右 ECE；虚线 0.5=随机。结论：流水线健全，非临床主张。</figcaption></figure>
-<figure><img src="{uris.get('fig3_calibration.png','')}" alt="Fig3"/><figcaption>图 3. 温度缩放与 ECE（SYNTHETIC）。问什么：校准链路是否可压低 ECE？结论：评估框架动机成立，≠临床已校准可用。</figcaption></figure>
-<figure><img src="{uris.get('fig4_cross_domain.png','')}" alt="Fig4"/><figcaption>图 4. 跨队列落差（SYNTHETIC）。问什么：是否强制报告 domain drop？结论：协议层必须画跨库，数值不可作运输性估计。</figcaption></figure>
+### 图注阅读约定（来龙去脉）
+
+每幅图按同一模板：*问什么 → 怎么读 → 曲线/框含义 → 结论 → 待补充*。图 1 无性能数字；图 2–4 凡涉及 AUROC/ECE 均标注 SYNTHETIC。
+
+**图 1 方法总览。** 问什么：在不改动冻结骨干的前提下，方法增量落在何处？怎么读：蓝框=输入与共享骨干；黄框=单调质量融合；橙框=可选 E5 骨干路由；绿框=部分标签 MTL + 校准/DCA 评估。结论：可卖点在黄/橙/绿；蓝色骨干不是新贡献。待补充：真实特征跑通后可在绿框旁标注主终点，仍勿在示意图写 AUROC。
+
+**图 2 合成消融柱状图。** 问什么：四臂是否跑通？怎么读：左 AUROC_D（深蓝 ODIR val / 浅蓝跨库）；右 ECE（橙 raw / 绿 calibrated）；虚线 0.5=随机。结论：流水线健全，禁止与 Nat Med 0.699–0.833 比较。待补充：真实特征整图替换。
+
+**图 3 温度缩放与 ECE。** 问什么：校准链路是否可压低 ECE？怎么读：圆点 raw、方点 calibrated、标注 Δ。结论：评估框架动机成立，≠临床已校准可用。待补充：可靠性图与完整 NB 曲线。
+
+**图 4 跨队列落差。** 问什么：只报源域是否过度乐观？怎么读：实线源域、虚线跨库、红填充=域差距。结论：协议层必须画跨库；本图数值为 SYNTHETIC。待补充：真实跨库幅度与反向迁移。
+
+<figure>
+
+![Fig1](../paper_assets/fig1_architecture.png)
+
+<figcaption>图 1. 方法概览（示意；无性能数字）。黄框=单调质量路由；橙框=可选 E5；绿框=部分标签 MTL + 校准/DCA 评估。</figcaption>
+</figure>
+<figure>
+
+![Fig2](../paper_assets/fig2_ablation_bars.png)
+
+<figcaption>图 2. 消融柱状图（SYNTHETIC）。左 AUROC_D，右 ECE；虚线 0.5=随机。n_val=10，n_cross=48。</figcaption>
+</figure>
+<figure>
+
+![Fig3](../paper_assets/fig3_calibration.png)
+
+<figcaption>图 3. 温度缩放与 ECE（SYNTHETIC）。评估框架动机成立，≠临床已校准可用。</figcaption>
+</figure>
+<figure>
+
+![Fig4](../paper_assets/fig4_cross_domain.png)
+
+<figcaption>图 4. 跨队列落差（SYNTHETIC）。协议层必须画跨库，数值不可作运输性估计。</figcaption>
+</figure>
 
 ## 7. 讨论与局限
 
-须区分 published multitask vs released independent loops；`diabetes_related` 不得进临床主表。待补充：真实 ODIR/BRSET 像素、GPU 三骨干特征、多 seed 临床表。RFMiD 影像本地有（N=3200）但仍带 SYNTHETIC 特征旗标。
+须区分 published multitask vs released independent loops；`diabetes_related` 不得进临床主表。方法学实现（单调路由、掩码 MTL、E5、端点守卫）与代码一致，但证据强度目前停在工程与合成自检层。待补充：真实 ODIR/BRSET 像素、GPU 三骨干特征、多 seed 临床表、E5 真实特征臂。RFMiD 影像本地有（N=3200）但仍带 SYNTHETIC 特征旗标 → `clinical_claim_allowed: false`。
 
 ## 8. 验收与审查
 
-- 审稿修复验收：`docs/chatgpt-runs/2026-09-13-review-fixes/ACCEPTANCE.md`  
-- 真实性审查：`docs/paper/AUTHENTICITY_AUDIT.md`
+- 本轮交付验收：`docs/chatgpt-runs/2026-09-15-full-deliverables/ACCEPTANCE.md`  
+- 真实性审查：`docs/paper/AUTHENTICITY_AUDIT.md`  
+- 审稿修复验收：`docs/chatgpt-runs/2026-09-13-review-fixes/ACCEPTANCE.md`
 """
 
 
@@ -390,9 +431,10 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
             "图 1 方法总览（来龙去脉）",
             "问什么：在不改动冻结骨干的前提下，方法增量落在何处？"
             "怎么读：左蓝框=输入（CFP/元数据/质量概率）；中蓝框=与 Reti-Pioneer 共享的冻结 RETFound/Swin/Vim；"
-            "黄框=质量感知双线性融合（固定 q vs learnable_q）；绿框=共享多任务头 + 温度缩放/DCA。"
+            "黄框=质量感知双线性融合（固定 q vs monotone learnable_q）；橙框=可选 E5（q→softmax over backbone heads）；"
+            "绿框=共享多任务头（masked BCE）+ 温度缩放/DCA 评估框架。"
             "曲线/框含义：本图无性能数字，只编码信息流与消融位置。"
-            "结论：相对基线论文，可卖点集中在黄/绿两框；蓝色骨干不是新贡献。"
+            "结论：相对基线论文，可卖点集中在黄/橙/绿框；蓝色骨干不是新贡献。"
             "待补充：真实特征跑通后可在绿框旁加“主终点/共主终点”标注，但仍勿在示意图上写 AUROC。",
         ),
         "fig2_ablation_bars.png": (
@@ -400,7 +442,7 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
             "问什么：四臂（baseline / learnq / multitask / full）在鉴别力与校准误差上是否“跑通”？"
             "怎么读：左图 D 头 AUROC——深蓝=ODIR val，浅蓝=ODIR→BRSET；虚线 0.5=随机参考。"
             "右图 ECE——橙=原始，绿=温度缩放后。"
-            "曲线含义：柱高接近 0.5 且 n 极小（val=12，跨库=48）时，臂间差异不可作方法优劣证据；"
+            "曲线含义：柱高接近 0.5 且 n 极小（val=10，跨库=48）时，臂间差异不可作方法优劣证据；"
             "右图若绿柱低于橙柱，仅说明校准链路对合成 logits 仍可压低 ECE。"
             "结论：流水线健全；禁止与 Nat Med 内部 AUROC 0.699–0.833 比较。"
             "待补充：真实 ODIR/BRSET 特征复跑后整图替换。",
@@ -472,7 +514,7 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
 
   <section id="abstract">
     <h2>1. 摘要</h2>
-    <p>Reti-Pioneer（Zhang 等，<em>Nature Medicine</em>，2026）展示了冻结基础模型特征与质量感知融合用于系统性代谢病筛查的可行性。发表文本描述多任务筛查，但<strong>发布训练代码</strong>采用疾病独立二分类循环，质量权重固定为 good=1 / usable=0.5 / bad=0。本工作在保留冻结三骨干骨架前提下实现：（i）<strong>单调有界质量路由</strong>（bad ≤ usable ≤ good ∈ [0,1]）；（ii）共享头 + <strong>掩码 BCE</strong> 的部分标签多任务学习；（iii）端点感知跨队列评估与校准/DCA<strong>评估框架</strong>；可选 E5 质量条件骨干路由。当前消融数字为<strong>SYNTHETIC</strong>，不得与 Reti-Pioneer 内部检验 AUROC 0.699–0.833 比较。</p>
+    <p>Reti-Pioneer（Zhang 等，<em>Nature Medicine</em>，2026）展示了冻结基础模型特征与质量感知融合用于系统性代谢病筛查的可行性。发表文本描述多任务筛查，但<strong>发布训练代码</strong>采用疾病独立二分类循环，质量权重固定为 good=1 / usable=0.5 / bad=0。本工作在保留冻结三骨干骨架前提下实现：（i）<strong>单调有界质量路由</strong>（bad ≤ usable ≤ good ∈ [0,1]）；（ii）共享头 + <strong>掩码 BCE</strong> 的端点感知部分标签多任务学习；（iii）可选 <strong>E5 质量条件骨干路由</strong>（质量分布 → 三骨干 softmax）；（iv）端点感知跨队列评估与校准/DCA<strong>评估框架</strong>。当前消融数字为<strong>SYNTHETIC</strong>（n_val=10，n_cross=48），不得与 Reti-Pioneer 内部检验 AUROC 0.699–0.833 比较。</p>
   </section>
 
   <section id="bg">
@@ -489,10 +531,10 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
     <h3>3.2 模型改动（与代码一一对应）</h3>
     <ul>
       <li><code>QualityAware(quality_router='monotone')</code>：softplus 增量 + cumsum 归一化，强制 bad≤usable≤good 且 good=1（<code>model/QualityAware.py</code>）。</li>
-      <li><code>masked_bce_with_logits</code>：仅监督 y≥0 的部分标签（<code>utils/run.py</code>）。</li>
-      <li>可选 E5：<code>QualityBackboneRouter</code> 由 q 生成三骨干 softmax（<code>model/quality_gate.py</code>；<code>configs/ablation_e5.yaml</code>）。</li>
+      <li><code>masked_bce_with_logits</code>：仅监督 y≥0 的部分标签（<code>utils/run.py</code>）；对照 released-code 独立病种循环。</li>
+      <li>可选 E5：<code>QualityBackboneRouter</code> 由 q 生成三骨干 softmax（<code>model/quality_gate.py</code>；<code>configs/ablation_e5.yaml</code>：<code>quality_gating: true</code>, <code>lambda_q: 0.1</code>）。</li>
       <li><code>evaluate.py --calibrate</code>：温度 T 拟合于 calibration_idx ⊥ eval；报告 ECE/Brier/按病种 DCA；NB@0.10 示意。</li>
-      <li>患者级划分，避免同一患者双眼泄漏。</li>
+      <li>患者级划分，避免同一患者双眼泄漏；endpoint alignment ≠ direct 时拒绝临床主表。</li>
     </ul>
     <h3>3.3 消融臂与数据</h3>
     <p>baseline（固定 q，单任务）→ learnq（monotone）→ multitask → full（monotone+MTL+校准评估）。特征缓存：<code>data/odir|brset/SYNTHETIC_FEATURES.txt</code>；RFMiD 影像可本地存在但仍带合成特征旗标时 <code>clinical_claim_allowed: false</code>。</p>
@@ -733,7 +775,8 @@ def write_pdf(report_text: str, fig_paths: list[Path], out: Path) -> None:
 
 
 def write_manuscript_pdf(md_text: str, fig_paths: list[Path], out: Path) -> None:
-    write_pdf(md_text, fig_paths[:1], out)
+    # Embed all paper figures (architecture + SYNTHETIC metric panels).
+    write_pdf(md_text, fig_paths, out)
 
 
 def main() -> None:
