@@ -1,9 +1,7 @@
 # 审查文档 · Authenticity Audit
 
-**目的：** 证明本稿结果数字来自本仓库自行计算的流水线，而非抄录 *Nature Medicine* Reti-Pioneer 临床表。  
-**日期：** 2026-09-15（full-deliverables 刷新）  
-**仓库内容主提交：** `1a71d64083e0bb18addc3ddfcf0c39912b0ad010`  
-**公开 tip（见 PUSH.md；可因验收书记账提交前移）：** `2d12a89056fb8e35727024c5a05e0896153e7fb2`  
+**目的：** 证明本稿 Results 数字来自本仓库自行计算的流水线，而非抄录 *Nature Medicine* Reti-Pioneer 临床表，亦非标签派生 SYNTHETIC 特征。  
+**日期：** 2026-09-17（real-results 刷新）  
 **公开快照：** https://github.com/Coucou2016/retinal-imaging-methods-public
 
 ---
@@ -12,150 +10,94 @@
 
 | 主张 | 判定 |
 |------|------|
-| 消融 AUROC / ECE / \(T\) / \(n\) | **本仓库 `run_ablations.py` 计算**，见 `results/ablation_summary.*` 与 `results/metrics_*.json` |
-| Reti-Pioneer UKB AUROC 0.699–0.833 | **仅作背景引用**（Zhang et al. 2026），**未写入我们的结果表** |
-| 临床主表（真实三骨干特征） | **待补充**；当前 `clinical_claim_allowed=false` |
-| 图 1–4 | SciencePlots + Times New Roman，由 `scripts/plot_paper_figures.py` **从上述 CSV 重绘**（Fig1 含 E5 示意） |
+| RFMiD E0–E5 AUROC / ECE / \(T\) / bootstrap CI | **本仓库** `build_real_rfmid_cache.py` → `run_real_rfmid_experiments.py` → `evaluate.py` |
+| 直观图（眼底质量分层、ROC、可靠性、DCA、消融柱、路由） | `scripts/plot_real_results.py`（SciencePlots + Times New Roman） |
+| Reti-Pioneer UKB AUROC 0.699–0.833 | **仅作背景引用**，未写入我们的结果表 |
+| ODIR / BRSET / UKB 临床主表 | **待补充**（见 DATA_BLOCKERS） |
+| 历史 SYNTHETIC ODIR 消融表 | **已移出主 Results**；仅留作 CI |
 
 ---
 
-## 2. SYNTHETIC vs 真实证据链
+## 2. REAL vs SYNTHETIC 证据链
 
 | 资产 | 路径 | 标记 | 含义 |
 |------|------|------|------|
-| ODIR 合成特征旗标 | `data/odir/SYNTHETIC_FEATURES.txt` | `Do not report AUROC…clinical` | 特征由标签确定性生成，非眼底像素 |
-| BRSET 合成特征旗标 | `data/brset/SYNTHETIC_FEATURES.txt` | 同上 | 同上 |
-| RFMiD 合成特征旗标 | `data/rfmid/SYNTHETIC_FEATURES.txt` | `clinical_claim_allowed: false` | RFMiD 影像可在本地，但当前缓存仍为合成骨干特征 |
-| 消融总表 | `results/ablation_summary.csv` | 列 `disclaimer` 全行为 SYNTHETIC | 生成于 2026-09-15T02:45:26 |
-| 评估 JSON | `results/metrics_{baseline,learnq,multitask,full}_odir_{val,to_brset}.json` | `disclaimer` 含 `clinical_claim_allowed=false unless alignment=direct` | 与 CSV 同行一致 |
-| 运行元数据 | `results/ablation_runs/20260915*/**/run_meta.json` | `quality_router`, `masked_bce`, `dataset=odir` | 证明配置落入训练 |
+| RFMiD 特征出处 | `data/rfmid/FEATURE_PROVENANCE.json` | `real_pixels: true` | 真实眼底像素；ImageNet 骨干替代 |
+| SYNTHETIC 旗标 | `data/rfmid/SYNTHETIC_FEATURES.txt` | **已删除** | 不再存在 |
+| 骨干哈希（前 8MB SHA256 前缀） | `UKB_swin.npz` | `860db8257ec87300` | Swin-V2-B ImageNet |
+| | `UKB_RETF.npz` | `37b95500eb975f58` | ViT-B→1024（RETFound gated） |
+| | `UKB_vim.npz` | `4d62c0f2946365d0` | ViT-S/384（Vim 不可用） |
+| 质量代理 | `UKB_mqd.npz` ql/qr | 1131 个唯一 soft-q | 非常数 default_quality |
+| 结果总表 | `results/real_rfmid/ablation_summary.csv` | disclaimer = REAL-PIXEL | 生成于 2026-09-17 |
+| 评估 JSON | `results/real_rfmid/metrics_E{0-5}_rfmid_{val,test}.json` | bootstrap + DeLong + dca_curves | calibrate on cal, score on split |
 
-**判定规则（代码）：** `scripts/evaluate.py` 写入 disclaimer；`reti_pioneer.label_map.features_clinical_claim_allowed` 在存在 `SYNTHETIC_FEATURES.txt` 时拒绝 clinical_ok；`--paper-mode` / `--clinical-tables` 要求 `alignment=direct`。
-
----
-
-## 3. 数字出处（逐项）
-
-### 3.1 消融矩阵（论文 Table 1 / 报告表 1）
-
-命令（可复现）：
-
-```text
-python scripts/run_ablations.py --quick
-```
-
-| Arm | Eval | AUROC_D | ECE → Cal ECE | 源文件 |
-|-----|------|---------|---------------|--------|
-| baseline | odir_val | 0.381 | 0.363 → 0.289 | `metrics_baseline_odir_val.json` |
-| baseline | odir_to_brset | 0.558 | 0.357 → 0.350 | `metrics_baseline_odir_to_brset.json` |
-| learnq | odir_val | 0.762 | 0.319 → 0.400 | `metrics_learnq_odir_val.json` |
-| learnq | odir_to_brset | 0.493 | 0.414 → 0.481 | `metrics_learnq_odir_to_brset.json` |
-| multitask | odir_val | 0.500 (D) / 0.363 macro | 0.669 → 0.401 | `metrics_multitask_odir_val.json` |
-| multitask | odir_to_brset | 0.563 (D) | 0.481 → 0.400 | `metrics_multitask_odir_to_brset.json` |
-| full | odir_val | 0.438 (D) / 0.532 macro | 0.656 → 0.410 | `metrics_full_odir_val.json` |
-| full | odir_to_brset | 0.516 (D) | 0.475 → 0.446 | `metrics_full_odir_to_brset.json` |
-
-**样本：** ODIR val \(n=10\)；跨库 \(n=48\)。如此小 \(n\) 下出现个别头 AUROC=1.0 属于合成标签折统计噪声，**不是**临床性能。
-
-### 3.2 配置与代码映射
-
-| 论文概念 | 配置 / 代码 |
-|----------|-------------|
-| Fixed quality baseline | `quality_router: fixed`；`model/QualityAware.py` |
-| Monotone router | `quality_router: monotone`；`QualityAware.monotone_weights`（softplus + cumsum 归一化） |
-| Partial-label MTL | `masked_bce: true`；`utils/run.py::masked_bce_with_logits` |
-| Released-code control | `ensemble: released_code`；独立病种循环 vs `multitask: true` |
-| E5 backbone routing | `configs/ablation_e5.yaml` → `quality_gating: true`, `lambda_q: 0.1`；`model/quality_gate.py::QualityBackboneRouter` |
-| Endpoint alignment | `reti_pioneer/label_map.py`；跨评 `clinical_claim_allowed` |
-| 校准折不相交 | `split.cal_fraction` + `evaluate.py` `temperature_fit=calibration_idx` |
-
-示例 run_meta（full / multitask ODIR）：
-
-```json
-{
-  "learnable_q": true,
-  "quality_router": "monotone",
-  "ensemble": "released_code",
-  "multitask": true,
-  "masked_bce": true,
-  "quality_gating": false,
-  "dataset": "odir",
-  "fast_mode": true
-}
-```
-
-路径：`results/ablation_runs/20260915024410/multitask/y0/run_meta.json`。
+**诚实边界：** RETFound HF 仓库 gated（401）；Vision Mamba / mamba-ssm 在本机不可用。因此骨干为 ImageNet 替代，**不是** UKB Reti-Pioneer 三骨干复现，但是**真实像素**特征，可用于 RFMiD 眼底体征 Results。
 
 ---
 
-## 4. 图件与交付物生成链
+## 3. 数字出处（RFMiD test）
 
-| 产物 | 脚本 | 输入 | 输出 | 样式 / 约束 |
-|------|------|------|------|-------------|
-| Fig 1 architecture | `plot_architecture_schematic` | 无性能数字 | `docs/paper_assets/fig1_architecture.{png,pdf}` | SciencePlots + Times New Roman；含 E5 橙框 |
-| Fig 2 ablation bars | `plot_ablation_bars` | `results/ablation_summary.csv` | `fig2_ablation_bars.*` | 标题含 SYNTHETIC |
-| Fig 3 calibration | `plot_calibration_effect` | 同上 | `fig3_calibration.*` | 同上 |
-| Fig 4 cross-domain | `plot_cross_domain` | 同上 | `fig4_cross_domain.*` | 同上 |
-| Base64 sidecar | `write_uri_sidecar` | PNG | `docs/paper_assets/embedded_png_uris.json` | 供 HTML 内嵌 |
-| Paper md/html/pdf | `build_paper_report.py` | `manuscript.md` + URIs | `docs/paper/manuscript.{md,html,pdf}` | 论文无本机绝对路径；PDF 含 Fig1–4 |
-| Report md/html/pdf | 同上 | CSV + URIs | `docs/report/report.{md,html,pdf}` | HTML：内联 CSS、Base64、无 CDN；可含路径 |
-
-命令：
+### 可复现命令
 
 ```text
-pip install SciencePlots
-python scripts/plot_paper_figures.py
+python scripts/build_real_rfmid_cache.py --cache-dir data/rfmid --batch-size 8
+python scripts/run_real_rfmid_experiments.py --data-dir data/rfmid --out-dir results/real_rfmid --epochs 12 --bootstrap 200
+python scripts/plot_real_results.py
 python scripts/build_paper_report.py
 ```
 
----
+### Test 表（\(n=640\)，bootstrap \(B=200\)）
 
-## 5. 与 *Nature Medicine* 表的隔离检查
+| Arm | Macro AUROC | AUROC_DR | ECE | Cal ECE | T | Bootstrap 95% CI |
+|-----|-------------|----------|-----|---------|---|------------------|
+| E0 | 0.925 | 0.925 | 0.026 | 0.031 | 1.06 | [0.902, 0.947] |
+| E1 | 0.931 | 0.931 | 0.034 | 0.032 | 1.11 | [0.908, 0.949] |
+| E2 | 0.886 | 0.910 | 0.170 | 0.176 | 1.06 | [0.872, 0.902] |
+| E3 | 0.898 | 0.928 | 0.178 | 0.188 | 1.11 | [0.882, 0.914] |
+| E4 | 0.898 | 0.928 | 0.178 | 0.188 | 1.11 | [0.882, 0.914] |
+| E5 | 0.901 | 0.916 | 0.156 | 0.154 | 0.98 | [0.887, 0.914] |
 
-| 检查项 | 结果 |
-|--------|------|
-| 我们的结果表是否出现 0.833 / 0.832 / 0.787 / 0.740 / 0.736 / 0.699 作为“本方法 AUROC”？ | **否**。这些数仅在引言中作为 Reti-Pioneer **已发表**内部检验范围引用 |
-| 我们的 AUROC_D 是否与上述集合重合？ | **否**（0.381–0.762 等，且 \(n\) 与终点不同） |
-| 是否声称在 UKB / 医院队列上复现？ | **否**；明确 **待补充** |
-| 合成结果是否标注？ | **是**（CSV disclaimer、图标题、论文 §5.1、报告红框） |
+Run dirs：见 `results/real_rfmid/run_manifest.json`。
 
----
+### 配置映射
 
-## 6. Git / 提交锚点（方法学相关）
-
-| Commit | 主题 |
-|--------|------|
-| `f431a00` | monotone router、endpoint ontology、calibration split |
-| `3584cb7` | threshold lock、bootstrap CI、E5 / λ_q |
-| `cc70b8d` | YAML–code contract sync |
-| `30ef160` | E5 backbone routing、MultiCohort、eval CIs |
-| `0816710` | 方法稿 / 自包含报告 / 审查文档（上一轮公开 tip） |
-| `1a71d64` | 学术语气重写、强化 monotone / MTL / E5、全图 PDF、full-deliverables |
-| `f12faaa` | ACCEPTANCE / 审查文档 SHA 锚定 |
-| `8291781` | 公开 tip 确认（本轮最终 tip） |
-
-完整历史以 `git log` 为准；本文件不替代 ACCEPTANCE 清单。
+| 论文概念 | 配置 |
+|----------|------|
+| E0 fixed quality | `ablation_e0.yaml` |
+| E1 monotone | `ablation_e1.yaml` |
+| E2 MTL fixed-q | `ablation_e2.yaml` |
+| E3 MTL + monotone | `ablation_e3.yaml` |
+| E4 + cal protocol | `ablation_e4.yaml` |
+| E5 backbone routing | `ablation_e5.yaml` (`quality_gating: true`) |
 
 ---
 
-## 7. 环境与阻塞（诚实记录）
+## 4. 图件生成链
 
-| 项 | 状态 |
-|----|------|
-| CUDA / 三骨干特征提取 | **不可用** → 临床表待补充 |
-| ODIR Kaggle | 无凭据 |
-| BRSET PhysioNet | DUA / 凭据未完成 |
-| RFMiD 影像 | 本地有（\(N=3200\)）；合成特征旗标仍在 → 不得 clinical claim |
-| 论文稿主线 | `docs/paper/manuscript.md`（2026-09-15 full-deliverables：学术语气 + 强化 monotone / MTL / E5） |
+| 图 | 脚本 | 输入 | 输出 |
+|----|------|------|------|
+| Fig1 architecture | `plot_paper_figures.py` | schematic | `fig1_architecture.*` |
+| Fig2 ablation bars | `plot_real_results.py` | `ablation_summary.csv` | `fig2_ablation_bars.*` |
+| Fig3 reliability | same | E5 test preds | `fig3_calibration.*` |
+| Fig5 fundus quality | same | RFMiD images + ql | `fig5_fundus_quality.*` |
+| Fig6 routing | same | QualityAware + router | `fig6_quality_routing.*` |
+| Fig6b quality pie | same | ql argmax | `fig6b_quality_pie.*` |
+| Fig7 DCA | same | metrics JSON dca_curves | `fig7_decision_curves.*` |
+| Fig8 ROC | same | E5 test probs | `fig8_roc_curves.*` |
+| Fig9 score hist | same | E5 DR scores | `fig9_score_hist.*` |
 
 ---
 
-## 8. 审阅人快速核验清单
+## 5. 与 *Nature Medicine* 表隔离
 
-1. 打开 `results/ablation_summary.csv`，确认 `disclaimer` 列全为 SYNTHETIC。  
-2. 打开任一 `results/metrics_*_odir_val.json`，确认 `disclaimer` 与 `n`。  
-3. 打开 `data/*/SYNTHETIC_FEATURES.txt`。  
-4. 确认论文结果表 **没有** 把 0.833 等 UKB AUROC 写成本方法成绩。  
-5. 确认 §5.2 / 报告临床表为 **待补充**。  
-6. 运行 `python scripts/plot_paper_figures.py && python scripts/build_paper_report.py` 应可重生图与 HTML/PDF。  
-7. 确认公开 tip SHA 与 `docs/chatgpt-runs/2026-09-15-full-deliverables/ACCEPTANCE.md` 一致。
+| 检查 | 结果 |
+|------|------|
+| 我们的结果表是否出现 0.833 / 0.832 / … 作为“本方法 AUROC”？ | **否** |
+| 是否声称 UKB T2DM 复现？ | **否** |
+| SYNTHETIC AUROC 是否仍在主 Results？ | **否**（已删除） |
+
+---
+
+## 6. 环境与阻塞
+
+见 `docs/DATA_BLOCKERS.md`（2026-09-17）：CUDA torch 不可用；ODIR/BRSET 无凭据；RETFound gated；Vim 不可用。

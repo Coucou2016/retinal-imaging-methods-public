@@ -12,7 +12,7 @@ Screening endocrine and metabolic disease from retinal imaging remains limited b
 
 We present a methods extension that preserves the frozen-backbone ensemble while revising three controllable components. First, quality scalars follow a **monotone bounded** route so that bad ≤ usable ≤ good within [0, 1], with good normalized to 1. Second, a shared multi-label head is trained with **masked binary cross-entropy**, supervising only labels present for each sample or dataset (**endpoint-aware partial-label multi-task learning**). Third, optional **quality-conditioned backbone routing** (configuration E5) maps the quality distribution to a softmax over foundation heads. Evaluation follows an endpoint-aware cross-cohort protocol on ODIR-5K, BRSET, and RFMiD, with alignment flags (`direct` / `partial` / `related_not_equivalent`), and reports expected calibration error (ECE), Brier score, and per-disease decision-curve analysis (DCA) after temperature scaling fitted on a fold disjoint from the scored set.
 
-Clinical AUROC, ECE, and DCA tables on real foundation features remain **待补充**. Section 5.1 reports pipeline-sanity metrics on **SYNTHETIC** feature caches computed in this repository (`clinical_claim_allowed = false`). These values must not be compared with Reti-Pioneer UKB internal AUROCs. Calibration and DCA constitute an evaluation framework rather than claimed algorithmic novelty.
+Clinical AUROC / ECE / DCA on **real-pixel RFMiD** features (ImageNet foundation surrogates; see §5) are reported in this draft. ODIR / BRSET / UKB clinical tables remain **待补充** (credentials / access). Prior SYNTHETIC feature-cache AUROCs are excluded from main Results. Calibration and DCA constitute an evaluation framework rather than claimed algorithmic novelty.
 
 **Keywords:** oculomics; fundus photography; monotone quality routing; partial-label multi-task learning; quality-conditioned backbone routing; calibration (evaluation); endpoint harmonization; Reti-Pioneer
 
@@ -58,7 +58,7 @@ Let each eye (or paired eyes) be represented by frozen backbone features \(x \in
 
 ### 3.2 Frozen backbones and feature caches
 
-Following Reti-Pioneer, we freeze RETFound, Swin V2-B, and Vision Mamba-S and train fusion and heads on pre-extracted features (`fast_mode`). Public caches are built from prepared labels then foundation extraction. Until real pixels and CUDA extraction succeed, caches may contain deterministic **synthetic** features flagged by `SYNTHETIC_FEATURES.txt` with `clinical_claim_allowed: false`. Such caches support continuous integration only and are excluded from submission clinical tables.
+Following Reti-Pioneer, we freeze foundation encoders and train fusion and heads on pre-extracted features (`fast_mode`). Public caches are built from prepared labels then pixel feature extraction. RFMiD in this workspace uses **real-pixel** ImageNet foundation surrogates (see §5.1); CI may still use deterministic synthetic caches flagged by `SYNTHETIC_FEATURES.txt` with `clinical_claim_allowed: false`, which must never populate submission Results tables.
 
 ### 3.3 Monotone bounded quality routing
 
@@ -141,30 +141,51 @@ Synthetic or demo AUROC must never appear in submission clinical tables without 
 
 ## 5. Results
 
-### 5.1 Pipeline verification on SYNTHETIC feature caches (not clinical)
+### 5.1 Intuitive results on real-pixel RFMiD (figures first)
 
-The following metrics were computed in this repository by `scripts/run_ablations.py` (timestamp 2026-09-15T02:45:26) on deterministic synthetic ODIR / BRSET feature caches (`SYNTHETIC_FEATURES.txt`; evaluate JSON disclaimer: `clinical_claim_allowed=false unless alignment=direct`). Sample sizes are small (ODIR val \(n=10\); ODIR→BRSET \(n=48\)). Values near chance are expected. Arm ranking must not be interpreted as method superiority, and numbers must not be compared with Reti-Pioneer UKB AUROCs (0.699–0.833).
+RFMiD official-split images (\(N=3200\); train/val/test = 1920/640/640) were used to build a **real-pixel** UKB-style feature cache (`scripts/build_real_rfmid_cache.py`). Soft quality vectors were estimated from a sharpness/exposure proxy (argmax strata: good 179 / usable 2793 / bad 228). Backbone slots were filled from real fundus pixels with ImageNet-pretrained surrogates because RETFound (Hugging Face gated, HTTP 401 without token) and Vision Mamba (unavailable on this Windows host) could not be loaded: Swin-V2-B → `UKB_swin.npz`; ViT-B/16 projected to 1024-d → `UKB_RETF.npz`; ViT-S/16 → `UKB_vim.npz` (384-d). `SYNTHETIC_FEATURES.txt` was removed. Labels were restricted to eight heads with adequate prevalence: Disease_Risk, DR, MH, ODC, TSLN, DN, ARMD, MYA. These are **not** Reti-Pioneer UKB ICD endpoints and **not** RETFound/Vim replications; they are real-pixel RFMiD ocular-sign results with honest surrogate-backbone disclosure (`data/rfmid/FEATURE_PROVENANCE.json`).
 
-**Table 1. Ablation summary (SYNTHETIC; repository-computed metrics).** Primary comparable column: AUROC\(_D\) (ODIR D head). Macro AUROC is multi-label for multitask arms.
+**Figure panel (SciencePlots + Times New Roman; regenerated 2026-09-17):**
 
-| Arm | Eval | AUROC | AUROC\(_D\) | ECE | Cal. ECE | \(T\) | \(n\) |
-|-----|------|-------|-------------|-----|----------|-------|-------|
-| baseline | odir_val | 0.381 | 0.381 | 0.363 | 0.289 | 1.84 | 10 |
-| baseline | odir→brset | 0.558 | 0.558 | 0.357 | 0.350 | 1.84 | 48 |
-| learnq (monotone) | odir_val | 0.762 | 0.762 | 0.319 | 0.400 | 0.05 | 10 |
-| learnq (monotone) | odir→brset | 0.493 | 0.493 | 0.414 | 0.481 | 0.05 | 48 |
-| multitask | odir_val | 0.363 | 0.500 | 0.669 | 0.401 | 10.0 | 10 |
-| multitask | odir→brset | 0.462 | 0.563 | 0.481 | 0.400 | 10.0 | 48 |
-| full | odir_val | 0.532 | 0.438 | 0.656 | 0.410 | 10.0 | 10 |
-| full | odir→brset | 0.482 | 0.516 | 0.475 | 0.446 | 1.81 | 48 |
+1. Architecture schematic (Figure 1) — unchanged methods diagram.  
+2. RFMiD fundus examples by quality stratum with soft \(q\) (Figure 5: `fig5_fundus_quality`).  
+3. Quality-stratum pie / counts (Figure 6b) and monotone / E5 routing under good→usable→bad intervention (Figure 6).  
+4. Per-disease ROC curves on the held-out test fold for the multitask E5 head (Figure 8) — curves precede AUC numbers.  
+5. Reliability diagrams for DR / Disease_Risk / MH (Figure 3).  
+6. Per-disease decision curves (NB vs threshold) (Figure 7).  
+7. Ablation bars E0–E5 on RFMiD test (Figure 2).  
+8. DR score distributions (Figure 9).
 
-Temperature scaling changes ECE without changing ranking AUROC, which is the intended behavior of a post-hoc calibrator. Cross-cohort columns illustrate the protocol of reporting domain drop under endpoint mapping, not a clinical transportability estimate. Extremely small \(n\) produces unstable point estimates (for example, AUROC = 1.0 on some ODIR heads in the full-arm JSON); such values are artifacts of synthetic labels and tiny folds.
+ODIR (Kaggle) and BRSET (PhysioNet) remain **待补充** — no credentials in this workspace (`docs/DATA_BLOCKERS.md`).
 
-Companion figures (SciencePlots, Times New Roman): architecture schematic (Figure 1); SYNTHETIC ablation bars (Figure 2); ECE before / after temperature scaling (Figure 3); cross-cohort AUROC\(_D\) drop (Figure 4). Provenance is recorded in `docs/paper/AUTHENTICITY_AUDIT.md`.
+### 5.2 Quantitative RFMiD test metrics (after figures)
 
-### 5.2 Clinical evaluation on real foundation features
+Arms E0–E5 were trained for 12 epochs on the frozen official split with nested calibration (\(n_{\mathrm{cal}}=64\)) carved from validation; temperature scaling was fit on calibration and applied on val/test. Metrics below are **test** (\(n=640\)), with patient-level bootstrap AUROC 95% CI (\(B=200\)). Primary comparable column for single-task arms is AUROC\(_{\mathrm{DR}}\); multitask arms also report macro AUROC across eight heads.
 
-**待补充.** Requires (a) authorized download of ODIR / BRSET / RFMiD images under their licenses, (b) CUDA-capable extraction of RETFound / Swin / Vim features, and (c) multi-seed runs with `paper_mode` guards. RFMiD images and official CSVs are present in this workspace (\(N=3200\)), but three-backbone foundation features for clinical tables remain unavailable on CPU-only PyTorch. ODIR (Kaggle) and BRSET (PhysioNet) downloads were blocked without credentials at drafting time.
+**Table 1. RFMiD test ablation (real-pixel features; repository-computed).**
+
+| Arm | Macro AUROC | AUROC\(_{\mathrm{DR}}\) | ECE | Cal. ECE | \(T\) | \(n\) | Bootstrap 95% CI (macro) |
+|-----|-------------|-------------------------|-----|----------|-------|-------|--------------------------|
+| E0 (fixed-q, DR) | 0.925 | 0.925 | 0.026 | 0.031 | 1.06 | 640 | [0.902, 0.947] |
+| E1 (monotone-q, DR) | 0.931 | 0.931 | 0.034 | 0.032 | 1.11 | 640 | [0.908, 0.949] |
+| E2 (MTL, fixed-q) | 0.886 | 0.910 | 0.170 | 0.176 | 1.06 | 640 | [0.872, 0.902] |
+| E3 (MTL + monotone) | 0.898 | 0.928 | 0.178 | 0.188 | 1.11 | 640 | [0.882, 0.914] |
+| E4 (E3 + cal. protocol) | 0.898 | 0.928 | 0.178 | 0.188 | 1.11 | 640 | [0.882, 0.914] |
+| E5 (+ backbone routing) | 0.901 | 0.916 | 0.156 | 0.154 | 0.98 | 640 | [0.887, 0.914] |
+
+Source JSON/CSV: `results/real_rfmid/metrics_*_rfmid_test.json`, `results/real_rfmid/ablation_summary.csv`. E5 per-head test AUROCs (illustrative): Disease_Risk 0.959, DR 0.916, MH 0.957, ODC 0.742, TSLN 0.924, DN 0.780, ARMD 0.939, MYA 0.989. Do not compare these ocular-sign AUROCs with Reti-Pioneer UKB systemic AUROCs (0.699–0.833).
+
+### 5.3 Still 待补充
+
+| Cohort / claim | Status |
+|----------------|--------|
+| ODIR-5K real pixels + foundation extract | **待补充** (no Kaggle credentials) |
+| BRSET real pixels + foundation extract | **待补充** (PhysioNet DUA not completed) |
+| RETFound / Vim-S exact Reti-Pioneer weights | **待补充** (HF gated / mamba unavailable); surrogates used above |
+| UKB / hospital systemic clinical tables | **待补充** (no UKB access) |
+| Multi-seed {42,43,44} final tables | **待补充** (single seed 42 reported) |
+
+Provenance: `docs/paper/AUTHENTICITY_AUDIT.md`, `docs/DATA_BLOCKERS.md`.
 
 ---
 
@@ -172,17 +193,17 @@ Companion figures (SciencePlots, Times New Roman): architecture schematic (Figur
 
 Public ocular and systemic labels enable reproducible methods claims that UKB-gated papers cannot always support. Transferring Reti-Pioneer’s skeleton to ODIR / BRSET / RFMiD forces explicit endpoint harmonization and domain-shift reporting. Fairness and calibration should be first-class evaluation practices, matching the authors’ own limitations discussion, without overselling calibration or DCA as novelty.
 
-Figure 1 is an information-flow schematic (yellow = monotone quality fusion; green = partial-label multi-task head and calibration / DCA evaluation). Figures 2–4 currently plot SYNTHETIC feature-cache metrics and justify engineering readiness of the protocol, not clinical superiority over Reti-Pioneer’s UKB AUROCs.
+Figure 1 is an information-flow schematic (yellow = monotone quality fusion; green = partial-label multi-task head and calibration / DCA evaluation). Figures 2–3 and 5–9 report **real-pixel RFMiD** results (ImageNet foundation surrogates). ODIR/BRSET/UKB clinical transportability remains out of scope until credentials and biobank access exist.
 
-A concise novelty statement is: we replace fixed quality weights with a monotone bounded router, train a masked multi-task head against the released independent-loop control, optionally route backbone mixture weights from quality (E5), and evaluate with endpoint-aware cross-cohort splits plus a calibration / DCA reporting framework. We do not claim to outperform Reti-Pioneer, and we do not report a UKB T2DM AUROC without the original endpoint and cohort.
+A concise novelty statement is: we replace fixed quality weights with a monotone bounded router, train a masked multi-task head against the released independent-loop control, optionally route backbone mixture weights from quality (E5), and evaluate with endpoint-aware splits plus a calibration / DCA reporting framework. We do not claim to outperform Reti-Pioneer on UKB, and we do not report a UKB T2DM AUROC without the original endpoint and cohort.
 
-Open risks for subsequent clinical tables include empty real-feature Results, published-versus-released multitask wording, endpoint drift if `diabetes_related` is misused clinically, monotone weights that may remain near (0, 0.5, 1) without quality supervision, illustrative DCA at threshold 0.10, and blocked foundation extraction without CUDA.
+Open risks include surrogate (not RETFound/Vim) backbones on RFMiD, empty ODIR/BRSET Results, published-versus-released multitask wording, endpoint drift if `diabetes_related` is misused clinically, and monotone weights that may remain near (0, 0.5, 1) without EyeQ supervision.
 
 ---
 
 ## 7. Limitations
 
-No UKB / SEED access in this drafting workspace; label mismatch versus ICD systemic endpoints; no prospective trial; Vision Mamba optional on some platforms; EyeQ weights external; synthetic caches for continuous integration only; ODIR Kaggle credentials absent; BRSET PhysioNet data-use agreement not completed here; GPU absent for RETFound / Swin extraction. Clinical AUROC tables therefore remain **待补充**.
+No UKB / SEED access in this drafting workspace; RFMiD labels are retinal disease signs rather than ICD systemic endpoints; no prospective trial; Vision Mamba optional / unavailable here; EyeQ weights external; RETFound HF gated without token → ImageNet surrogates used for RFMiD; ODIR Kaggle credentials absent; BRSET PhysioNet DUA not completed; GTX 950M present but CUDA PyTorch unavailable (CPU extract). ODIR / BRSET / UKB clinical tables therefore remain **待补充**.
 
 ---
 

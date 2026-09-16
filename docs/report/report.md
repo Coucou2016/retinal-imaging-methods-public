@@ -1,6 +1,6 @@
 # 研究报告：基于 Reti-Pioneer 的单调质量路由与端点感知多任务学习扩展
 
-**日期：** 2026-09-15  
+**日期：** 2026-09-17  
 **项目路径：** `E:/Projects/20260522-retinal-imaging`（本机；公开 clone 路径可变）  
 **性质：** 方法学跟进 / 工程可复现报告（非临床试验报告；可含过程与本地路径）  
 **公开代码：** https://github.com/Coucou2016/retinal-imaging-methods-public  
@@ -81,16 +81,20 @@ Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**�
 
 ## 6. 结果（SYNTHETIC；本仓库计算）
 
-| Arm | Eval | AUROC | AUROC_D | ECE | Cal ECE | NB@0.10 | n | Note |
-|-----|------|-------|---------|-----|---------|---------|---|------|
-| baseline | odir_val | 0.381 | 0.381 | 0.363 | 0.289 | 0.233 | 10 | SYNTHETIC |
-| baseline | odir_to_brset | 0.558 | 0.558 | 0.357 | 0.350 | -0.000 | 48 | SYNTHETIC |
-| learnq | odir_val | 0.762 | 0.762 | 0.319 | 0.400 | 0.222 | 10 | SYNTHETIC |
-| learnq | odir_to_brset | 0.493 | 0.493 | 0.414 | 0.481 | -0.009 | 48 | SYNTHETIC |
-| multitask | odir_val | 0.363 | 0.500 | 0.669 | 0.401 | 0.058 | 10 | SYNTHETIC |
-| multitask | odir_to_brset | 0.462 | 0.563 | 0.481 | 0.400 | 0.022 | 48 | SYNTHETIC |
-| full | odir_val | 0.532 | 0.438 | 0.656 | 0.410 | 0.072 | 10 | SYNTHETIC |
-| full | odir_to_brset | 0.482 | 0.516 | 0.475 | 0.446 | 0.021 | 48 | SYNTHETIC |
+| Arm | Eval | AUROC | AUROC_DR | ECE | Cal ECE | Boot CI | n | Note |
+|-----|------|-------|----------|-----|---------|---------|---|------|
+| E0 | rfmid_val | 0.941 | 0.941 | 0.029 | 0.030 | [0.920, 0.956] | 576 | REAL-PIXEL |
+| E0 | rfmid_test | 0.925 | 0.925 | 0.026 | 0.031 | [0.902, 0.947] | 640 | REAL-PIXEL |
+| E1 | rfmid_val | 0.915 | 0.915 | 0.037 | 0.040 | [0.885, 0.939] | 576 | REAL-PIXEL |
+| E1 | rfmid_test | 0.931 | 0.931 | 0.034 | 0.032 | [0.908, 0.949] | 640 | REAL-PIXEL |
+| E2 | rfmid_val | 0.876 | 0.921 | 0.176 | 0.181 | [0.858, 0.892] | 576 | REAL-PIXEL |
+| E2 | rfmid_test | 0.886 | 0.910 | 0.170 | 0.176 | [0.872, 0.902] | 640 | REAL-PIXEL |
+| E3 | rfmid_val | 0.882 | 0.929 | 0.179 | 0.188 | [0.864, 0.896] | 576 | REAL-PIXEL |
+| E3 | rfmid_test | 0.898 | 0.928 | 0.178 | 0.188 | [0.882, 0.914] | 640 | REAL-PIXEL |
+| E4 | rfmid_val | 0.882 | 0.929 | 0.179 | 0.188 | [0.864, 0.896] | 576 | REAL-PIXEL |
+| E4 | rfmid_test | 0.898 | 0.928 | 0.178 | 0.188 | [0.882, 0.914] | 640 | REAL-PIXEL |
+| E5 | rfmid_val | 0.885 | 0.939 | 0.160 | 0.158 | [0.869, 0.900] | 576 | REAL-PIXEL |
+| E5 | rfmid_test | 0.901 | 0.916 | 0.156 | 0.154 | [0.887, 0.914] | 640 | REAL-PIXEL |
 
 **读表：** `auroc_D` 便于跨臂对比糖尿病相关头；ECE 降而 AUROC 不变符合温度缩放语义；n=10/48 时禁止方法优劣结论。旗标见 `data/odir|brset|rfmid/SYNTHETIC_FEATURES.txt`。临床真实特征表 **待补充**。
 

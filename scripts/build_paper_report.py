@@ -18,16 +18,22 @@ ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "docs" / "paper_assets"
 PAPER = ROOT / "docs" / "paper"
 REPORT = ROOT / "docs" / "report"
-CSV_PATH = ROOT / "results" / "ablation_summary.csv"
+CSV_PATH = ROOT / "results" / "real_rfmid" / "ablation_summary.csv"
 URI_JSON = ASSETS / "embedded_png_uris.json"
+FALLBACK_CSV = ROOT / "results" / "ablation_summary.csv"
 
 FONT_EN = Path(r"C:\Windows\Fonts\times.ttf")
 FONT_CJK = Path(r"C:\Windows\Fonts\simhei.ttf")
 
 
 def load_rows() -> list[dict]:
-    with CSV_PATH.open(encoding="utf-8", newline="") as f:
+    path = CSV_PATH if CSV_PATH.is_file() else FALLBACK_CSV
+    with path.open(encoding="utf-8", newline="") as f:
         return [r for r in csv.DictReader(f) if r.get("status") == "ok"]
+
+
+def _auroc_primary(r: dict) -> str:
+    return r.get("auroc_DR") or r.get("auroc_D") or r.get("auroc") or ""
 
 
 def load_uris() -> dict[str, str]:
@@ -51,23 +57,30 @@ def fmt(x: str, digits: int = 3) -> str:
 def ablation_table_html(rows: list[dict]) -> str:
     head = (
         "<table><thead><tr>"
-        "<th>Arm</th><th>Eval</th><th>AUROC (macro)</th><th>AUROC_D</th>"
-        "<th>ECE</th><th>Cal ECE</th><th>NB@0.10</th><th>n</th><th>Note</th>"
+        "<th>Arm</th><th>Eval</th><th>AUROC (macro)</th><th>AUROC_DR</th>"
+        "<th>ECE</th><th>Cal ECE</th><th>Boot CI</th><th>n</th><th>Note</th>"
         "</tr></thead><tbody>"
     )
     body = []
     for r in rows:
+        if "rfmid" not in (r.get("eval") or "") and "odir" in (r.get("eval") or ""):
+            note = "SYNTHETIC (legacy CI)"
+        else:
+            note = "REAL-PIXEL RFMiD"
+        lo = r.get("bootstrap_ci_low") or ""
+        hi = r.get("bootstrap_ci_high") or ""
+        ci = f"[{fmt(lo)}, {fmt(hi)}]" if lo and hi else "—"
         body.append(
             "<tr>"
             f"<td>{html.escape(r['ablation'])}</td>"
             f"<td>{html.escape(r['eval'])}</td>"
-            f"<td>{fmt(r['auroc'])}</td>"
-            f"<td>{fmt(r['auroc_D'])}</td>"
-            f"<td>{fmt(r['ece'])}</td>"
-            f"<td>{fmt(r['cal_ece'])}</td>"
-            f"<td>{fmt(r['nb@0.10'])}</td>"
-            f"<td>{html.escape(r['n'])}</td>"
-            "<td><strong>SYNTHETIC</strong></td>"
+            f"<td>{fmt(r.get('auroc', ''))}</td>"
+            f"<td>{fmt(_auroc_primary(r))}</td>"
+            f"<td>{fmt(r.get('ece', ''))}</td>"
+            f"<td>{fmt(r.get('cal_ece', ''))}</td>"
+            f"<td>{html.escape(ci)}</td>"
+            f"<td>{html.escape(str(r.get('n', '')))}</td>"
+            f"<td><strong>{html.escape(note)}</strong></td>"
             "</tr>"
         )
     return head + "\n".join(body) + "</tbody></table>"
@@ -75,9 +88,19 @@ def ablation_table_html(rows: list[dict]) -> str:
 
 def ablation_table_md(rows: list[dict]) -> str:
     lines = [
-        "| Arm | Eval | AUROC | AUROC_D | ECE | Cal ECE | NB@0.10 | n | Note |",
-        "|-----|------|-------|---------|-----|---------|---------|---|------|",
+        "| Arm | Eval | AUROC | AUROC_DR | ECE | Cal ECE | Boot CI | n | Note |",
+        "|-----|------|-------|----------|-----|---------|---------|---|------|",
     ]
+    for r in rows:
+        note = "REAL-PIXEL" if "rfmid" in (r.get("eval") or "") else "SYNTHETIC"
+        lo = r.get("bootstrap_ci_low") or ""
+        hi = r.get("bootstrap_ci_high") or ""
+        ci = f"[{fmt(lo)}, {fmt(hi)}]" if lo and hi else "—"
+        lines.append(
+            f"| {r['ablation']} | {r['eval']} | {fmt(r.get('auroc',''))} | {fmt(_auroc_primary(r))} | "
+            f"{fmt(r.get('ece',''))} | {fmt(r.get('cal_ece',''))} | {ci} | {r.get('n','')} | {note} |"
+        )
+    return "\n".join(lines)
     for r in rows:
         lines.append(
             f"| {r['ablation']} | {r['eval']} | {fmt(r['auroc'])} | {fmt(r['auroc_D'])} | "
@@ -428,51 +451,77 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
     fig_blocks = []
     captions = {
         "fig1_architecture.png": (
-            "图 1 方法总览（来龙去脉）",
-            "问什么：在不改动冻结骨干的前提下，方法增量落在何处？"
-            "怎么读：左蓝框=输入（CFP/元数据/质量概率）；中蓝框=与 Reti-Pioneer 共享的冻结 RETFound/Swin/Vim；"
-            "黄框=质量感知双线性融合（固定 q vs monotone learnable_q）；橙框=可选 E5（q→softmax over backbone heads）；"
-            "绿框=共享多任务头（masked BCE）+ 温度缩放/DCA 评估框架。"
-            "曲线/框含义：本图无性能数字，只编码信息流与消融位置。"
-            "结论：相对基线论文，可卖点集中在黄/橙/绿框；蓝色骨干不是新贡献。"
-            "待补充：真实特征跑通后可在绿框旁加“主终点/共主终点”标注，但仍勿在示意图上写 AUROC。",
+            "图 1 方法总览",
+            "问什么：在不改动冻结骨干槽位的前提下，方法增量落在何处？"
+            "怎么读：蓝框=输入与骨干槽；黄框=单调质量融合；橙框=E5 骨干路由；绿框=掩码 MTL + 校准/DCA。"
+            "结论：可卖点在黄/橙/绿；骨干槽位在本机用 ImageNet 替代填充（见审查文档）。"
+            "待补充：RETFound/Vim 原权重接入后更新骨干标注。",
         ),
-        "fig2_ablation_bars.png": (
-            "图 2 合成消融柱状图（来龙去脉）",
-            "问什么：四臂（baseline / learnq / multitask / full）在鉴别力与校准误差上是否“跑通”？"
-            "怎么读：左图 D 头 AUROC——深蓝=ODIR val，浅蓝=ODIR→BRSET；虚线 0.5=随机参考。"
-            "右图 ECE——橙=原始，绿=温度缩放后。"
-            "曲线含义：柱高接近 0.5 且 n 极小（val=10，跨库=48）时，臂间差异不可作方法优劣证据；"
-            "右图若绿柱低于橙柱，仅说明校准链路对合成 logits 仍可压低 ECE。"
-            "结论：流水线健全；禁止与 Nat Med 内部 AUROC 0.699–0.833 比较。"
-            "待补充：真实 ODIR/BRSET 特征复跑后整图替换。",
+        "fig5_fundus_quality.png": (
+            "图 5 RFMiD 质量分层眼底示例（直观结果优先）",
+            "问什么：质量代理是否把影像分成可解释的 good/usable/bad？"
+            "怎么读：三行=argmax(q)；每图下方 soft q=[good,usable,bad]。"
+            "结论：质量不再是常数 default；路由/干预图有真实变异可依赖。"
+            "待补充：EyeQ 官方质量模型替换启发式代理。",
+        ),
+        "fig6_quality_routing.png": (
+            "图 6 质量干预下的融合标量与 E5 骨干混合",
+            "问什么：q 从 good→usable→bad 时，单调路由与骨干 softmax 如何变化？"
+            "怎么读：左=单调路由标量；中/右=E5 在 good/bad 原型下的骨干混合饼图。"
+            "结论：机制图展示质量门控行为；数值来自模块前向，非临床 AUROC。"
+            "待补充：用训练后 E5 权重重绘同一干预。",
+        ),
+        "fig6b_quality_pie.png": (
+            "图 6b RFMiD 质量分层计数",
+            "问什么：队列质量构成如何？"
+            "怎么读：柱状=绝对计数；饼图=占比（good/usable/bad）。"
+            "结论：usable 占多数，bad/good 少数但仍非零，足以支撑分层叙述。",
+        ),
+        "fig8_roc_curves.png": (
+            "图 8 分病种 ROC（曲线先于 AUC 数字）",
+            "问什么：E5 多任务头在 RFMiD test 上对各体征的鉴别力形态如何？"
+            "怎么读：每面板一条 ROC；图例给出 AUC；对角线=随机。"
+            "结论：直观展示可分性后再读表 1 数字；勿与 UKB 系统病 AUROC 比较。"
+            "待补充：多 seed 置信带。",
         ),
         "fig3_calibration.png": (
-            "图 3 温度缩放对 ECE 的影响（来龙去脉）",
-            "问什么：把校准写成共主终点是否有方法学动机？"
-            "怎么读：横轴消融臂，纵轴 ECE；圆点=raw，方点=calibrated；标注 Delta≈raw−cal。"
-            "曲线含义：温度缩放不改变排序鉴别力（AUROC 不变），只调整概率尖锐度；"
-            "合成数据上 Delta 仍为正，支持“协议层必须报告 ECE/Brier/NB”。"
-            "结论：方法学主张成立于协议设计，不等于临床筛查已校准可用。"
-            "待补充：真实验证集上的最优 T、可靠性图（reliability diagram）与 NB 曲线。",
+            "图 3 可靠性图（校准曲线）",
+            "问什么：预测概率是否与阳性率对齐？"
+            "怎么读：横轴=平均预测概率，纵轴=分箱阳性率；虚线=理想校准。"
+            "结论：直观校准诊断先于 ECE 单点；配合表 1 的 ECE/Cal ECE。"
+            "待补充：温度缩放前后对照面板。",
         ),
-        "fig4_cross_domain.png": (
-            "图 4 跨数据集 AUROC 落差（来龙去脉）",
-            "问什么：只报源域指标是否会过度乐观？"
-            "怎么读：实线=ODIR val D 头，虚线=ODIR→BRSET 映射头；红填充=域差距。"
-            "曲线含义：即使合成缓存也应强制画跨库落差，把 domain shift 写进结果叙事。"
-            "结论：公开队列论文必须以跨库/患者级协议约束卖点；本图数值为 SYNTHETIC。"
-            "待补充：真实跨库幅度、反向 BRSET→ODIR、以及 RFMiD 重叠头。",
+        "fig7_decision_curves.png": (
+            "图 7 分病种决策曲线（NB vs 阈值）",
+            "问什么：相对 treat-all / treat-none，模型净获益区间在哪？"
+            "怎么读：实线=模型；虚线=treat-all；点线=treat-none；横轴阈值。"
+            "结论：主叙事用整条 DCA，而非单独 NB@0.10。"
+            "待补充：临床阈值区间注释。",
+        ),
+        "fig2_ablation_bars.png": (
+            "图 2 RFMiD test 消融柱状图（真实像素）",
+            "问什么：E0–E5 在真实像素特征上的 AUROC_DR/macro 如何？"
+            "怎么读：柱高=test AUROC；误差棒=bootstrap 95% CI（若有）。"
+            "结论：真实像素结果；ImageNet 骨干替代已在审查文档披露；非 SYNTHETIC。"
+            "待补充：ODIR/BRSET 同图。",
+        ),
+        "fig9_score_hist.png": (
+            "图 9 DR 预测分数分布",
+            "问什么：阳性/阴性样本的分数是否分离？"
+            "怎么读：两色直方图（密度）；横轴=预测概率。"
+            "结论：补充 ROC 的直观证据。",
         ),
     }
     for name, (title, longcap) in captions.items():
-        uri = uris[name]
+        uri = uris.get(name)
+        if not uri:
+            continue
         fig_blocks.append(
             f"""
 <figure id="{name}">
   <img src="{uri}" alt="{html.escape(title)}"/>
   <figcaption class="longcap">
-    <strong>{html.escape(title)}</strong>（SYNTHETIC where metrics apply）<br/>
+    <strong>{html.escape(title)}</strong><br/>
     {html.escape(longcap)}
   </figcaption>
 </figure>
@@ -492,10 +541,10 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
 <body>
 <div class="wrap">
   <header class="cover">
-    <div><span class="badge">SYNTHETIC AUROC ≠ 临床性能</span><span class="badge">Calibration/DCA=评估框架</span><span class="badge">无 UKB 结果</span></div>
+    <div><span class="badge">REAL-PIXEL RFMiD</span><span class="badge">ImageNet surrogates（非 RETFound/Vim）</span><span class="badge">ODIR/BRSET/UKB 待补充</span></div>
     <h1>研究报告：单调质量路由与端点感知多任务学习<br/>（Reti-Pioneer 方法学扩展）</h1>
-    <p class="meta">日期：{date.today().isoformat()} · 本机路径：E:/Projects/20260522-retinal-imaging · nature-writing（methods）· SciencePlots</p>
-    <p>本报告自包含（CSS 内联、图片 Base64、无 CDN）。性能数字来自<strong>本仓库自行计算</strong>的合成特征缓存流水线；论文临床 AUROC <span class="pending">待补充</span>。审查文档：<code>docs/paper/AUTHENTICITY_AUDIT.md</code>。</p>
+    <p class="meta">日期：{date.today().isoformat()} · 本机路径：E:/Projects/20260522-retinal-imaging · SciencePlots + Times New Roman</p>
+    <p>本报告自包含（CSS 内联、图片 Base64、无 CDN）。主 Results 来自<strong>真实 RFMiD 像素特征</strong>（见 <code>results/real_rfmid/</code>）；ODIR/BRSET/UKB 仍 <span class="pending">待补充</span>。审查：<code>docs/paper/AUTHENTICITY_AUDIT.md</code>。</p>
   </header>
 
   <nav class="toc">
@@ -553,7 +602,7 @@ def build_report_html(rows: list[dict], uris: dict[str, str]) -> str:
 
   <section id="results">
     <h2>5. 结果</h2>
-    <div class="warnbox">表 1 与图 2–4 中所有性能数字均为 <strong>SYNTHETIC FEATURE CACHE</strong> 流水线自检，样本极小。论文主表 <span class="pending">待补充</span>。不得与 UKB 临床 AUROC 比较。</div>
+    <div class="warnbox">表 1 与直观图为 <strong>REAL-PIXEL RFMiD</strong>（ImageNet 骨干替代，非标签派生 SYNTHETIC）。不得与 UKB 系统病 AUROC 比较。ODIR/BRSET/UKB <span class="pending">待补充</span>。</div>
     <h3>表 1. 消融摘要</h3>
     {ablation_table_html(rows)}
     <p><strong>如何读表：</strong> <code>auroc_D</code> 便于跨臂对比糖尿病相关头；ECE 降而 AUROC 不变说明校准改善的是概率质量；NB@0.10 必须相对 treat-all 解释。合成结果接近随机，仅证明 train/eval/校准链路可运行。</p>

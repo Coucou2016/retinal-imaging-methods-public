@@ -224,11 +224,22 @@ _disk_cleanup_report.txt
 *.safetensors
 data/
 !data/**/.gitkeep
-results/
+# results: keep summary + real_rfmid metrics/figures; ignore heavy run trees
+results/**
 !results/ablation_summary.csv
+!results/ablation_summary.md
 !results/figures/
-!results/figures/*.png
-!results/figures/*.pdf
+!results/figures/**
+!results/real_rfmid/
+!results/real_rfmid/**
+results/real_rfmid/ckpts/
+results/real_rfmid/ckpts/**
+results/real_rfmid/*.log
+results/real_rfmid/*.npz
+results/real_rfmid/extract_log.txt
+results/real_rfmid/train_eval*.txt
+results/real_rfmid/train_eval_*.txt
+results/ablation_runs/
 
 # secrets / local env / browser state
 .env
