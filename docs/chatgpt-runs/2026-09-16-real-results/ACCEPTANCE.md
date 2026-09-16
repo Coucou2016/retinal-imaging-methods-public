@@ -22,7 +22,7 @@
 | Embed figures + rebuild report.html | **DONE** | `docs/paper_assets/embedded_png_uris.json`; `docs/report/report.html` |
 | AUTHENTICITY_AUDIT refreshed | **DONE** | `docs/paper/AUTHENTICITY_AUDIT.md` |
 | ACCEPTANCE this path | **DONE** | this file |
-| Push to GitHub | **DONE** | see PUSH note / `git log -1` after push |
+| Push to GitHub | **DONE** | tip `9fcd8bf` on `main` → https://github.com/Coucou2016/retinal-imaging-methods-public |
 
 ---
 
