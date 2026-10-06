@@ -1,0 +1,12 @@
+usage: evaluate.py [-h] [--config CONFIG] --ckpt CKPT [--disease DISEASE]
+                   [--horizon HORIZON] [--demo]
+                   [--dataset {odir,brset,rfmid,ukb,demo}]
+                   [--data-dir DATA_DIR] [--test-data-dir TEST_DATA_DIR]
+                   [--test-dataset {odir,brset,rfmid,ukb,demo}]
+                   [--heads HEADS] [--multitask] [--learnable-q] [--calibrate]
+                   [--paper-mode] [--clinical-tables]
+                   [--split {train,val,test,all,calibration,cal}]
+                   [--regenerate-data] [--val-fraction VAL_FRACTION]
+                   [--split-seed SPLIT_SEED] [--out-json OUT_JSON]
+                   [--bootstrap BOOTSTRAP] [--bootstrap-seed BOOTSTRAP_SEED]
+evaluate.py: error: unrecognized arguments: --delong

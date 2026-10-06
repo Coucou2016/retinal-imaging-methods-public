@@ -1,0 +1,18 @@
+﻿=== DISK CLEANUP REPORT ===
+Time: 2026-08-15T21:59:51
+BEFORE C: 2.44 GB
+BEFORE E: 686.67 GB
+TEMP cleaned: 2.96 GB items=2101 path=C:\Users\Administrator\AppData\Local\Temp
+Windows\Temp: 0 KB
+pip cache: 34.1 MB dir=c:\users\administrator\appdata\local\pip\cache
+agent-tools: 520 KB
+cursor terminals old/large: 7 KB
+cache C:\Users\Administrator\AppData\Local\pip\Cache : 0 KB
+cache C:\Users\Administrator\.cache\huggingface\hub : 217.7 MB
+cache C:\Users\Administrator\AppData\Local\npm-cache : 158.2 MB
+__pycache__: 243 KB dirs=6
+AFTER C: 8.63 GB
+AFTER E: 686.72 GB
+TRACKED_FREED: 3.36 GB
+SHELL_ECHO_OK=True
+PYTHON_PRINT_OK=True

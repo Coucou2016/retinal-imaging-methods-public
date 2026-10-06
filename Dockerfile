@@ -1,18 +1,14 @@
-# CPU-friendly smoke image for unit tests / demo training (no CUDA, no patient data).
+# CPU-friendly smoke image for the FLAT snapshot (no CUDA, no patient data).
+# Everything is copied flat into /app; there are no sub-packages.
 FROM python:3.12-slim
 
 WORKDIR /app
-COPY requirements.txt pyproject.toml README.md ./
-COPY reti_pioneer ./reti_pioneer
-COPY model ./model
-COPY dataset ./dataset
-COPY utils ./utils
-COPY scripts ./scripts
-COPY tests ./tests
-COPY configs ./configs
+
+COPY . /app
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements-flat.txt
 
-CMD ["python", "-m", "unittest", "discover", "-s", "tests", "-v"]
+# Flat layout: discovery runs from the root itself.
+CMD ["python", "-m", "unittest", "discover", "-s", ".", "-p", "test_*.py", "-v"]

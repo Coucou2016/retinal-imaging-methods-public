@@ -1,3 +1,12 @@
+
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
 from typing import Tuple
 
 import torch
@@ -5,7 +14,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 from PIL import Image, ImageCms
 
-from model.base import get_EyeQ, get_RETFound, get_SwinB, get_VimS
+from base import get_EyeQ, get_RETFound, get_SwinB, get_VimS
 
 
 class AnalysisModel:

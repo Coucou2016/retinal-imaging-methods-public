@@ -1,0 +1,42 @@
+{
+  "generated_at": "2026-09-16T18:39:35.629648+00:00",
+  "data_dir": "data/rfmid",
+  "provenance": {
+    "real_pixels": true,
+    "n_pairs": 3200,
+    "backbones_written": [
+      "swin",
+      "retf",
+      "vim"
+    ],
+    "backbone_notes": {
+      "swin": "torchvision Swin_V2_B ImageNet weights; real RFMiD pixels",
+      "retf": "timm vit_base_patch16_224 ImageNet \u2192 orthogonal proj to 1024-d \u2014 YukunZhou/RETFound_mae_natureCFP is gated (HF 401 without token)",
+      "vim": "timm vit_small_patch16_224 ImageNet 384-d surrogate \u2014 Vision Mamba / mamba-ssm not available on this Windows host"
+    },
+    "quality": "laplacian+exposure soft (good,usable,bad) from pixels",
+    "labels": [
+      "Disease_Risk",
+      "DR",
+      "MH",
+      "ODC",
+      "TSLN",
+      "DN",
+      "ARMD",
+      "MYA"
+    ],
+    "clinical_claim_allowed": true,
+    "disclaimer": "Real-pixel RFMiD features with ImageNet foundation surrogates. Not RETFound/Vim UKB replication; not label-derived synthetic features."
+  },
+  "run_map": {
+    "E0": "results/real_rfmid/ckpts/20260917012508/DR/y0",
+    "E1": "results\\real_rfmid\\ckpts\\20260917013929\\DR\\y0",
+    "E2": "results\\real_rfmid\\ckpts\\20260917015318\\multitask\\y0",
+    "E3": "results\\real_rfmid\\ckpts\\20260917020322\\multitask\\y0",
+    "E4": "results\\real_rfmid\\ckpts\\20260917021522\\multitask\\y0",
+    "E5": "results\\real_rfmid\\ckpts\\20260917022709\\multitask\\y0"
+  },
+  "epochs": 12,
+  "bootstrap": 200,
+  "disclaimer": "REAL-PIXEL RFMiD features (ImageNet foundation surrogates: Swin-V2-B + ViT-B->1024 + ViT-S/384). Not label-derived SYNTHETIC. Not RETFound/Vim UKB replication (RETFound HF gated; Vim unavailable)."
+}

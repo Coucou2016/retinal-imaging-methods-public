@@ -1,0 +1,19 @@
+Operating points fit on calibration_idx (n=64); applied frozen on split=val
+Disease=multitask horizon=0y split=val n=576 pos=900
+raw  AUROC=0.8847  AP=0.6414  ECE=0.1597  Brier=0.1070  NB@0.10=0.1456  treat-all=0.1059  treat-none=0.0000  YoudenJ=0.6129@t=0.5801  sens@95%spec=0.3613(spec=0.9692)
+  Disease_Risk  AUROC=0.9181  AP=0.9753
+  DR  AUROC=0.9390  AP=0.8203
+  MH  AUROC=0.9497  AP=0.8323
+  ODC  AUROC=0.6798  AP=0.2561
+  TSLN  AUROC=0.9294  AP=0.4441
+  DN  AUROC=0.7196  AP=0.1676
+  ARMD  AUROC=0.9505  AP=0.7443
+  MYA  AUROC=0.9916  AP=0.8913
+  subgroup sex=0 n=576 AUROC=0.8847
+  subgroup age_tertile=0 n=576 AUROC=0.8847
+bootstrap AUROC=0.8847 95% CI [0.8686, 0.9001] (n_patients=576, n_boot=200)
+DeLong AUROC=0.8847 95% CI [0.8479, 0.9215] (method=delong_macro)
+Note: NB@0.10 is illustrative only; prefer per-disease DCA curves (see out-json dca_curves).
+temperature T=0.9809 fitted on calibration_idx; intercept=-1.2132 slope=0.9644
+calibrated  AUROC=0.8847  AP=0.6414  ECE=0.1583  Brier=0.1069  NB@0.10=0.1463  treat-all=0.1059  treat-none=0.0000  YoudenJ=0.6129@t=0.5812  sens@95%spec=0.3613(spec=0.9692)
+Wrote metrics JSON to E:\Projects\20260522-retinal-imaging\results\real_rfmid\metrics_E5_rfmid_val.json

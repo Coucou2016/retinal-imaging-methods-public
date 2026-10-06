@@ -1,90 +1,81 @@
-# Reti-Pioneer methods extension — monotone quality routing & endpoint-aware multitask
+# Reti-Pioneer methods extension - FLAT public snapshot
 
-Reproduction / methods workspace extending the **Nature Medicine (2026)** paper [*AI framework for multidisease detection via retinal imaging*](https://doi.org/10.1038/s41591-026-04359-w) (**Reti-Pioneer**).
+> **Everything in this repository lives in the root directory. There are no
+> folders - on purpose.** See `FLAT_REPOSITORY_NOTICE.md` for why and how to
+> load it.
 
-**Working title:** *Extending Reti-Pioneer with Monotone Quality Routing and Endpoint-Aware Multi-Task Learning*
+Public, folder-free snapshot of a methods extension to **Reti-Pioneer**
+(Zhang et al., *Nature Medicine* 2026), *"AI framework for multidisease
+detection via retinal imaging"*.  Working title: *Extending Reti-Pioneer with
+Monotone Quality Routing and Endpoint-Aware Multi-Task Learning*.
 
-This project integrates the [official Reti-Pioneer release](https://github.com/lyhyl/Reti-Pioneer) with local scripts, configuration, demo data, public-dataset adapters, and documentation for end-to-end training and evaluation when UK Biobank / hospital cohorts are unavailable.
+## Read me first
 
-See [docs/paper/manuscript.md](docs/paper/manuscript.md), [docs/PAPER.md](docs/PAPER.md), [docs/DATA.md](docs/DATA.md), [docs/PUBLIC_DATA.md](docs/PUBLIC_DATA.md), and [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md).
+| File | What it is |
+|------|------------|
+| `FLAT_REPOSITORY_NOTICE.md` | Why this repo has no folders; how to load it into an AI agent |
+| `FLAT_FILE_INDEX.md` | Every file: flat name -> original nested path -> role |
+| `manuscript.md` / `.html` / `.pdf` | The paper draft (Nature-family methods structure) |
+| `report.md` / `.html` / `.pdf` | Standalone research report (self-contained HTML, Base64 figures, no CDN) |
+| `AUTHENTICITY_AUDIT.md` | Real-pixel vs synthetic provenance, exact run commands, claim boundaries |
+| `methodology_extensions_flat.py` | The three methods contributions, self-contained and self-testing |
+| `FLAT_BUILD_MANIFEST.json` | Provenance of this build + SHA-256 for every file |
 
 ## What is (and is not) claimed
 
 | Claim | Status |
 |-------|--------|
-| Monotone bounded quality router (`bad ≤ usable ≤ good`) | Methods contribution |
-| Masked partial-label multitask vs **released-code** independent loops | Methods contribution |
+| Monotone bounded quality router (`bad <= usable <= good`) | Methods contribution |
+| Masked partial-label multitask vs released-code independent loops | Methods contribution |
 | Endpoint ontology + endpoint-aware cross-cohort evaluation | Methods / protocol |
-| MultiCohort joint vocabulary (ODIR+BRSET+RFMiD masks) | Methods / protocol (`--multi-cohort`) |
-| E5 quality-conditioned **backbone** routing (softmax over heads from q) | Optional (`quality_gating`) |
-| Calibration / ECE / DCA | **Evaluation framework** (not novelty); per-disease DCA is primary utility |
-| UKB / clinical AUROCs from this workspace | **Not claimed** (待补充 until real features) |
-| Synthetic feature-cache metrics | CI only (`clinical_claim_allowed: false`) |
+| MultiCohort joint vocabulary (ODIR+BRSET+RFMiD masks) | Methods / protocol |
+| E5 quality-conditioned backbone routing (softmax over heads from q) | Optional, config-gated |
+| Calibration / ECE / decision curves | Evaluation framework, not novelty |
+| RFMiD real-pixel test AUROC (E0-E5) | **Real-pixel**, ImageNet foundation surrogates |
+| UKB / clinical AUROCs of the Reti-Pioneer paper (0.699-0.833) | **Not reproduced here** - controlled access |
+| ODIR / BRSET clinical results | **Not available** - credentialed access |
 
-**Published vs released:** the Reti-Pioneer *article* describes multitask screening; the *released* `main.py` trains per-disease binary loops. Our clone control matches the released code.
+Backbone disclosure: RETFound on Hugging Face is gated (HTTP 401 without a
+token) and Vision Mamba could not be built on the Windows host, so the RFMiD
+feature cache uses ImageNet-pretrained **surrogates** (Swin-V2-B, ViT-B/16 ->
+1024-d, ViT-S/16 -> 384-d) over **real fundus pixels**.  See
+`FEATURE_PROVENANCE.json` and `AUTHENTICITY_AUDIT.md`.
 
-**Upstream `inference.py`:** UKB TorchScript / EyeQ demo path — **reference only**. Do **not** use it for methods-extension checkpoints. Use `scripts/predict_extension.py` (config + `run_meta.json`, calibration T, frozen thresholds, endpoints).
-
-## Quick start (demo, CPU-friendly)
+## Run it (flat layout, from the repository root)
 
 ```powershell
-cd <repo-root>
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-flat.txt
 python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 
-python scripts/generate_demo_data.py
-python scripts/train.py --demo --disease t2dm --horizon 0
-python scripts/evaluate.py --demo --disease t2dm --horizon 0 --split val --ckpt ckpt/<run>/t2dm/y0
-python -m unittest discover -s tests -v
+python generate_demo_data.py --out-dir data/UKBCompressed
+python train.py --demo --disease t2dm --horizon 0
+python evaluate.py --demo --disease t2dm --horizon 0 --split val
+python -m unittest discover -s . -p "test_*.py" -v
 ```
 
-Training uses **pre-extracted foundation features** (`fast_mode: true`). Demo AUROC is pipeline sanity only.
-
-## Ablations (E0–E5)
+Full real-data pipeline (needs CUDA + RFMiD images):
 
 ```powershell
-python scripts/train.py --config configs/ablation_e0.yaml --demo --disease t2dm --horizon 0
-python scripts/train.py --config configs/ablation_e1.yaml --demo --disease t2dm --horizon 0
-python scripts/train.py --config configs/ablation_e4.yaml --demo --multitask --horizon 0
-python scripts/train.py --config configs/ablation_e5.yaml --demo --multitask --horizon 0
-python scripts/train.py --config configs/ablation_multicohort.yaml --multi-cohort --horizon 0
-python scripts/evaluate.py --demo --split val --ckpt ckpt/<run>/multitask/y0 --calibrate --out-json results/metrics.json
-python scripts/predict_extension.py --ckpt ckpt/<run>/multitask/y0 --split test --calibrate --out-json results/pred.json
-python scripts/run_ablations.py --quick
-python scripts/intervention_quality.py
+python run_paper_pipeline_flat.py --stages cache train figures report
 ```
 
-| Config | Role |
-|--------|------|
-| `ablation_e0.yaml` | Fixed q, independent head, `released_code` ensemble |
-| `ablation_e1.yaml` | Monotone quality router |
-| `ablation_e2.yaml` | Multitask + masked BCE |
-| `ablation_e3.yaml` | Monotone + multitask |
-| `ablation_e4.yaml` | Full + disjoint calibration eval protocol |
-| `ablation_e5.yaml` | E5 backbone routing (`quality_gating`) + optional `lambda_q` |
-| `ablation_multicohort.yaml` | Joint ODIR+BRSET+RFMiD vocabulary |
+or stage by stage:
 
-`quality_router`: `fixed` | `free_linear` (ablation) | `monotone` (default when `learnable_q`).  
-Ensemble: `released_code` (train soft / eval max; legacy alias `paper`), `published_soft_vote`, `mean`, `temp_mean`.  
-E5: `quality_gating` = softmax over backbone heads from q (not feature attenuation; optional `feature_attenuation` ablation).
-## Public datasets
+```powershell
+python build_real_rfmid_cache.py --cache-dir data/rfmid
+python run_real_rfmid_experiments.py --data-dir data/rfmid --out-dir results/real_rfmid
+python plot_real_results.py
+python build_paper_report.py
+```
 
-See [docs/PUBLIC_DATA.md](docs/PUBLIC_DATA.md). Default cross-cohort endpoints: `hypertension_ocular`, `diabetes_ocular`. `--clinical-tables` refuses non-direct alignments.
+`data/`, `results/` and `ckpt/` are **runtime output directories** created by the
+pipeline and gitignored; they keep their original names so the documented
+commands remain literally correct.
 
 ## License vs research disclaimer
 
-Software copyright: [LICENSE](LICENSE) (MIT, upstream Reti-Pioneer). Third-party notes: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Software copyright: `LICENSE` (MIT, upstream Reti-Pioneer).  Third-party notes:
+`THIRD_PARTY_NOTICES.md`.
 
-**Research disclaimer** (not a medical device; not for clinical decisions; synthetic metrics are not clinical AUROC) is **scientific guidance**, not an additional restriction on the MIT license.
-
-## Citation
-
-```bibtex
-@article{zhang2026retipioneer,
-  title={AI framework for multidisease detection via retinal imaging},
-  author={Zhang, X. and Li, Q. and Liang, Y. and others},
-  journal={Nature Medicine},
-  year={2026},
-  doi={10.1038/s41591-026-04359-w}
-}
-```
+**Research disclaimer:** not a medical device, not for clinical decisions, and
+synthetic-feature metrics are pipeline sanity only - never clinical AUROC.

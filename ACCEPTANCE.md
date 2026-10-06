@@ -1,8 +1,8 @@
 # ACCEPTANCE — 2026-09-15 no-tails (software-complete)
 
 **Public:** https://github.com/Coucou2016/retinal-imaging-methods-public  
-**Detail matrix:** `docs/chatgpt-runs/2026-09-15-no-tails/ACCEPTANCE.md`  
-**Data blockers:** `docs/DATA_BLOCKERS.md`
+**Detail matrix:** `chatgpt-runs/2026-09-15-no-tails/ACCEPTANCE.md`  
+**Data blockers:** `DATA_BLOCKERS.md`
 
 ## Software (Done)
 
@@ -10,7 +10,7 @@
 |------|--------|
 | E5 quality-conditioned **backbone routing** + λ_q + intervention figures | **Done** |
 | MultiCohort joint vocabulary (ODIR+BRSET+RFMiD masks) | **Done** |
-| `scripts/predict_extension.py` | **Done** |
+| `predict_extension.py` | **Done** |
 | `inference.py` marked upstream-reference only | **Done** |
 | Per-disease DCA + bootstrap CI + DeLong in evaluate JSON | **Done** |
 | Multilabel stratification + paper_mode class-coverage fail | **Done** |

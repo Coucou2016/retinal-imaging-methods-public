@@ -1,0 +1,4 @@
+Training DR K=1 (y=0 years) learnable_q=False quality_router=fixed ensemble=released_code on cpu
+  using frozen split from E:\Projects\20260522-retinal-imaging\data\rfmid\split.npz
+  nested calibration from frozen val: cal=64 val=576
+  train=1920 val=576 cal=64 test=640 (val positives=119 patients=1920)
