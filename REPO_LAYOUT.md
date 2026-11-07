@@ -19,9 +19,20 @@
 
 ## 发布流程
 
-1. 在本地工作区生成或更新稿件（`docs/paper/manuscript_zh_v3.*`、`docs/paper_assets/*`）。
-2. 进入 `C:\Users\Administrator\flatwt`。
-3. 把文件按扁平命名复制到根目录。命名规则见 `FLAT_FILE_INDEX.md`，稿件相关如下。
+扁平快照由 `tools/build_flat.py` 生成，不再手工复制。该脚本读取嵌套工作区，
+写入 `docs/_flat_build/`，并同时改写路径、生成索引与清单。
+
+1. 在本地工作区生成或更新稿件与统计（`docs/paper/manuscript_zh_v3.*`、
+   `docs/paper_assets/*`、`results/real_rfmid/analysis_seed/*.json`）。
+
+2. 构建扁平快照。
+
+   ```powershell
+   python tools\build_flat.py
+   ```
+
+   产物：353 个文件，约 43.7 MB，无路径改写告警。命名规则与排除项写在
+   `FLAT_FILE_INDEX.md`，稿件相关如下。
 
    | 本地路径 | 扁平文件名 |
    |---|---|
@@ -30,15 +41,47 @@
    | `docs/paper/manuscript_zh_v3.pdf` | `manuscript_zh.pdf` |
    | `docs/paper/manuscript_zh_v3.html` | `manuscript_zh.html` |
    | `docs/paper_assets/figN_*.png` | `figN_*.png`（同名） |
+   | `docs/paper_assets/equations/eqN.png` | `eqN.png`（同名） |
    | `results/real_rfmid/analysis_sel/stats/*.json` | `*.json`（同名，铺到根目录） |
+   | `results/real_rfmid/analysis_seed/*.json` | `*.json`（同名，铺到根目录） |
 
-4. `git add -A`，提交，`git push origin HEAD:main`。
+   现在还会带上每臂预测张量（`arm_E*.npz`、`cal_E*.npz`）与四种子统计，
+   审计脚本因此在扁平根目录也能直接复算。
+
+3. 同步到 `flatwt`，提交并推送。
+
+   ```powershell
+   Copy-Item E:\Projects\20260522-retinal-imaging\docs\_flat_build\* C:\Users\Administrator\flatwt\ -Force
+   cd C:\Users\Administrator\flatwt
+   git add -A
+   git commit -m "..."
+   ```
+
+4. 推送。本机到 `github.com:443` 的直连经常被重置，普通 `git push` 会失败：
+
+   ```
+   fatal: unable to access '...': Recv failure: Connection was reset
+   ```
+
+   REST API 可达，因此改用 Git Data API 上传对象并快进引用。
+
+   ```powershell
+   $env:GH_TOKEN = (gh auth token)
+   python E:\Projects\20260522-retinal-imaging\tools\push_via_api.py <base-sha> <tip-sha> main
+   ```
+
+   脚本先确认远端等于 `base`，再上传 blob、tree、commit，最后快进 `main`，
+   并打印远端与本地是否一致。
 
 ## 注意
 
 - 远端不存在子目录。新增文件也必须放在根目录，否则与既有约定冲突。
 - 扁平仓库里 `label_map.json` 与 `label_map.py` 同名不同后缀，两者可以共存，但
   新增 JSON 时要先查根目录有没有同名模块。
-- 统计 JSON 铺平后可能与根目录的脚本同名，复制前先比对。
-- `verify_ref_authors.py` 与 `check_manuscript_numbers.py` 读取的是本地嵌套路径，
-  在 `flatwt` 里直接运行需要改路径参数。当前只在本地工作区运行。
+- 统计 JSON 铺平后可能与根目录的脚本同名。`build_flat.py` 遇到同名不同内容会
+  直接报错；图的多份镜像例外，保留 `docs/paper_assets` 的正式版本。
+- 审计与数值核对脚本已改写为扁平路径，可直接在 `flatwt` 运行：
+  `check_manuscript_numbers.py`、`check_ordering.py`、`check_citation_order.py`、
+  `audit_quotes.py`、`lint_manuscript.py`。全部通过后才提交。
+- `scripts/scratch/` 与一次性探针脚本（`probe_*.py`、`_*.py`、
+  `configs/_speedtest.yaml`）不进快照。
