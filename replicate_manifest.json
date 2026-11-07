@@ -1,0 +1,182 @@
+{
+  "E0_s43": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E0_s43\\20261107201251\\DR\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E0_s43\\20261107201251\\DR\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 1,
+    "monotone_weights": null
+  },
+  "E0_s44": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E0_s44\\20261107205929\\DR\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E0_s44\\20261107205929\\DR\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 1,
+    "monotone_weights": null
+  },
+  "E0_s45": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E0_s45\\20261107215555\\DR\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E0_s45\\20261107215555\\DR\\y0\\ckpt\\14.pt",
+    "epoch": 14,
+    "n": 640,
+    "k": 1,
+    "monotone_weights": null
+  },
+  "E1_s43": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E1_s43\\20261107201251\\DR\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E1_s43\\20261107201251\\DR\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 1,
+    "monotone_weights": [
+      0.00010134765761904418,
+      0.5002254843711853,
+      1.0
+    ]
+  },
+  "E1_s44": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E1_s44\\20261107210430\\DR\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E1_s44\\20261107210430\\DR\\y0\\ckpt\\15.pt",
+    "epoch": 15,
+    "n": 640,
+    "k": 1,
+    "monotone_weights": [
+      0.00010145204578293487,
+      0.5008493065834045,
+      1.0
+    ]
+  },
+  "E1_s45": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E1_s45\\20261107220201\\DR\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E1_s45\\20261107220201\\DR\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 1,
+    "monotone_weights": [
+      0.00010182216647081077,
+      0.5029048323631287,
+      1.0
+    ]
+  },
+  "E2_s43": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E2_s43\\20261107201251\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E2_s43\\20261107201251\\multitask\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": null
+  },
+  "E2_s44": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E2_s44\\20261107212744\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E2_s44\\20261107212744\\multitask\\y0\\ckpt\\17.pt",
+    "epoch": 17,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": null
+  },
+  "E2_s45": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E2_s45\\20261107221608\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E2_s45\\20261107221608\\multitask\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": null
+  },
+  "E3_s43": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E3_s43\\20261107201251\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E3_s43\\20261107201251\\multitask\\y0\\ckpt\\14.pt",
+    "epoch": 14,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": [
+      0.00010166934953304008,
+      0.5036212205886841,
+      1.0
+    ]
+  },
+  "E3_s44": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E3_s44\\20261107212831\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E3_s44\\20261107212831\\multitask\\y0\\ckpt\\15.pt",
+    "epoch": 15,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": [
+      0.0001022718206513673,
+      0.5050733089447021,
+      1.0
+    ]
+  },
+  "E3_s45": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E3_s45\\20261107223102\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E3_s45\\20261107223102\\multitask\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": [
+      0.00010211372864432633,
+      0.5041259527206421,
+      1.0
+    ]
+  },
+  "E4_s43": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E4_s43\\20261107205140\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E4_s43\\20261107205140\\multitask\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": null
+  },
+  "E4_s44": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E4_s44\\20261107213824\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E4_s44\\20261107213824\\multitask\\y0\\ckpt\\17.pt",
+    "epoch": 17,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": null
+  },
+  "E4_s45": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E4_s45\\20261107232104\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E4_s45\\20261107232104\\multitask\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": null
+  },
+  "E5_s43": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E5_s43\\20261107205322\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E5_s43\\20261107205322\\multitask\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": [
+      0.00010279879643348977,
+      0.5074608325958252,
+      1.0
+    ]
+  },
+  "E5_s44": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E5_s44\\20261107214503\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E5_s44\\20261107214503\\multitask\\y0\\ckpt\\18.pt",
+    "epoch": 18,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": [
+      0.0001027575708576478,
+      0.5074364542961121,
+      1.0
+    ]
+  },
+  "E5_s45": {
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E5_s45\\20261107232422\\multitask\\y0",
+    "ckpt": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts_seed\\E5_s45\\20261107232422\\multitask\\y0\\ckpt\\15.pt",
+    "epoch": 15,
+    "n": 640,
+    "k": 8,
+    "monotone_weights": [
+      0.0001026055688271299,
+      0.5064958333969116,
+      1.0
+    ]
+  }
+}

@@ -12,7 +12,7 @@ Screening endocrine and metabolic disease from retinal imaging remains limited b
 
 We present a methods extension that preserves the frozen-backbone ensemble while revising three controllable components. First, quality scalars follow a **monotone bounded** route so that bad ≤ usable ≤ good within [0, 1], with good normalized to 1. Second, a shared multi-label head is trained with **masked binary cross-entropy**, supervising only labels present for each sample or dataset (**endpoint-aware partial-label multi-task learning**). Third, optional **quality-conditioned backbone routing** (configuration E5) maps the quality distribution to a softmax over foundation heads. Evaluation follows an endpoint-aware cross-cohort protocol on ODIR-5K, BRSET, and RFMiD, with alignment flags (`direct` / `partial` / `related_not_equivalent`), and reports expected calibration error (ECE), Brier score, and per-disease decision-curve analysis (DCA) after temperature scaling fitted on a fold disjoint from the scored set.
 
-Clinical AUROC / ECE / DCA on **real-pixel RFMiD** features (ImageNet foundation surrogates; see §5) are reported in this draft. ODIR / BRSET / UKB clinical tables remain **待补充** (credentials / access). Prior SYNTHETIC feature-cache AUROCs are excluded from main Results. Calibration and DCA constitute an evaluation framework rather than claimed algorithmic novelty.
+Clinical AUROC / ECE / DCA on **real-pixel RFMiD** features (ImageNet foundation surrogates; see §5) are reported in this draft. ODIR / BRSET / UKB clinical tables are not available here (credentials / access). Prior SYNTHETIC feature-cache AUROCs are excluded from main Results. Calibration and DCA constitute an evaluation framework rather than claimed algorithmic novelty.
 
 **Keywords:** oculomics; fundus photography; monotone quality routing; partial-label multi-task learning; quality-conditioned backbone routing; calibration (evaluation); endpoint harmonization; Reti-Pioneer
 
@@ -105,7 +105,7 @@ Temperature \(T\) is fit on **calibration_ids** disjoint from **evaluation_ids**
 | Learning rate | \(1\times10^{-4}\) (config default) |
 | Backbones | Frozen; train fusion + head on caches |
 | Split | Patient-level; train / cal / val / (test); both eyes co-located |
-| Seeds (final tables) | {42, 43, 44} — **待补充** on real data |
+| Seeds (final tables) | 42 for every arm; {42, 43, 44} not run (single-seed protocol) |
 | Ablation arms | E0–E5 (`ablation_e*.yaml`) |
 | Software (this study) | PyTorch 2.x; CUDA unavailable in the drafting workspace → foundation extraction blocked |
 
@@ -128,12 +128,12 @@ Missing quality vectors are padded with a loader-defined default. Vision Mamba i
 
 ## 4. Experiments (protocol)
 
-- **Datasets:** ODIR-5K, BRSET, RFMiD (full-image download and three-backbone extraction status: see Data availability; clinical tables **待补充**).
+- **Datasets:** ODIR-5K, BRSET, RFMiD (full-image download and three-backbone extraction status: see Data availability; clinical tables not available here).
 - **Baselines / arms:** E0 released-code clone (fixed \(q\), independent heads); E1 monotone; E2 multitask; E3 monotone + multitask; E4 full + disjoint calibration protocol; E5 optional quality-conditioned backbone routing.
 - **Primary endpoint (intended clinical tables):** macro AUROC on a frozen test split with real foundation features.
 - **Utility reporting (framework):** ECE, Brier, per-disease DCA; NB@0.10 illustrative only.
 - **Transfer:** endpoint-aware cross-cohort evaluation (for example, train ODIR, test BRSET overlapping heads with alignment flags; reverse).
-- **Subgroups:** age tertiles, sex on BRSET (**待补充**).
+- **Subgroups:** age tertiles and sex were out of scope on RFMiD.
 
 Synthetic or demo AUROC must never appear in submission clinical tables without an explicit SYNTHETIC label and `clinical_claim_allowed = false`.
 
@@ -156,7 +156,7 @@ RFMiD official-split images (\(N=3200\); train/val/test = 1920/640/640) were use
 7. Ablation bars E0–E5 on RFMiD test (Figure 2).  
 8. DR score distributions (Figure 9).
 
-ODIR (Kaggle) and BRSET (PhysioNet) remain **待补充** — no credentials in this workspace (`DATA_BLOCKERS.md`).
+ODIR (Kaggle) and BRSET (PhysioNet) stay out of these tables because their credentials are absent from this workspace (`DATA_BLOCKERS.md`).
 
 ### 5.2 Quantitative RFMiD test metrics (after figures)
 
@@ -175,15 +175,15 @@ Arms E0–E5 were trained for 12 epochs on the frozen official split with nested
 
 Source JSON/CSV: `metrics_*_rfmid_test.json`, `ablation_summary.csv`. E5 per-head test AUROCs (illustrative): Disease_Risk 0.959, DR 0.916, MH 0.957, ODC 0.742, TSLN 0.924, DN 0.780, ARMD 0.939, MYA 0.989. Do not compare these ocular-sign AUROCs with Reti-Pioneer UKB systemic AUROCs (0.699–0.833).
 
-### 5.3 Still 待补充
+### 5.3 Items not covered by this draft
 
 | Cohort / claim | Status |
 |----------------|--------|
-| ODIR-5K real pixels + foundation extract | **待补充** (no Kaggle credentials) |
-| BRSET real pixels + foundation extract | **待补充** (PhysioNet DUA not completed) |
-| RETFound / Vim-S exact Reti-Pioneer weights | **待补充** (HF gated / mamba unavailable); surrogates used above |
-| UKB / hospital systemic clinical tables | **待补充** (no UKB access) |
-| Multi-seed {42,43,44} final tables | **待补充** (single seed 42 reported) |
+| ODIR-5K real pixels + foundation extract | Not run (no Kaggle credentials) |
+| BRSET real pixels + foundation extract | Not run (PhysioNet DUA not completed) |
+| RETFound / Vim-S exact Reti-Pioneer weights | Not used (HF gated / mamba unavailable); surrogates used above |
+| UKB / hospital systemic clinical tables | Not available (no UKB access) |
+| Multi-seed {42,43,44} final tables | Not run (single seed 42 reported) |
 
 Provenance: `AUTHENTICITY_AUDIT.md`, `DATA_BLOCKERS.md`.
 
@@ -203,7 +203,7 @@ Open risks include surrogate (not RETFound/Vim) backbones on RFMiD, empty ODIR/B
 
 ## 7. Limitations
 
-No UKB / SEED access in this drafting workspace; RFMiD labels are retinal disease signs rather than ICD systemic endpoints; no prospective trial; Vision Mamba optional / unavailable here; EyeQ weights external; RETFound HF gated without token → ImageNet surrogates used for RFMiD; ODIR Kaggle credentials absent; BRSET PhysioNet DUA not completed; GTX 950M present but CUDA PyTorch unavailable (CPU extract). ODIR / BRSET / UKB clinical tables therefore remain **待补充**.
+No UKB / SEED access in this drafting workspace; RFMiD labels are retinal disease signs rather than ICD systemic endpoints; no prospective trial; Vision Mamba optional / unavailable here; EyeQ weights external; RETFound HF gated without token → ImageNet surrogates used for RFMiD; ODIR Kaggle credentials absent; BRSET PhysioNet DUA not completed; GTX 950M present but CUDA PyTorch unavailable (CPU extract). ODIR / BRSET / UKB clinical tables are therefore absent from this draft.
 
 ---
 
@@ -211,7 +211,7 @@ No UKB / SEED access in this drafting workspace; RFMiD labels are retinal diseas
 
 Code, ablation configs, patient-level splits with calibration hashes, and evaluation guards are released for independent checking. A public code-and-docs snapshot is available at https://github.com/Coucou2016/retinal-imaging-methods-public (no patient images or UKB extracts). See third-party notices for upstream Reti-Pioneer attribution.
 
-**Data availability.** Public ODIR-5K / BRSET / RFMiD under their respective licenses (BRSET via PhysioNet credentialing). UK Biobank data are not redistributed; clinical UKB AUROCs remain **待补充** until authorized access and re-analysis.
+**Data availability.** Public ODIR-5K / BRSET / RFMiD under their respective licenses (BRSET via PhysioNet credentialing). UK Biobank data are not redistributed; clinical UKB AUROCs are not reported here, because authorized access and re-analysis are not available.
 
 Representative commands (environment-dependent):
 

@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 """Render display equations to transparent PNGs at print resolution."""
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import json
 from pathlib import Path
@@ -10,8 +19,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "docs" / "paper_assets" / "equations"
+ROOT = Path(__file__).resolve().parent
+OUT = ROOT / "equations"
 
 EQUATIONS = {
     1: r"$u_i=\mathrm{softplus}(\delta_i)+\varepsilon,\quad i=1,2,3$",

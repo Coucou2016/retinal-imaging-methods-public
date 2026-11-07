@@ -27,7 +27,7 @@
 | ODIR (Kaggle) | **Impossible** — no credentials |
 | BRSET (PhysioNet) | **Impossible** — no credentials |
 | CUDA foundation extract | **Impossible** — torch CPU-only despite GTX 950M |
-| Clinical Results AUROCs | **待补充** — not invented |
+| Clinical Results AUROCs | **Not available in this environment** — no UKB access, so no clinical AUROCs are reported |
 
 ## Unittest
 

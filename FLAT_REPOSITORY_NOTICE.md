@@ -40,6 +40,7 @@ structure was folded into the filename to keep the tree one level deep.
 
 | Original nested path | Flat path here |
 |----------------------|----------------|
+| `docs/paper/manuscript_zh_v2.md`, `manuscript_zh_v3.{docx,pdf,html}` | `manuscript_zh.md`, `.docx`, `.pdf`, `.html` |
 | `docs/paper/manuscript.{md,html,pdf}` | `manuscript.{md,html,pdf}` |
 | `docs/report/report.{md,html,pdf}` | `report.{md,html,pdf}` |
 | `docs/paper/AUTHENTICITY_AUDIT.md`, `docs/paper/OUTLINE.md` | `AUTHENTICITY_AUDIT.md`, `OUTLINE.md` |
@@ -127,11 +128,13 @@ Suggested reading order
   1. FLAT_REPOSITORY_NOTICE.md   (this file)
   2. FLAT_FILE_INDEX.md          (map of everything)
   3. AUTHENTICITY_AUDIT.md       (what is real, what is not)
-  4. manuscript.md               (the paper)
-  5. report.md                   (the report)
-  6. metrics_E*_rfmid_test.json  (numbers behind the tables)
-  7. ablation_e*.yaml + train.py + evaluate.py + QualityAware.py
-  8. test_*.py                   (what is actually enforced)
+  4. manuscript_zh.md            (the paper, primary deliverable)
+  5. manuscript.md               (English draft of the same work)
+  6. report.md                   (the report)
+  7. metrics_E*_rfmid_test.json  (numbers behind the tables)
+  8. seed_replication.json, threshold_transfer_replication.json (4-seed evidence)
+  9. ablation_e*.yaml + train.py + evaluate.py + QualityAware.py
+ 10. test_*.py                   (what is actually enforced)
 ```
 
 Machine-readable provenance for this build: `FLAT_BUILD_MANIFEST.json`

@@ -22,6 +22,15 @@ Usage:
     python scripts/export_manuscript_numbers.py
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import json
 import os
@@ -29,9 +38,9 @@ from pathlib import Path
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]
-ANALYSIS = Path(os.environ.get("ARM_ANALYSIS_DIR", ROOT / "results" / "real_rfmid" / "analysis_sel"))
-STATS = Path(os.environ.get("ARM_STATS_DIR", ANALYSIS / "stats"))
+ROOT = Path(__file__).resolve().parent
+ANALYSIS = Path(os.environ.get("ARM_ANALYSIS_DIR", ROOT))
+STATS = Path(os.environ.get("ARM_STATS_DIR", ROOT))
 
 
 def r(x, n=4):
@@ -42,7 +51,7 @@ def r(x, n=4):
 
 
 def load(name: str):
-    p = STATS / name
+    p = ROOT / name
     if not p.is_file():
         raise FileNotFoundError(f"missing statistic file {p}; run the pipeline first")
     return json.loads(p.read_text(encoding="utf-8"))
@@ -66,12 +75,17 @@ def main() -> None:
 
     # optional: newer analyses, included when the scripts have been run
     def maybe(name):
-        p = STATS / name
+        p = (ROOT / name).resolve() if name.startswith("..") else ROOT / name
         return json.loads(p.read_text(encoding="utf-8")) if p.is_file() else None
 
     extended = maybe("extended.json")
     holdout = maybe("recalibration_holdout.json")
     followup = maybe("recalibration_followup.json")
+    # seed replicates: optional, merged when the replicate pipeline has run
+    seed_repl = maybe("../../analysis_seed/seed_replication.json")
+    seed_cal = maybe("../../analysis_seed/calibration_replication.json")
+    seed_ep = maybe("../../analysis_seed/seed_endpoint_analysis.json")
+    seed_tt = maybe("../../analysis_seed/threshold_transfer_replication.json")
 
     out: dict = {
         "arms": {},
@@ -97,6 +111,10 @@ def main() -> None:
         "extended": extended,
         "recalibration_holdout": holdout,
         "recalibration_followup": followup,
+        "seed_replication": seed_repl,
+        "calibration_replication": seed_cal,
+        "seed_endpoint_analysis": seed_ep,
+        "threshold_transfer_replication": seed_tt,
     }
 
     for arm, row in headline.items():
@@ -163,6 +181,34 @@ def main() -> None:
             ),
             "equal_mass_ece": r(
                 (extended or {}).get("adaptive_ece", {}).get(arm, {}).get("mean_head_ece_equal_mass")
+            ),
+            "seed_macro_mean": r(
+                ((seed_repl or {}).get("per_arm", {}).get(arm, {}) or {}).get("mean")
+            ),
+            "seed_macro_sd": r(
+                ((seed_repl or {}).get("per_arm", {}).get(arm, {}) or {}).get("sd")
+            ),
+            "seed_macro_min": r(
+                ((seed_repl or {}).get("per_arm", {}).get(arm, {}) or {}).get("min")
+            ),
+            "seed_macro_max": r(
+                ((seed_repl or {}).get("per_arm", {}).get(arm, {}) or {}).get("max")
+            ),
+            "seed_n": ((seed_repl or {}).get("per_arm", {}).get(arm, {}) or {}).get("n_seeds"),
+            "seed_ece_identity": r(
+                ((seed_cal or {}).get("per_arm", {}).get(arm, {}) or {})
+                .get("aggregate", {})
+                .get("ece_identity_mean")
+            ),
+            "seed_ece_temperature": r(
+                ((seed_cal or {}).get("per_arm", {}).get(arm, {}) or {})
+                .get("aggregate", {})
+                .get("ece_temperature_global_mean")
+            ),
+            "seed_ece_prevalence_shift": r(
+                ((seed_cal or {}).get("per_arm", {}).get(arm, {}) or {})
+                .get("aggregate", {})
+                .get("ece_prevalence_shift_mean")
             ),
         }
 

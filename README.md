@@ -15,11 +15,17 @@ Monotone Quality Routing and Endpoint-Aware Multi-Task Learning*.
 |------|------------|
 | `FLAT_REPOSITORY_NOTICE.md` | Why this repo has no folders; how to load it into an AI agent |
 | `FLAT_FILE_INDEX.md` | Every file: flat name -> original nested path -> role |
-| `manuscript.md` / `.html` / `.pdf` | The paper draft (Nature-family methods structure) |
+| `manuscript_zh.md` / `.docx` / `.pdf` / `.html` | **Primary deliverable**: Chinese submission manuscript, 26 tables, 18 figures, live TOC |
+| `manuscript.md` / `.html` / `.pdf` | The earlier English draft (Nature-family methods structure) |
 | `report.md` / `.html` / `.pdf` | Standalone research report (self-contained HTML, Base64 figures, no CDN) |
 | `AUTHENTICITY_AUDIT.md` | Real-pixel vs synthetic provenance, exact run commands, claim boundaries |
 | `methodology_extensions_flat.py` | The three methods contributions, self-contained and self-testing |
 | `FLAT_BUILD_MANIFEST.json` | Provenance of this build + SHA-256 for every file |
+| `seed_replication.json`, `threshold_transfer_replication.json` | Four-seed operating-point evidence behind §4 and Fig. 19-20 |
+
+Every number quoted in the manuscript is re-checked against the statistics
+JSON by `check_manuscript_numbers.py`; ordering, citation order and prose
+rules have their own audit scripts at the root.
 
 ## What is (and is not) claimed
 

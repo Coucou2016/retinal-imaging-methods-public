@@ -4,11 +4,20 @@ Back-references later in the prose are legitimate and must not be flagged.
 Equation mentions conventionally precede the displayed definition, so an
 equation may be referenced before it is typeset.
 """
+
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
 import re
 import sys
 from pathlib import Path
 
-SRC = Path(__file__).resolve().parents[1] / "docs" / "paper" / "manuscript_zh_v2.md"
+SRC = Path(__file__).resolve().parent / "manuscript_zh.md"
 text = SRC.read_text(encoding="utf-8")
 lines = text.split("\n")
 

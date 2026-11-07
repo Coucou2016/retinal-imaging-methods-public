@@ -38,7 +38,7 @@ Target venues (realistic without UKB): *npj Digital Medicine*, *Medical Image An
 | IV | Calibration / DCA as **evaluation framework** | Not novelty — reporting protocol | `utils/calibration.py` | Any public set | Low |
 | V | Disjoint calibration splits | Prevent val fit+score leakage | `split.calibration_idx` | All | Low |
 | VI | Fairness slices (age, sex) | Authors flag ethnicity imbalance | Subgroup AUROC | BRSET | Low |
-| E5 | Quality-conditioned gating | Deferred | — | — | 待补充 |
+| E5 | Quality-conditioned gating | Implemented as `quality_gating`; validated on RFMiD only | `quality_gating` | RFMiD | Low |
 
 **Write I+II+III as the paper core. Use IV–VI as required evaluation/protocol. Do not sell calibration/DCA as novelty.**
 

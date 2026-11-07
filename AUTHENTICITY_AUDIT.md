@@ -10,10 +10,13 @@
 
 | 主张 | 判定 |
 |------|------|
-| RFMiD E0–E5 AUROC / ECE / \(T\) / bootstrap CI | **本仓库** `build_real_rfmid_cache.py` → `run_real_rfmid_experiments.py` → `evaluate.py` |
-| 直观图（眼底质量分层、ROC、可靠性、DCA、消融柱、路由） | `plot_real_results.py`（SciencePlots + Times New Roman） |
+| RFMiD E0–E5 AUROC / ECE / \(T\) / bootstrap CI | **本仓库** `build_real_rfmid_cache.py` → `run_real_rfmid_experiments.py` → `analyze_arms.py` |
+| 校准诊断（logit 偏移、共享 Platt、事后校正阶梯） | `logit_offset_analysis.py`、`recalibration_holdout.py`、`recalibration_followup.py` |
+| 工作点与阈值搬移 | `operating_point_analysis.py`、`threshold_transfer.py`、`clinical_utility.py` |
+| 配对自助法分布（1000 次重采样密度） | `extra_evidence.py` → `stats/extra_bootstrap.npz`、`stats/extra_evidence.json` |
+| 直观图（眼底质量分层、ROC、可靠性、DCA、消融柱、路由） | `rebuild_paper_figures.py`（SciencePlots + Times New Roman，600 dpi） |
 | Reti-Pioneer UKB AUROC 0.699–0.833 | **仅作背景引用**，未写入我们的结果表 |
-| ODIR / BRSET / UKB 临床主表 | **待补充**（见 DATA_BLOCKERS） |
+| ODIR / BRSET / UKB 临床主表 | **未包含**（本机无凭据；见 DATA_BLOCKERS） |
 | 历史 SYNTHETIC ODIR 消融表 | **已移出主 Results**；仅留作 CI |
 
 ---
@@ -41,21 +44,35 @@
 
 ```text
 python build_real_rfmid_cache.py --cache-dir data/rfmid --batch-size 8
-python run_real_rfmid_experiments.py --data-dir data/rfmid --out-dir results/real_rfmid --epochs 12 --bootstrap 200
-python plot_real_results.py
-python build_paper_report.py
+python run_real_rfmid_experiments.py --data-dir data/rfmid --epochs 15
+python select_epochs.py --runs results/real_rfmid
+python collect_arm_predictions.py --arms E0 E1 E2 E3 E4 E5
+python collect_cal_predictions.py --arms E0 E1 E2 E3 E4 E5
+python analyze_arms.py --arms E0 E1 E2 E3 E4 E5
+python recalibrate_arms.py
+python temperature_schemes.py
+python logit_offset_analysis.py
+python recalibration_holdout.py
+python recalibration_followup.py
+python extra_evidence.py
+python export_manuscript_numbers.py
+python rebuild_paper_figures.py
 ```
 
-### Test 表（\(n=640\)，bootstrap \(B=200\)）
+### Test 表（\(n=640\)，bootstrap \(B=1000\)，报告轮次按验证集选择）
 
-| Arm | Macro AUROC | AUROC_DR | ECE | Cal ECE | T | Bootstrap 95% CI |
-|-----|-------------|----------|-----|---------|---|------------------|
-| E0 | 0.925 | 0.925 | 0.026 | 0.031 | 1.06 | [0.902, 0.947] |
-| E1 | 0.931 | 0.931 | 0.034 | 0.032 | 1.11 | [0.908, 0.949] |
-| E2 | 0.886 | 0.910 | 0.170 | 0.176 | 1.06 | [0.872, 0.902] |
-| E3 | 0.898 | 0.928 | 0.178 | 0.188 | 1.11 | [0.882, 0.914] |
-| E4 | 0.898 | 0.928 | 0.178 | 0.188 | 1.11 | [0.882, 0.914] |
-| E5 | 0.901 | 0.916 | 0.156 | 0.154 | 0.98 | [0.887, 0.914] |
+Numbers below are read from `analysis_sel/manuscript_numbers.json`, the same file that `check_manuscript_numbers.py` uses to audit the manuscript. Any drift between table and paper fails that check.
+
+| Arm | Macro AUROC | Bootstrap 95% CI | DeLong 95% CI | AUROC_DR | Mean per-head ECE | Brier | \(T\) (cal 64) |
+|-----|-------------|------------------|---------------|----------|-------------------|-------|----------------|
+| E0 | 0.932 | [0.908, 0.953] | [0.908, 0.956] | 0.932 | 0.031 | 0.075 | 1.099 |
+| E1 | 0.933 | [0.912, 0.952] | [0.912, 0.955] | 0.933 | 0.025 | 0.079 | 1.325 |
+| E2 | 0.896 | [0.881, 0.910] | [0.863, 0.928] | 0.926 | 0.136 | 0.098 | 1.216 |
+| E3 | 0.906 | [0.890, 0.919] | [0.872, 0.940] | 0.934 | 0.149 | 0.101 | 1.261 |
+| E4 | 0.898 | [0.882, 0.912] | [0.865, 0.930] | 0.931 | 0.122 | 0.097 | 1.382 |
+| E5 | 0.916 | [0.903, 0.928] | [0.888, 0.944] | 0.938 | 0.122 | 0.087 | 1.132 |
+
+Selected epochs: E0 12/15, E1 14/15, E2 15/15, E3 15/15, E4 18/23, E5 15/15. The earlier 12-epoch fixed-budget run is reported in §5.6 of the manuscript as a sensitivity check, not as the main result.
 
 Run dirs：见 `run_manifest.json`。
 
@@ -74,17 +91,28 @@ Run dirs：见 `run_manifest.json`。
 
 ## 4. 图件生成链
 
-| 图 | 脚本 | 输入 | 输出 |
+All sixteen figures in the manuscript come from `rebuild_paper_figures.py`, which reads only the JSON/CSV artefacts under `analysis_sel/` and the RFMiD images under ``. Typography is SciencePlots with Times New Roman, and the PNGs are written at 600 dpi.
+
+| 图 | 函数 | 输入 | 输出 |
 |----|------|------|------|
-| Fig1 architecture | `plot_paper_figures.py` | schematic | `fig1_architecture.*` |
-| Fig2 ablation bars | `plot_real_results.py` | `ablation_summary.csv` | `fig2_ablation_bars.*` |
-| Fig3 reliability | same | E5 test preds | `fig3_calibration.*` |
-| Fig5 fundus quality | same | RFMiD images + ql | `fig5_fundus_quality.*` |
-| Fig6 routing | same | QualityAware + router | `fig6_quality_routing.*` |
-| Fig6b quality pie | same | ql argmax | `fig6b_quality_pie.*` |
-| Fig7 DCA | same | metrics JSON dca_curves | `fig7_decision_curves.*` |
-| Fig8 ROC | same | E5 test probs | `fig8_roc_curves.*` |
-| Fig9 score hist | same | E5 DR scores | `fig9_score_hist.*` |
+| Fig 1 architecture | `fig1_architecture` | schematic | `fig1_architecture.*` |
+| Fig 2 fundus strata | `fig5_fundus` | RFMiD images + soft-q | `fig5_fundus_quality_embed.*` |
+| Fig 3 quality counts | `fig6b_pie` | `quality_strata.json` | `fig6b_quality_pie.*` |
+| Fig 4 ablation bars | `fig2_ablation` | `headline.json` | `fig2_ablation_bars.*` |
+| Fig 5 paired delta | `fig5_paired` | `extra_bootstrap.npz` | `fig10_paired_delta.*` |
+| Fig 6 endpoint delta | `fig6_endpoint` | `extended.json` | `fig17_endpoint_delta.*` |
+| Fig 7 ROC curves | `fig7_roc` | E5 test predictions | `fig8_roc_curves.*` |
+| Fig 8 reliability | `fig8_reliability` | E3/E5 test predictions | `fig3_calibration.*` |
+| Fig 9 per-head ECE | `fig9_ece` | `per_head.json` | `fig12_ece_by_endpoint.*` |
+| Fig 10 correction ladder | `fig10_ladder` | `recalibration_holdout.json`, `recalibration_followup.json` | `fig16_recalibration_ladder.*` |
+| Fig 11 calibration headline | `fig11_headline_calibrated` | `headline_calibrated.json` | `fig13_headline_calibrated.*` |
+| Fig 12 threshold transfer | `fig12_transfer` | `threshold_transfer.json` | `fig14_threshold_transfer.*` |
+| Fig 13 score shift | `fig13_shift` | E0/E5 test predictions | `fig15_score_shift.*` |
+| Fig 14 decision curves | `fig14_dca` | `decision_curves.json` | `fig7_decision_curves.*` |
+| Fig 15 quality strata | `fig15_strata` | `quality_strata.json` | `fig11_quality_strata.*` |
+| Fig 16 router intervention | `fig16_router` | `router_intervention.json` | `fig18_router_intervention.*` |
+
+Inline display equations are rendered to transparent PNGs by `render_equations.py` at 600 dpi and embedded by the Word exporter.
 
 ---
 

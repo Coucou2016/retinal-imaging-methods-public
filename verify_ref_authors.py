@@ -16,6 +16,15 @@ Usage:  python scripts/verify_ref_authors.py
 Exit 1 on any problem.
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import json
 import re
@@ -24,9 +33,9 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-MD = ROOT / "docs" / "paper" / "manuscript_zh_v2.md"
-CACHE = ROOT / "results" / "real_rfmid" / "analysis_sel" / "stats" / "crossref_refs.json"
+ROOT = Path(__file__).resolve().parent
+MD = ROOT / "manuscript_zh.md"
+CACHE = ROOT / "crossref_refs.json"
 
 SURNAME = r"((?:Van|van|De|de|Von)\s+)?([A-Z][A-Za-z\-']{2,})"
 

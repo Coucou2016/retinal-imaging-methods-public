@@ -6,21 +6,23 @@ landscape table sections and embedded figures are already resolved there, so
 printing that file keeps the PDF identical to what the reader opens in Word.
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-DOCX = ROOT / "docs" / "paper" / "manuscript_zh_v3.docx"
-PDF = ROOT / "docs" / "paper" / "manuscript_zh_v3.pdf"
-MIRROR = (
-    ROOT
-    / "docs"
-    / "researchwrite"
-    / "retinal-methods"
-    / "exports"
-    / "manuscript_zh_v3.pdf"
-)
+ROOT = Path(__file__).resolve().parent
+DOCX = ROOT / "manuscript_zh.docx"
+PDF = ROOT / "manuscript_zh.pdf"
+MIRROR = PDF
 
 WD_EXPORT_FORMAT_PDF = 17
 WD_DO_NOT_SAVE_CHANGES = 0

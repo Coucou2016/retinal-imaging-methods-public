@@ -382,7 +382,7 @@ def main() -> None:
         synthetic_features=False,
         stub_features=False,
         extra={
-            "extractor": "scripts/build_real_rfmid_cache.py",
+            "extractor": "build_real_rfmid_cache.py",
             "real_pixels": True,
             "foundation_surrogates": True,
             "retfound_gated": True,

@@ -8,15 +8,24 @@ inserting a table does not silently point the checker at the wrong block.
 Exit code 1 when a mismatch exceeds the rounding tolerance.
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import json
 import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-MD = ROOT / "docs" / "paper" / "manuscript_zh_v2.md"
-NUM = ROOT / "results" / "real_rfmid" / "analysis_sel" / "manuscript_numbers.json"
+ROOT = Path(__file__).resolve().parent
+MD = ROOT / "manuscript_zh.md"
+NUM = ROOT / "manuscript_numbers.json"
 
 TOL = 0.0015
 
@@ -66,10 +75,11 @@ def rows_by_arm(rows: list[list[str]]) -> dict[str, list[str]]:
     return out
 
 
-def compare(problems: list[str], label: str, idx: int, got: float | None, want: float) -> None:
+def compare(problems: list[str], label: str, idx: int, got: float | None, want: float,
+            tol: float = TOL) -> None:
     if got is None:
         problems.append(f"{label} col {idx}: unparsable cell")
-    elif abs(got - want) > TOL:
+    elif abs(got - want) > tol:
         problems.append(f"{label} col {idx}: manuscript {got} vs stats {round(want, 3)}")
 
 
@@ -256,13 +266,271 @@ def check_counts(text, nums, problems):
             problems.append(f"prevalence {ep}={s} not found verbatim")
 
 
+def check_seed_tables(text, nums, problems):
+    """Seed-level tables and claims: per-arm means and the four comparisons."""
+    repl = nums.get("seed_replication")
+    if not repl:
+        return
+    rows = rows_by_arm(table_block(text, "四次训练的稳定性") or [])
+    for arm, rec in repl["per_arm"].items():
+        if arm not in rows:
+            problems.append(f"seed table: no row for {arm}")
+            continue
+        r = rows[arm]
+        # arm | mean | sd | min | max | n
+        compare(problems, f"seed {arm} mean", 0, parse_number(r[1]), rec["mean"])
+        compare(problems, f"seed {arm} sd", 1, parse_number(r[2]), rec["sd"])
+        compare(problems, f"seed {arm} min", 2, parse_number(r[3]), rec["min"])
+        compare(problems, f"seed {arm} max", 3, parse_number(r[4]), rec["max"])
+
+    labels = {
+        ("E1", "E0"): "E1 减 E0",
+        ("E3", "E2"): "E3 减 E2",
+        ("E4", "E3"): "E4 减 E3",
+        ("E5", "E3"): "E5 减 E3",
+    }
+    comp_rows = {}
+    for r in (table_block(text, "四次训练的配对差值") or [])[1:]:
+        comp_rows[r[0]] = r
+    for rec in repl["comparisons"]:
+        label = labels.get((rec["a"], rec["b"]))
+        if label is None or label not in comp_rows:
+            problems.append(f"seed comparison: no row for {rec['a']}-{rec['b']}")
+            continue
+        r = comp_rows[label]
+        compare(problems, f"seed cmp {label} mean", 0, parse_number(r[1]), rec["mean_delta"])
+        compare(problems, f"seed cmp {label} sd", 1, parse_number(r[2]), rec["sd_delta"])
+        m = re.match(r"(\d+)\s*/\s*(\d+)", r[3])
+        if m:
+            compare(problems, f"seed cmp {label} positives", 2,
+                    float(m.group(1)), float(rec["n_positive"]))
+            compare(problems, f"seed cmp {label} n", 3,
+                    float(m.group(2)), float(rec["n_seeds"]))
+        else:
+            problems.append(f"seed cmp {label}: sign-count cell unparsable ({r[3]})")
+
+
+def check_seed_calibration(text, nums, problems):
+    """Shared-head calibration under the seed replicates."""
+    cal = nums.get("calibration_replication")
+    if not cal:
+        return
+    rows = rows_by_arm(table_block(text, "四次训练的平均分病种校准误差") or [])
+    for arm, rec in cal["per_arm"].items():
+        if arm not in rows:
+            problems.append(f"seed cal: no row for {arm}")
+            continue
+        r = rows[arm]
+        a = rec["aggregate"]
+        # arm | raw | temperature | per-endpoint T | prevalence shift | fitted shift
+        compare(problems, f"seed cal {arm} raw", 0, parse_number(r[1]), a["ece_identity_mean"])
+        compare(problems, f"seed cal {arm} temp", 1, parse_number(r[2]), a["ece_temperature_global_mean"])
+        compare(problems, f"seed cal {arm} per-head", 2, parse_number(r[3]), a["ece_temperature_per_head_mean"])
+        compare(problems, f"seed cal {arm} prev", 3, parse_number(r[4]), a["ece_prevalence_shift_mean"])
+        compare(problems, f"seed cal {arm} fit", 4, parse_number(r[5]), a["ece_fitted_shift_mean"])
+
+
+def check_dr_seed(text, nums, problems):
+    """Six-arm comparison on the one endpoint every arm shares."""
+    ep = nums.get("seed_endpoint_analysis")
+    if not ep:
+        return
+    rows = rows_by_arm(table_block(text, "糖尿病视网膜病变 AUROC 的四次训练结果") or [])
+    for arm, rec in ep["dr_auroc"].items():
+        if arm not in rows:
+            problems.append(f"DR seed table: no row for {arm}")
+            continue
+        r = rows[arm]
+        compare(problems, f"DR seed {arm} mean", 0, parse_number(r[1]), rec["mean"])
+        compare(problems, f"DR seed {arm} sd", 1, parse_number(r[2]), rec["sd"])
+        compare(problems, f"DR seed {arm} min", 2, parse_number(r[3]), rec["min"])
+        compare(problems, f"DR seed {arm} max", 3, parse_number(r[4]), rec["max"])
+
+
+def check_slope_ranges(text, nums, problems):
+    """Seed-level spread of the centre-versus-prevalence diagnostic."""
+    repl = nums.get("seed_replication")
+    if not repl:
+        return
+    rows = rows_by_arm(table_block(text, "中心与流行率关系的跨种子范围") or [])
+    for arm, rec in repl["calibration"].items():
+        if arm not in rows:
+            problems.append(f"slope table: no row for {arm}")
+            continue
+        r = rows[arm]
+        compare(problems, f"slope {arm} r_lo", 0, parse_number(r[1]), rec["corr_min"])
+        compare(problems, f"slope {arm} r_hi", 1, parse_number(r[2]), rec["corr_max"])
+        compare(problems, f"slope {arm} s_lo", 2, parse_number(r[3]), rec["slope_min"])
+        compare(problems, f"slope {arm} s_hi", 3, parse_number(r[4]), rec["slope_max"])
+
+
+def check_s95_seed(text, nums, problems):
+    """Four-seed replication of the 95%-specificity operating point."""
+    tt = nums.get("threshold_transfer_replication")
+    if not tt:
+        return
+    rows = rows_by_arm(table_block(text, "高特异度工作点的四次重复") or [])
+    for arm, rec in tt["per_arm"].items():
+        if arm not in rows:
+            problems.append(f"s95 seed: no row for {arm}")
+            continue
+        g = rec["aggregate"]
+        r = rows[arm]
+        # arm | frozen | matched | loss | excess | slope | pAUC   ("mean ± sd" cells)
+        for idx, key in enumerate(("test_sensitivity_frozen", "test_sensitivity_matched",
+                                   "transfer_loss", "excess_specificity",
+                                   "local_roc_slope", "test_partial_auroc"), start=1):
+            m = re.match(r"([+\-−]?[0-9.]+)\s*±\s*([0-9.]+)", r[idx])
+            if not m:
+                problems.append(f"s95 seed {arm} col {idx}: unparsable cell ({r[idx]})")
+                continue
+            # the slope column is printed to two decimals, the rest to three
+            tol = 0.0051 if key == "local_roc_slope" else TOL
+            compare(problems, f"s95 seed {arm} {key} mean", idx, parse_number(m.group(1)),
+                    g[key]["mean"], tol)
+            compare(problems, f"s95 seed {arm} {key} sd", idx + 10, parse_number(m.group(2)),
+                    g[key]["sd"], tol)
+
+
+def check_utility_seed(text, nums, problems):
+    """Four-seed clinical utility at the frozen operating point."""
+    tt = nums.get("threshold_transfer_replication")
+    if not tt:
+        return
+    rows = rows_by_arm(table_block(text, "固定工作点上的临床效用四次重复") or [])
+    for arm, rec in tt["per_arm"].items():
+        if arm not in rows:
+            problems.append(f"utility seed: no row for {arm}")
+            continue
+        g = rec["aggregate"]
+        r = rows[arm]
+        # arm | PPV | NPV | missed per 100 | false alarms per 100
+        for idx, key in ((1, "ppv"), (2, "npv")):
+            m = re.match(r"([0-9.]+)\s*±\s*([0-9.]+)", r[idx])
+            if not m:
+                problems.append(f"utility seed {arm} col {idx}: unparsable cell ({r[idx]})")
+                continue
+            compare(problems, f"utility seed {arm} {key} mean", idx, parse_number(m.group(1)), g[key]["mean"])
+            compare(problems, f"utility seed {arm} {key} sd", idx + 10, parse_number(m.group(2)), g[key]["sd"])
+        for idx, key in ((3, "missed_per_100"), (4, "false_alarm_per_100")):
+            m = re.match(r"([0-9.]+)\s*±\s*([0-9.]+)", r[idx])
+            if not m:
+                problems.append(f"utility seed {arm} col {idx}: unparsable cell ({r[idx]})")
+                continue
+            # these columns carry two decimals
+            compare(problems, f"utility seed {arm} {key} mean", idx, float(m.group(1)),
+                    g[key]["mean"], 0.0051)
+            compare(problems, f"utility seed {arm} {key} sd", idx + 10, float(m.group(2)),
+                    g[key]["sd"], 0.0051)
+
+
+def check_epoch9(text, nums, problems):
+    """The fixed-epoch sensitivity reference quoted in §3.7 and §4.3.
+
+    Both claims are read back from disk rather than from the merged numbers file,
+    because they describe a protocol that the manuscript does not report: every
+    arm scoring the ninth checkpoint with no validation-based selection.
+    """
+    sel_path = ROOT / "epoch_selection.json"
+    if not sel_path.is_file():
+        return
+    selection = json.loads(sel_path.read_text(encoding="utf-8"))
+
+    def val_at(arm: str, epoch: int) -> float | None:
+        for rec in selection.get(arm, {}).get("per_epoch", []):
+            if int(rec["epoch"]) == epoch:
+                return float(rec["val_macro_auroc"])
+        return None
+
+    vals = [val_at(arm, 9) for arm in ("E0", "E1", "E2", "E3", "E4", "E5")]
+    if any(v is None for v in vals):
+        problems.append("epoch9: validation AUROC missing for at least one arm")
+    else:
+        line = "、".join(f"{v:.3f}" for v in vals)
+        if line not in text:
+            problems.append(f"epoch9: validation row {line} not found verbatim")
+        chosen = {
+            arm: selection[arm]["selected_val_macro_auroc"]
+            for arm in selection
+        }
+        order9 = sorted(range(6), key=lambda i: -vals[i])
+        order_sel = sorted(
+            range(6), key=lambda i: -chosen[("E0", "E1", "E2", "E3", "E4", "E5")[i]]
+        )
+        if order9 != order_sel:
+            problems.append("epoch9: arm ordering differs between epoch 9 and selected epochs")
+
+    test9: dict[str, float] = {}
+    for arm in ("E0", "E1"):
+        p = ROOT / f"metrics_{arm}_rfmid_test.json"
+        if not p.is_file():
+            return
+        rec = json.loads(p.read_text(encoding="utf-8"))
+        if not str(rec.get("ckpt", "")).endswith("9.pt"):
+            problems.append(f"epoch9: {arm} test metrics were not computed on the 9th checkpoint")
+            continue
+        test9[arm] = float(rec["raw"]["auroc"])
+    if len(test9) == 2:
+        delta = test9["E1"] - test9["E0"]
+        sentence = f"E0 为 {test9['E0']:.3f}，E1 为 {test9['E1']:.3f}，差值为 {delta:+.3f}"
+        if sentence not in text:
+            problems.append(f"epoch9: sentence '{sentence}' not found verbatim")
+
+
+def check_decision_curve(text, nums, problems):
+    """Net benefit quoted in §4.13, read back from the curve file itself."""
+    p = ROOT / "decision_curves.json"
+    if not p.is_file():
+        return
+    curves = json.loads(p.read_text(encoding="utf-8")).get("E5", {})
+
+    def nb_at(endpoint: str, target: float, key: str) -> float | None:
+        c = curves.get(endpoint)
+        if not c:
+            return None
+        th, val = c["thresholds"], c[key]
+        i = min(range(len(th)), key=lambda k: abs(th[k] - target))
+        return float(val[i])
+
+    for endpoint, t0, claim in (
+        ("DR", 0.20, "0.118"),
+        ("MH", 0.20, "0.102"),
+        ("Disease_Risk", 0.20, "0.737"),
+        ("DN", 0.10, "−0.005"),
+    ):
+        got = nb_at(endpoint, t0, "net_benefit")
+        if got is None:
+            problems.append(f"dca: no curve for {endpoint}")
+            continue
+        shown = f"{got:.3f}".replace("-", "−")
+        if shown != claim:
+            problems.append(f"dca {endpoint}@{t0}: manuscript {claim} vs stats {shown}")
+        if claim not in text:
+            problems.append(f"dca {endpoint}@{t0}: value {claim} not found verbatim")
+    for endpoint, t0, claim in (
+        ("DR", 0.20, "−0.008"),
+        ("MH", 0.20, "−0.047"),
+        ("Disease_Risk", 0.20, "0.738"),
+        ("DN", 0.10, "−0.031"),
+    ):
+        got = nb_at(endpoint, t0, "treat_all")
+        if got is None:
+            continue
+        shown = f"{got:.3f}".replace("-", "−")
+        if shown != claim:
+            problems.append(f"dca treat_all {endpoint}@{t0}: manuscript {claim} vs stats {shown}")
+
+
 def main() -> int:
     text = MD.read_text(encoding="utf-8")
     nums = json.loads(NUM.read_text(encoding="utf-8"))
 
     problems: list[str] = []
     for fn in (check_epoch, check_main, check_paired, check_per_head, check_calibration,
-               check_youden, check_s95, check_strata, check_counts):
+               check_youden, check_s95, check_strata, check_counts,
+               check_seed_tables, check_seed_calibration, check_dr_seed,
+               check_slope_ranges, check_s95_seed, check_utility_seed, check_epoch9,
+               check_decision_curve):
         fn(text, nums, problems)
 
     if not problems:

@@ -24,11 +24,11 @@ python download_public_data.py --try-download
 
 | Dataset | Labels | Images | Foundation features | Notes |
 |---------|--------|--------|---------------------|-------|
-| **ODIR-5K** | not downloaded | not downloaded | SYNTHETIC demo cache only | No `kaggle` CLI / `~/.kaggle/kaggle.json` |
-| **BRSET** | blocked | blocked | SYNTHETIC demo cache only | PhysioNet credentialing / DUA required; script never auto-downloads |
-| **RFMiD** | **real** official CSVs (n=3200, K=46) under `data/raw/rfmid/` | sample PNGs only (3 training images for path check); full ~3200 images not bulk-pulled | **SYNTHETIC** in `` (`SYNTHETIC_FEATURES.txt`) | CUDA unavailable (`torch.cuda.is_available()==False`) → RETFound/Swin extraction **待补充** |
+| **ODIR-5K** | not downloaded | not downloaded | none | No `kaggle` CLI / `~/.kaggle/kaggle.json` in this environment |
+| **BRSET** | not downloaded | not downloaded | none | PhysioNet credentialing / DUA required; the helper never auto-downloads |
+| **RFMiD** | **real** official CSVs (n=3200, K=46) under `data/raw/rfmid/` | **all 3200 images** | **real-pixel** cache in `` (Swin-V2-B, ViT-B/16→1024, ViT-S/16→384) | RETFound weights are gated and Vision Mamba is unavailable on Windows, so ImageNet surrogates fill the backbone slots; see `FEATURE_PROVENANCE.json` |
 
-Honesty: real RFMiD *labels* do not authorize manuscript AUROCs until real pixels + foundation features replace the synthetic backbone caches.
+Honesty: the RFMiD rows in the manuscript come from this real-pixel cache. ODIR and BRSET stay out of the main results because their downloads are not accessible from this host.
 
 ## Label mapping / endpoint harmonization (pre-register these heads)
 

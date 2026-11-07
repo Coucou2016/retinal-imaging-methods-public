@@ -7,13 +7,22 @@ Chinese characters, the most repeated sentence openers, and phrases that survive
 from a first draft.
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import collections
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "docs" / "paper" / "manuscript_zh_v2.md"
+ROOT = Path(__file__).resolve().parent
+SRC = ROOT / "manuscript_zh.md"
 
 SKIP_PREFIX = ("#", "|", "!", "\\[", "**表", "**图", "```", "---")
 BANNED = ["链路", "回路", "闭环", "耦合", "赋能", "抓手", "生态位", "护城河", "壁垒"]

@@ -6,14 +6,23 @@ figures are embedded as relative links to ``docs/paper_assets``, and the table o
 contents is generated from the heading hierarchy.
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import html
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "docs" / "paper" / "manuscript_zh_v2.md"
-OUT = ROOT / "docs" / "paper" / "manuscript_zh_v3.html"
+ROOT = Path(__file__).resolve().parent
+SRC = ROOT / "manuscript_zh.md"
+OUT = ROOT / "manuscript_zh.html"
 
 CSS = """
 :root { --ink:#1a1a1a; --muted:#5c5c5c; --rule:#d5d5d5; --accent:#7a4a2b; }
@@ -105,7 +114,7 @@ def inline(text: str) -> str:
 
 def figure_path(raw: str) -> str:
     p = (SRC.parent / raw).resolve()
-    return Path("..") / "paper_assets" / p.name if p.exists() else Path(raw)
+    return Path(p.name) if p.exists() else Path(raw)
 
 
 def main() -> int:

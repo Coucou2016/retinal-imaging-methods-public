@@ -1,0 +1,45 @@
+# E4 — Unconstrained free-linear quality routing (ablation of the monotone constraint).
+# Same backbone, heads, split and masked multitask loss as E3; only the router differs.
+# Purpose: test whether enforcing bad <= usable <= good changes discrimination or calibration.
+
+data_dir: data/UKBCompressed
+pretrained_dir: pretrained
+ckpt_dir: ckpt
+
+clinic_variables: [baselineage, gender, weight, ethnicity]
+diseases: [t2dm, thyroid, osteoporosis, gout, hyperlipemia, hypertension]
+pretrain_features: [RETF, SwinB, VimS]
+
+training:
+  lr: 1.0e-4
+  weight_decay: 0.01
+  epochs: 20
+  epochs_factor: 2
+  warmup_lr: 1.0e-6
+  warmup_epochs: 4
+  batch_size: 64
+  fast_mode: true
+  balance_sampler: false
+  device: auto
+  learnable_q: true
+  quality_router: free_linear
+  multitask: true
+  masked_bce: true
+  pos_weight: true
+  enable_q: true
+  ensemble: released_code
+  calibrate: false
+
+eval:
+  calibrate: true
+  decision_threshold: 0.10
+  paper_mode: false
+
+longitudinal_years: [0]
+split:
+  val_fraction: 0.25
+  cal_fraction: 0.1
+  seed: 42
+demo:
+  n_samples: 256
+  seed: 42

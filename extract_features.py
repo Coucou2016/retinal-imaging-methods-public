@@ -208,7 +208,7 @@ def update_cache_provenance(
     from label_map import update_label_map_provenance
 
     payload = {
-        "extractor": "scripts/extract_features.py",
+        "extractor": "extract_features.py",
         "stub_identity": bool(stub),
         "extract_complete": bool(complete) and not stub,
     }

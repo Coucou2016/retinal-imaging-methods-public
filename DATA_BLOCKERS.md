@@ -11,10 +11,10 @@
 | ODIR-5K | `kaggle datasets download` | **Impossible here** | No `~/.kaggle/kaggle.json`; `kaggle` CLI not installed |
 | BRSET | PhysioNet DUA download | **Impossible here** | No PhysioNet credentials; helper never scrapes PhysioNet |
 | CUDA foundation extract | Use GTX 950M | **Blocked** | CPU-only torch; driver/CUDA too old for modern wheels; Maxwell dropped |
-| Clinical UKB tables | Fill manuscript UKB AUROCs | **待补充** | No UKB access; no invented AUROCs |
+| Clinical UKB tables | Fill manuscript UKB AUROCs | **Not available** | No UKB access; no clinical AUROCs are reported |
 
 ## What is reportable now
 
 - Real-pixel RFMiD Results (ImageNet foundation surrogates) under ``
 - Intuitive figures (fundus quality strata, ROC, reliability, DCA, ablation bars, routing)
-- ODIR/BRSET remain **待补充** (no credentials) — do **not** put prior SYNTHETIC AUROCs in main Results tables
+- ODIR/BRSET stay out of the main Results tables because the credentials for those downloads are not available here

@@ -15,13 +15,22 @@ length          sentences over 90 Chinese characters
 Exit code 1 if any hard rule is violated.
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import re
 import sys
 from collections import Counter
 from pathlib import Path
 
-MD = Path(__file__).resolve().parents[1] / "docs" / "paper" / "manuscript_zh_v2.md"
+MD = Path(__file__).resolve().parent / "manuscript_zh.md"
 
 BANNED_WORDS = ["待确定", "待确认", "待补充", "TBD", "TODO", "XXX"]
 JARGON = ["链路", "回路", "闭环", "耦合", "赋能", "抓手", "生态位", "护城河"]

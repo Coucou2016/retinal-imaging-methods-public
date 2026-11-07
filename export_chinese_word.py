@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Chinese Word manuscript from docs/paper/manuscript_zh_v2.md.
+"""Build the Chinese Word manuscript from docs/paper/manuscript_zh.md.
 
 Features
 --------
@@ -10,6 +10,15 @@ Features
 * Live TOC field plus page-number footer; refreshed by Word COM afterwards
 """
 from __future__ import annotations
+# --- flat-snapshot bootstrap (auto-generated) -------------------------------
+import os as _os
+import sys as _sys
+
+_FLAT_ROOT = _os.path.dirname(_os.path.abspath(__file__))
+if _FLAT_ROOT not in _sys.path:
+    _sys.path.insert(0, _FLAT_ROOT)
+# ---------------------------------------------------------------------------
+
 
 import os
 import re
@@ -34,10 +43,10 @@ try:
 except Exception:  # pragma: no cover
     to_omml = None
 
-ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "docs" / "paper" / "manuscript_zh_v2.md"
-OUT = ROOT / "docs" / "paper" / "manuscript_zh_v3.docx"
-MIRROR = ROOT / "docs" / "researchwrite" / "retinal-methods" / "exports" / "manuscript_zh_v3.docx"
+ROOT = Path(__file__).resolve().parent
+SRC = ROOT / "manuscript_zh.md"
+OUT = ROOT / "manuscript_zh.docx"
+MIRROR = OUT
 
 CN_BODY = "宋体"
 CN_HEAD = "黑体"
@@ -498,7 +507,7 @@ def add_equation(doc, latex: str, number: int):
     keeps a stable height. The formula sits on a centre tab and its number on a
     right tab, so both share one line at the standard geometry of a 21 cm page.
     """
-    img = ROOT / "docs" / "paper_assets" / "equations" / f"eq{number}.png"
+    img = ROOT / f"eq{number}.png"
     p = doc.add_paragraph()
     pf = p.paragraph_format
     pf.first_line_indent = Cm(0)
@@ -559,7 +568,7 @@ def resolve_image(target: str) -> Path:
     if cand.exists():
         return cand
     name = Path(target).name
-    alt = ROOT / "docs" / "paper_assets" / name
+    alt = ROOT / name
     if alt.exists():
         return alt
     return cand

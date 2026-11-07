@@ -1,0 +1,68 @@
+{
+  "E0": {
+    "split": "test",
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts\\20260917012508\\DR\\y0",
+    "quality_router": "fixed",
+    "quality_gating": false,
+    "monotone_weights": null,
+    "n": 640,
+    "ckpt": "results/real_rfmid/ckpts/20260917012508/DR/y0/ckpt/12.pt"
+  },
+  "E1": {
+    "split": "test",
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts\\20260917013929\\DR\\y0",
+    "quality_router": "monotone",
+    "quality_gating": false,
+    "monotone_weights": [
+      0.0001012335269479081,
+      0.5005667805671692,
+      1.0
+    ],
+    "n": 640,
+    "ckpt": "results/real_rfmid/ckpts/20260917013929/DR/y0/ckpt/14.pt"
+  },
+  "E2": {
+    "split": "test",
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts\\20260917015318\\multitask\\y0",
+    "quality_router": "fixed",
+    "quality_gating": false,
+    "monotone_weights": null,
+    "n": 640,
+    "ckpt": "results/real_rfmid/ckpts/20260917015318/multitask/y0/ckpt/15.pt"
+  },
+  "E3": {
+    "split": "test",
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts\\20260917020322\\multitask\\y0",
+    "quality_router": "monotone",
+    "quality_gating": false,
+    "monotone_weights": [
+      0.0001017582617350854,
+      0.5031662583351135,
+      1.0
+    ],
+    "n": 640,
+    "ckpt": "results/real_rfmid/ckpts/20260917020322/multitask/y0/ckpt/15.pt"
+  },
+  "E4": {
+    "split": "test",
+    "run_dir": "C:\\_retinal_runs\\ckpt_e4free\\20261107033000\\multitask\\y0",
+    "quality_router": "free_linear",
+    "quality_gating": false,
+    "monotone_weights": null,
+    "n": 640,
+    "ckpt": "C:/_retinal_runs/ckpt_e4free/20261107033000/multitask/y0/ckpt/18.pt"
+  },
+  "E5": {
+    "split": "test",
+    "run_dir": "E:\\Projects\\20260522-retinal-imaging\\results\\real_rfmid\\ckpts\\20260917022709\\multitask\\y0",
+    "quality_router": "monotone",
+    "quality_gating": true,
+    "monotone_weights": [
+      0.00010264815500704572,
+      0.5068389177322388,
+      1.0
+    ],
+    "n": 640,
+    "ckpt": "results/real_rfmid/ckpts/20260917022709/multitask/y0/ckpt/15.pt"
+  }
+}

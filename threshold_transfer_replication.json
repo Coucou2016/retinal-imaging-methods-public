@@ -1,0 +1,1518 @@
+{
+  "endpoint": "DR",
+  "target_specificity": 0.95,
+  "seeds": [
+    42,
+    43,
+    44,
+    45
+  ],
+  "per_arm": {
+    "E0": {
+      "seeds": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "rows": [
+        {
+          "seed": 42,
+          "epoch": 12,
+          "val_threshold": 0.5707362294197083,
+          "val_sensitivity": 0.7226890756302521,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity_frozen": 0.6612903225806451,
+          "test_specificity_frozen": 0.9573643410852714,
+          "test_specificity_predicted_shift": 0.9518599562363238,
+          "specificity_prediction_error": 0.005504384848947552,
+          "test_sensitivity_matched": 0.6774193548387096,
+          "test_specificity_matched": 0.9534883720930233,
+          "transfer_loss": 0.016129032258064502,
+          "excess_specificity": 0.0073643410852713975,
+          "local_roc_slope": -5.746543778801849,
+          "expected_loss_from_excess_spec": 0.0423195084485412,
+          "test_auroc": 0.932076769192298,
+          "test_partial_auroc": 0.7596932127768785,
+          "val_negative_mean": 0.12354648858308792,
+          "test_negative_mean": 0.10372605919837952,
+          "negative_mean_shift": -0.019820429384708405,
+          "val_negative_p95": 0.5672837495803833,
+          "test_negative_p95": 0.49595358967781067,
+          "val_spec_at_test_p95": 0.0700218818380744,
+          "tp": 82,
+          "fn": 42,
+          "tn": 494,
+          "fp": 22,
+          "ppv": 0.7884615384615384,
+          "npv": 0.9216417910447762,
+          "missed_per_100": 6.5625,
+          "false_alarm_per_100": 3.4375
+        },
+        {
+          "seed": 43,
+          "epoch": 18,
+          "val_threshold": 0.8252596855163574,
+          "val_sensitivity": 0.6386554621848739,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity_frozen": 0.5967741935483871,
+          "test_specificity_frozen": 0.9786821705426356,
+          "test_specificity_predicted_shift": 0.9606126914660832,
+          "specificity_prediction_error": 0.01806947907655243,
+          "test_sensitivity_matched": 0.7741935483870968,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.17741935483870963,
+          "excess_specificity": 0.028682170542635665,
+          "local_roc_slope": -3.1209677419354875,
+          "expected_loss_from_excess_spec": 0.0895161290322582,
+          "test_auroc": 0.942751312828207,
+          "test_partial_auroc": 0.8342184230268093,
+          "val_negative_mean": 0.11089374870061874,
+          "test_negative_mean": 0.08425535261631012,
+          "negative_mean_shift": -0.026638396084308624,
+          "val_negative_p95": 0.7974728345870972,
+          "test_negative_p95": 0.46982619166374207,
+          "val_spec_at_test_p95": 0.09846827133479212,
+          "tp": 74,
+          "fn": 50,
+          "tn": 505,
+          "fp": 11,
+          "ppv": 0.8705882352941177,
+          "npv": 0.9099099099099099,
+          "missed_per_100": 7.8125,
+          "false_alarm_per_100": 1.71875
+        },
+        {
+          "seed": 44,
+          "epoch": 18,
+          "val_threshold": 0.8243755102157593,
+          "val_sensitivity": 0.6470588235294118,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity_frozen": 0.6209677419354839,
+          "test_specificity_frozen": 0.9748062015503876,
+          "test_specificity_predicted_shift": 0.9562363238512035,
+          "specificity_prediction_error": 0.018569877699184056,
+          "test_sensitivity_matched": 0.7580645161290323,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.13709677419354838,
+          "excess_specificity": 0.024806201550387597,
+          "local_roc_slope": -3.0662139219015323,
+          "expected_loss_from_excess_spec": 0.07606112054329382,
+          "test_auroc": 0.9430326331582897,
+          "test_partial_auroc": 0.8029606085731958,
+          "val_negative_mean": 0.13298362493515015,
+          "test_negative_mean": 0.10831451416015625,
+          "negative_mean_shift": -0.024669110774993896,
+          "val_negative_p95": 0.8138476014137268,
+          "test_negative_p95": 0.5760111212730408,
+          "val_spec_at_test_p95": 0.08971553610503283,
+          "tp": 77,
+          "fn": 47,
+          "tn": 503,
+          "fp": 13,
+          "ppv": 0.8555555555555555,
+          "npv": 0.9145454545454546,
+          "missed_per_100": 7.34375,
+          "false_alarm_per_100": 2.03125
+        },
+        {
+          "seed": 45,
+          "epoch": 14,
+          "val_threshold": 0.6574215292930603,
+          "val_sensitivity": 0.7226890756302521,
+          "val_specificity": 0.9562363238512035,
+          "test_sensitivity_frozen": 0.6693548387096774,
+          "test_specificity_frozen": 0.936046511627907,
+          "test_specificity_predicted_shift": 0.9518599562363238,
+          "specificity_prediction_error": -0.015813444608416827,
+          "test_sensitivity_matched": 0.5967741935483871,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": -0.07258064516129026,
+          "excess_specificity": -0.013953488372092981,
+          "local_roc_slope": -4.5576036866359475,
+          "expected_loss_from_excess_spec": -0.0635944700460828,
+          "test_auroc": 0.9352025506376594,
+          "test_partial_auroc": 0.7627367368157829,
+          "val_negative_mean": 0.1106107085943222,
+          "test_negative_mean": 0.11381487548351288,
+          "negative_mean_shift": 0.003204166889190674,
+          "val_negative_p95": 0.597536027431488,
+          "test_negative_p95": 0.7203038334846497,
+          "val_spec_at_test_p95": 0.0350109409190372,
+          "tp": 83,
+          "fn": 41,
+          "tn": 483,
+          "fp": 33,
+          "ppv": 0.7155172413793104,
+          "npv": 0.9217557251908397,
+          "missed_per_100": 6.40625,
+          "false_alarm_per_100": 5.15625
+        }
+      ],
+      "aggregate": {
+        "val_threshold": {
+          "mean": 0.7194482386112213,
+          "sd": 0.12671275780171365,
+          "min": 0.5707362294197083,
+          "max": 0.8252596855163574
+        },
+        "test_sensitivity_frozen": {
+          "mean": 0.6370967741935484,
+          "sd": 0.034214844250961954,
+          "min": 0.5967741935483871,
+          "max": 0.6693548387096774
+        },
+        "test_specificity_frozen": {
+          "mean": 0.9617248062015503,
+          "sd": 0.01946846662263517,
+          "min": 0.936046511627907,
+          "max": 0.9786821705426356
+        },
+        "test_specificity_predicted_shift": {
+          "mean": 0.9551422319474836,
+          "sd": 0.00419005298799277,
+          "min": 0.9518599562363238,
+          "max": 0.9606126914660832
+        },
+        "specificity_prediction_error": {
+          "mean": 0.006582574254066803,
+          "sd": 0.01610785087639148,
+          "min": -0.015813444608416827,
+          "max": 0.018569877699184056
+        },
+        "test_sensitivity_matched": {
+          "mean": 0.7016129032258065,
+          "sd": 0.08171335566435839,
+          "min": 0.5967741935483871,
+          "max": 0.7741935483870968
+        },
+        "transfer_loss": {
+          "mean": 0.06451612903225806,
+          "sd": 0.11423940516599876,
+          "min": -0.07258064516129026,
+          "max": 0.17741935483870963
+        },
+        "negative_mean_shift": {
+          "mean": -0.016980942338705063,
+          "sd": 0.013758338901428987,
+          "min": -0.026638396084308624,
+          "max": 0.003204166889190674
+        },
+        "test_auroc": {
+          "mean": 0.9382658164541136,
+          "sd": 0.005493333010248606,
+          "min": 0.932076769192298,
+          "max": 0.9430326331582897
+        },
+        "test_partial_auroc": {
+          "mean": 0.7899022452981667,
+          "sd": 0.0355199237840679,
+          "min": 0.7596932127768785,
+          "max": 0.8342184230268093
+        },
+        "excess_specificity": {
+          "mean": 0.01172480620155042,
+          "sd": 0.01946846662263517,
+          "min": -0.013953488372092981,
+          "max": 0.028682170542635665
+        },
+        "local_roc_slope": {
+          "mean": -4.122832282318704,
+          "sd": 1.2839574388937076,
+          "min": -5.746543778801849,
+          "max": -3.0662139219015323
+        },
+        "expected_loss_from_excess_spec": {
+          "mean": 0.036075571994502606,
+          "sd": 0.06934897560422813,
+          "min": -0.0635944700460828,
+          "max": 0.0895161290322582
+        },
+        "ppv": {
+          "mean": 0.8075306426726305,
+          "sd": 0.07097593253493051,
+          "min": 0.7155172413793104,
+          "max": 0.8705882352941177
+        },
+        "npv": {
+          "mean": 0.9169632201727451,
+          "sd": 0.005786533390709932,
+          "min": 0.9099099099099099,
+          "max": 0.9217557251908397
+        },
+        "missed_per_100": {
+          "mean": 7.03125,
+          "sd": 0.6629126073623883,
+          "min": 6.40625,
+          "max": 7.8125
+        },
+        "false_alarm_per_100": {
+          "mean": 3.0859375,
+          "sd": 1.5696451214499623,
+          "min": 1.71875,
+          "max": 5.15625
+        }
+      },
+      "decomposition": {
+        "mean_loss": 0.06451612903225806,
+        "mean_explained": 0.036075571994502606,
+        "share_explained": 0.5591713659147904
+      }
+    },
+    "E1": {
+      "seeds": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "rows": [
+        {
+          "seed": 42,
+          "epoch": 14,
+          "val_threshold": 0.5219553112983704,
+          "val_sensitivity": 0.7058823529411765,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity_frozen": 0.6451612903225806,
+          "test_specificity_frozen": 0.9496124031007752,
+          "test_specificity_predicted_shift": 0.9540481400437637,
+          "specificity_prediction_error": -0.0044357369429884885,
+          "test_sensitivity_matched": 0.6370967741935484,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": -0.008064516129032251,
+          "excess_specificity": -0.0003875968992247403,
+          "local_roc_slope": -4.7557603686636005,
+          "expected_loss_from_excess_spec": -0.0018433179723499192,
+          "test_auroc": 0.9335302575643911,
+          "test_partial_auroc": 0.7434885037048735,
+          "val_negative_mean": 0.10195665806531906,
+          "test_negative_mean": 0.09290756285190582,
+          "negative_mean_shift": -0.009049095213413239,
+          "val_negative_p95": 0.5133767127990723,
+          "test_negative_p95": 0.5222842693328857,
+          "val_spec_at_test_p95": 0.04814004376367615,
+          "tp": 80,
+          "fn": 44,
+          "tn": 490,
+          "fp": 26,
+          "ppv": 0.7547169811320755,
+          "npv": 0.9176029962546817,
+          "missed_per_100": 6.875,
+          "false_alarm_per_100": 4.0625
+        },
+        {
+          "seed": 43,
+          "epoch": 18,
+          "val_threshold": 0.8084307909011841,
+          "val_sensitivity": 0.6638655462184874,
+          "val_specificity": 0.9562363238512035,
+          "test_sensitivity_frozen": 0.6129032258064516,
+          "test_specificity_frozen": 0.9806201550387597,
+          "test_specificity_predicted_shift": 0.9584245076586433,
+          "specificity_prediction_error": 0.022195647380116368,
+          "test_sensitivity_matched": 0.7661290322580645,
+          "test_specificity_matched": 0.9554263565891473,
+          "transfer_loss": 0.15322580645161288,
+          "excess_specificity": 0.0306201550387597,
+          "local_roc_slope": -1.9711375212224116,
+          "expected_loss_from_excess_spec": 0.06035653650254673,
+          "test_auroc": 0.9389691172793199,
+          "test_partial_auroc": 0.7920203735144312,
+          "val_negative_mean": 0.12598295509815216,
+          "test_negative_mean": 0.10095374286174774,
+          "negative_mean_shift": -0.02502921223640442,
+          "val_negative_p95": 0.773421049118042,
+          "test_negative_p95": 0.5133517980575562,
+          "val_spec_at_test_p95": 0.08533916849015317,
+          "tp": 76,
+          "fn": 48,
+          "tn": 506,
+          "fp": 10,
+          "ppv": 0.8837209302325582,
+          "npv": 0.9133574007220217,
+          "missed_per_100": 7.5,
+          "false_alarm_per_100": 1.5625
+        },
+        {
+          "seed": 44,
+          "epoch": 15,
+          "val_threshold": 0.7324748635292053,
+          "val_sensitivity": 0.6554621848739496,
+          "val_specificity": 0.9584245076586433,
+          "test_sensitivity_frozen": 0.5887096774193549,
+          "test_specificity_frozen": 0.9767441860465116,
+          "test_specificity_predicted_shift": 0.9606126914660832,
+          "specificity_prediction_error": 0.016131494580428396,
+          "test_sensitivity_matched": 0.7580645161290323,
+          "test_specificity_matched": 0.9534883720930233,
+          "transfer_loss": 0.16935483870967738,
+          "excess_specificity": 0.02674418604651163,
+          "local_roc_slope": -3.698924731182801,
+          "expected_loss_from_excess_spec": 0.09892473118279585,
+          "test_auroc": 0.9422980745186297,
+          "test_partial_auroc": 0.8005751437859465,
+          "val_negative_mean": 0.10075777769088745,
+          "test_negative_mean": 0.07667507231235504,
+          "negative_mean_shift": -0.02408270537853241,
+          "val_negative_p95": 0.6772360801696777,
+          "test_negative_p95": 0.3688375949859619,
+          "val_spec_at_test_p95": 0.09190371991247265,
+          "tp": 73,
+          "fn": 51,
+          "tn": 504,
+          "fp": 12,
+          "ppv": 0.8588235294117647,
+          "npv": 0.9081081081081082,
+          "missed_per_100": 7.96875,
+          "false_alarm_per_100": 1.875
+        },
+        {
+          "seed": 45,
+          "epoch": 18,
+          "val_threshold": 0.8142693042755127,
+          "val_sensitivity": 0.7058823529411765,
+          "val_specificity": 0.9540481400437637,
+          "test_sensitivity_frozen": 0.5967741935483871,
+          "test_specificity_frozen": 0.9418604651162791,
+          "test_specificity_predicted_shift": 0.9518599562363238,
+          "specificity_prediction_error": -0.009999491120044723,
+          "test_sensitivity_matched": 0.5241935483870968,
+          "test_specificity_matched": 0.9534883720930233,
+          "transfer_loss": -0.07258064516129037,
+          "excess_specificity": -0.008139534883720878,
+          "local_roc_slope": -6.4500000000000055,
+          "expected_loss_from_excess_spec": -0.05249999999999971,
+          "test_auroc": 0.9228400850212554,
+          "test_partial_auroc": 0.7251451020649899,
+          "val_negative_mean": 0.12931521236896515,
+          "test_negative_mean": 0.1371559500694275,
+          "negative_mean_shift": 0.007840737700462341,
+          "val_negative_p95": 0.7865817546844482,
+          "test_negative_p95": 0.8705018162727356,
+          "val_spec_at_test_p95": 0.037199124726477024,
+          "tp": 74,
+          "fn": 50,
+          "tn": 486,
+          "fp": 30,
+          "ppv": 0.7115384615384616,
+          "npv": 0.9067164179104478,
+          "missed_per_100": 7.8125,
+          "false_alarm_per_100": 4.6875
+        }
+      ],
+      "aggregate": {
+        "val_threshold": {
+          "mean": 0.7192825675010681,
+          "sd": 0.13672596511932636,
+          "min": 0.5219553112983704,
+          "max": 0.8142693042755127
+        },
+        "test_sensitivity_frozen": {
+          "mean": 0.6108870967741935,
+          "sd": 0.024965289813181038,
+          "min": 0.5887096774193549,
+          "max": 0.6451612903225806
+        },
+        "test_specificity_frozen": {
+          "mean": 0.9622093023255813,
+          "sd": 0.019347518258232447,
+          "min": 0.9418604651162791,
+          "max": 0.9806201550387597
+        },
+        "test_specificity_predicted_shift": {
+          "mean": 0.9562363238512035,
+          "sd": 0.003995058771007797,
+          "min": 0.9518599562363238,
+          "max": 0.9606126914660832
+        },
+        "specificity_prediction_error": {
+          "mean": 0.005972978474377888,
+          "sd": 0.015597345687504835,
+          "min": -0.009999491120044723,
+          "max": 0.022195647380116368
+        },
+        "test_sensitivity_matched": {
+          "mean": 0.6713709677419355,
+          "sd": 0.1145000367308982,
+          "min": 0.5241935483870968,
+          "max": 0.7661290322580645
+        },
+        "transfer_loss": {
+          "mean": 0.06048387096774191,
+          "sd": 0.11952545201836402,
+          "min": -0.07258064516129037,
+          "max": 0.16935483870967738
+        },
+        "negative_mean_shift": {
+          "mean": -0.012580068781971931,
+          "sd": 0.015457133554408477,
+          "min": -0.02502921223640442,
+          "max": 0.007840737700462341
+        },
+        "test_auroc": {
+          "mean": 0.934409383595899,
+          "sd": 0.00851751426623641,
+          "min": 0.9228400850212554,
+          "max": 0.9422980745186297
+        },
+        "test_partial_auroc": {
+          "mean": 0.7653072807675603,
+          "sd": 0.03672633531330075,
+          "min": 0.7251451020649899,
+          "max": 0.8005751437859465
+        },
+        "excess_specificity": {
+          "mean": 0.012209302325581428,
+          "sd": 0.019347518258232447,
+          "min": -0.008139534883720878,
+          "max": 0.0306201550387597
+        },
+        "local_roc_slope": {
+          "mean": -4.218955655267204,
+          "sd": 1.8787262257740387,
+          "min": -6.4500000000000055,
+          "max": -1.9711375212224116
+        },
+        "expected_loss_from_excess_spec": {
+          "mean": 0.026234487428248236,
+          "sd": 0.0669220154030724,
+          "min": -0.05249999999999971,
+          "max": 0.09892473118279585
+        },
+        "ppv": {
+          "mean": 0.802199975578715,
+          "sd": 0.08231248950604618,
+          "min": 0.7115384615384616,
+          "max": 0.8837209302325582
+        },
+        "npv": {
+          "mean": 0.9114462307488148,
+          "sd": 0.005002416896231243,
+          "min": 0.9067164179104478,
+          "max": 0.9176029962546817
+        },
+        "missed_per_100": {
+          "mean": 7.5390625,
+          "sd": 0.4837024901303831,
+          "min": 6.875,
+          "max": 7.96875
+        },
+        "false_alarm_per_100": {
+          "mean": 3.046875,
+          "sd": 1.5598936595699935,
+          "min": 1.5625,
+          "max": 4.6875
+        }
+      },
+      "decomposition": {
+        "mean_loss": 0.06048387096774191,
+        "mean_explained": 0.026234487428248236,
+        "share_explained": 0.43374352548037104
+      }
+    },
+    "E2": {
+      "seeds": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "rows": [
+        {
+          "seed": 42,
+          "epoch": 15,
+          "val_threshold": 0.8303467035293579,
+          "val_sensitivity": 0.6967213114754098,
+          "val_specificity": 0.9515418502202643,
+          "test_sensitivity_frozen": 0.6532258064516129,
+          "test_specificity_frozen": 0.9496124031007752,
+          "test_specificity_predicted_shift": 0.9581497797356828,
+          "specificity_prediction_error": -0.008537376634907612,
+          "test_sensitivity_matched": 0.6532258064516129,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.0,
+          "excess_specificity": -0.0003875968992247403,
+          "local_roc_slope": -5.82580645161291,
+          "expected_loss_from_excess_spec": -0.002258064516128651,
+          "test_auroc": 0.9255751437859465,
+          "test_partial_auroc": 0.7670141219515405,
+          "val_negative_mean": 0.2486957460641861,
+          "test_negative_mean": 0.23134660720825195,
+          "negative_mean_shift": -0.017349138855934143,
+          "val_negative_p95": 0.8267836570739746,
+          "test_negative_p95": 0.8261938095092773,
+          "val_spec_at_test_p95": 0.05286343612334802,
+          "tp": 81,
+          "fn": 43,
+          "tn": 490,
+          "fp": 26,
+          "ppv": 0.7570093457943925,
+          "npv": 0.9193245778611632,
+          "missed_per_100": 6.71875,
+          "false_alarm_per_100": 4.0625
+        },
+        {
+          "seed": 43,
+          "epoch": 18,
+          "val_threshold": 0.8496072292327881,
+          "val_sensitivity": 0.6967213114754098,
+          "val_specificity": 0.9537444933920705,
+          "test_sensitivity_frozen": 0.6451612903225806,
+          "test_specificity_frozen": 0.9534883720930233,
+          "test_specificity_predicted_shift": 0.960352422907489,
+          "specificity_prediction_error": -0.0068640508144657275,
+          "test_sensitivity_matched": 0.6532258064516129,
+          "test_specificity_matched": 0.9534883720930233,
+          "transfer_loss": 0.008064516129032251,
+          "excess_specificity": 0.0034883720930233286,
+          "local_roc_slope": -4.895635673624299,
+          "expected_loss_from_excess_spec": 0.01707779886148047,
+          "test_auroc": 0.9297011752938235,
+          "test_partial_auroc": 0.7582948368671114,
+          "val_negative_mean": 0.1876886785030365,
+          "test_negative_mean": 0.174376979470253,
+          "negative_mean_shift": -0.013311699032783508,
+          "val_negative_p95": 0.8181878924369812,
+          "test_negative_p95": 0.8437849283218384,
+          "val_spec_at_test_p95": 0.048458149779735685,
+          "tp": 80,
+          "fn": 44,
+          "tn": 492,
+          "fp": 24,
+          "ppv": 0.7692307692307693,
+          "npv": 0.917910447761194,
+          "missed_per_100": 6.875,
+          "false_alarm_per_100": 3.75
+        },
+        {
+          "seed": 44,
+          "epoch": 17,
+          "val_threshold": 0.8516157865524292,
+          "val_sensitivity": 0.6967213114754098,
+          "val_specificity": 0.9559471365638766,
+          "test_sensitivity_frozen": 0.6290322580645161,
+          "test_specificity_frozen": 0.9476744186046512,
+          "test_specificity_predicted_shift": 0.9625550660792952,
+          "specificity_prediction_error": -0.014880647474644015,
+          "test_sensitivity_matched": 0.6048387096774194,
+          "test_specificity_matched": 0.9573643410852714,
+          "transfer_loss": -0.024193548387096753,
+          "excess_specificity": -0.0023255813953487747,
+          "local_roc_slope": -5.82580645161291,
+          "expected_loss_from_excess_spec": -0.013548387096773844,
+          "test_auroc": 0.9332333083270818,
+          "test_partial_auroc": 0.7846172069333124,
+          "val_negative_mean": 0.22276368737220764,
+          "test_negative_mean": 0.21043826639652252,
+          "negative_mean_shift": -0.01232542097568512,
+          "val_negative_p95": 0.8378973603248596,
+          "test_negative_p95": 0.8607227206230164,
+          "val_spec_at_test_p95": 0.04185022026431718,
+          "tp": 78,
+          "fn": 46,
+          "tn": 489,
+          "fp": 27,
+          "ppv": 0.7428571428571429,
+          "npv": 0.914018691588785,
+          "missed_per_100": 7.1875,
+          "false_alarm_per_100": 4.21875
+        },
+        {
+          "seed": 45,
+          "epoch": 18,
+          "val_threshold": 0.7255406379699707,
+          "val_sensitivity": 0.680327868852459,
+          "val_specificity": 0.9625550660792952,
+          "test_sensitivity_frozen": 0.6129032258064516,
+          "test_specificity_frozen": 0.9651162790697675,
+          "test_specificity_predicted_shift": 0.9647577092511013,
+          "specificity_prediction_error": 0.0003585698186662212,
+          "test_sensitivity_matched": 0.6774193548387096,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.06451612903225801,
+          "excess_specificity": 0.015116279069767535,
+          "local_roc_slope": -4.681451612903234,
+          "expected_loss_from_excess_spec": 0.07076612903225862,
+          "test_auroc": 0.93564016004001,
+          "test_partial_auroc": 0.738470801911004,
+          "val_negative_mean": 0.1545737385749817,
+          "test_negative_mean": 0.14753004908561707,
+          "negative_mean_shift": -0.007043689489364624,
+          "val_negative_p95": 0.6599422693252563,
+          "test_negative_p95": 0.6638402938842773,
+          "val_spec_at_test_p95": 0.05066079295154185,
+          "tp": 76,
+          "fn": 48,
+          "tn": 498,
+          "fp": 18,
+          "ppv": 0.8085106382978723,
+          "npv": 0.9120879120879121,
+          "missed_per_100": 7.5,
+          "false_alarm_per_100": 2.8125
+        }
+      ],
+      "aggregate": {
+        "val_threshold": {
+          "mean": 0.8142775893211365,
+          "sd": 0.05992992406498862,
+          "min": 0.7255406379699707,
+          "max": 0.8516157865524292
+        },
+        "test_sensitivity_frozen": {
+          "mean": 0.6350806451612903,
+          "sd": 0.01788190147264793,
+          "min": 0.6129032258064516,
+          "max": 0.6532258064516129
+        },
+        "test_specificity_frozen": {
+          "mean": 0.9539728682170543,
+          "sd": 0.007812265259979229,
+          "min": 0.9476744186046512,
+          "max": 0.9651162790697675
+        },
+        "test_specificity_predicted_shift": {
+          "mean": 0.9614537444933919,
+          "sd": 0.0028436001073475687,
+          "min": 0.9581497797356828,
+          "max": 0.9647577092511013
+        },
+        "specificity_prediction_error": {
+          "mean": -0.007480876276337783,
+          "sd": 0.006263923039167171,
+          "min": -0.014880647474644015,
+          "max": 0.0003585698186662212
+        },
+        "test_sensitivity_matched": {
+          "mean": 0.6471774193548386,
+          "sd": 0.03044288078738203,
+          "min": 0.6048387096774194,
+          "max": 0.6774193548387096
+        },
+        "transfer_loss": {
+          "mean": 0.012096774193548376,
+          "sd": 0.037538279687550885,
+          "min": -0.024193548387096753,
+          "max": 0.06451612903225801
+        },
+        "negative_mean_shift": {
+          "mean": -0.012507487088441849,
+          "sd": 0.0042416420154691445,
+          "min": -0.017349138855934143,
+          "max": -0.007043689489364624
+        },
+        "test_auroc": {
+          "mean": 0.9310374468617155,
+          "sd": 0.004382889183002428,
+          "min": 0.9255751437859465,
+          "max": 0.93564016004001
+        },
+        "test_partial_auroc": {
+          "mean": 0.762099241915742,
+          "sd": 0.019183251976054208,
+          "min": 0.738470801911004,
+          "max": 0.7846172069333124
+        },
+        "excess_specificity": {
+          "mean": 0.003972868217054337,
+          "sd": 0.007812265259979229,
+          "min": -0.0023255813953487747,
+          "max": 0.015116279069767535
+        },
+        "local_roc_slope": {
+          "mean": -5.307175047438339,
+          "sd": 0.6052138849249451,
+          "min": -5.82580645161291,
+          "max": -4.681451612903234
+        },
+        "expected_loss_from_excess_spec": {
+          "mean": 0.01800936907020915,
+          "sd": 0.03737559089039469,
+          "min": -0.013548387096773844,
+          "max": 0.07076612903225862
+        },
+        "ppv": {
+          "mean": 0.7694019740450443,
+          "sd": 0.028211831019874702,
+          "min": 0.7428571428571429,
+          "max": 0.8085106382978723
+        },
+        "npv": {
+          "mean": 0.9158354073247635,
+          "sd": 0.0033577909633406974,
+          "min": 0.9120879120879121,
+          "max": 0.9193245778611632
+        },
+        "missed_per_100": {
+          "mean": 7.0703125,
+          "sd": 0.34646184103255395,
+          "min": 6.71875,
+          "max": 7.5
+        },
+        "false_alarm_per_100": {
+          "mean": 3.7109375,
+          "sd": 0.6298638865858242,
+          "min": 2.8125,
+          "max": 4.21875
+        }
+      },
+      "decomposition": {
+        "mean_loss": 0.012096774193548376,
+        "mean_explained": 0.01800936907020915,
+        "share_explained": 1.4887745098039575
+      }
+    },
+    "E3": {
+      "seeds": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "rows": [
+        {
+          "seed": 42,
+          "epoch": 15,
+          "val_threshold": 0.8810458183288574,
+          "val_sensitivity": 0.6721311475409836,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity_frozen": 0.5806451612903226,
+          "test_specificity_frozen": 0.9554263565891473,
+          "test_specificity_predicted_shift": 0.9647577092511013,
+          "specificity_prediction_error": -0.009331352661953951,
+          "test_sensitivity_matched": 0.5967741935483871,
+          "test_specificity_matched": 0.9554263565891473,
+          "transfer_loss": 0.016129032258064502,
+          "excess_specificity": 0.005426356589147363,
+          "local_roc_slope": -5.485337243401764,
+          "expected_loss_from_excess_spec": 0.029765395894428594,
+          "test_auroc": 0.9335927731932984,
+          "test_partial_auroc": 0.7744172885326595,
+          "val_negative_mean": 0.23705296218395233,
+          "test_negative_mean": 0.22349806129932404,
+          "negative_mean_shift": -0.013554900884628296,
+          "val_negative_p95": 0.8615777492523193,
+          "test_negative_p95": 0.8740673661231995,
+          "val_spec_at_test_p95": 0.04185022026431718,
+          "tp": 72,
+          "fn": 52,
+          "tn": 493,
+          "fp": 23,
+          "ppv": 0.7578947368421053,
+          "npv": 0.9045871559633027,
+          "missed_per_100": 8.125,
+          "false_alarm_per_100": 3.59375
+        },
+        {
+          "seed": 43,
+          "epoch": 14,
+          "val_threshold": 0.9113849997520447,
+          "val_sensitivity": 0.6639344262295082,
+          "val_specificity": 0.9515418502202643,
+          "test_sensitivity_frozen": 0.5887096774193549,
+          "test_specificity_frozen": 0.9786821705426356,
+          "test_specificity_predicted_shift": 0.9647577092511013,
+          "specificity_prediction_error": 0.013924461291534351,
+          "test_sensitivity_matched": 0.7016129032258065,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.11290322580645162,
+          "excess_specificity": 0.028682170542635665,
+          "local_roc_slope": -3.467741935483876,
+          "expected_loss_from_excess_spec": 0.09946236559139801,
+          "test_auroc": 0.9281226556639159,
+          "test_partial_auroc": 0.7850284939655966,
+          "val_negative_mean": 0.2947647273540497,
+          "test_negative_mean": 0.2714328169822693,
+          "negative_mean_shift": -0.023331910371780396,
+          "val_negative_p95": 0.9075586795806885,
+          "test_negative_p95": 0.813694417476654,
+          "val_spec_at_test_p95": 0.09691629955947137,
+          "tp": 73,
+          "fn": 51,
+          "tn": 505,
+          "fp": 11,
+          "ppv": 0.8690476190476191,
+          "npv": 0.908273381294964,
+          "missed_per_100": 7.96875,
+          "false_alarm_per_100": 1.71875
+        },
+        {
+          "seed": 44,
+          "epoch": 15,
+          "val_threshold": 0.8108714818954468,
+          "val_sensitivity": 0.6885245901639344,
+          "val_specificity": 0.9515418502202643,
+          "test_sensitivity_frozen": 0.6854838709677419,
+          "test_specificity_frozen": 0.9437984496124031,
+          "test_specificity_predicted_shift": 0.9537444933920705,
+          "specificity_prediction_error": -0.009946043779667346,
+          "test_sensitivity_matched": 0.6451612903225806,
+          "test_specificity_matched": 0.9534883720930233,
+          "transfer_loss": -0.040322580645161255,
+          "excess_specificity": -0.006201550387596844,
+          "local_roc_slope": -5.2016129032258185,
+          "expected_loss_from_excess_spec": -0.032258064516128816,
+          "test_auroc": 0.9319673668417104,
+          "test_partial_auroc": 0.7638060830997223,
+          "val_negative_mean": 0.19040468335151672,
+          "test_negative_mean": 0.18360930681228638,
+          "negative_mean_shift": -0.006795376539230347,
+          "val_negative_p95": 0.8032451868057251,
+          "test_negative_p95": 0.840290367603302,
+          "val_spec_at_test_p95": 0.039647577092511016,
+          "tp": 85,
+          "fn": 39,
+          "tn": 487,
+          "fp": 29,
+          "ppv": 0.7456140350877193,
+          "npv": 0.9258555133079848,
+          "missed_per_100": 6.09375,
+          "false_alarm_per_100": 4.53125
+        },
+        {
+          "seed": 45,
+          "epoch": 18,
+          "val_threshold": 0.8178329467773438,
+          "val_sensitivity": 0.6967213114754098,
+          "val_specificity": 0.9515418502202643,
+          "test_sensitivity_frozen": 0.5887096774193549,
+          "test_specificity_frozen": 0.9670542635658915,
+          "test_specificity_predicted_shift": 0.9581497797356828,
+          "specificity_prediction_error": 0.008904483830208698,
+          "test_sensitivity_matched": 0.6370967741935484,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.048387096774193505,
+          "excess_specificity": 0.01705426356589157,
+          "local_roc_slope": -4.161290322580649,
+          "expected_loss_from_excess_spec": 0.07096774193548433,
+          "test_auroc": 0.918745311327832,
+          "test_partial_auroc": 0.7815736828944079,
+          "val_negative_mean": 0.1998356282711029,
+          "test_negative_mean": 0.18182691931724548,
+          "negative_mean_shift": -0.018008708953857422,
+          "val_negative_p95": 0.7961472868919373,
+          "test_negative_p95": 0.7544097304344177,
+          "val_spec_at_test_p95": 0.06167400881057269,
+          "tp": 73,
+          "fn": 51,
+          "tn": 499,
+          "fp": 17,
+          "ppv": 0.8111111111111111,
+          "npv": 0.9072727272727272,
+          "missed_per_100": 7.96875,
+          "false_alarm_per_100": 2.65625
+        }
+      ],
+      "aggregate": {
+        "val_threshold": {
+          "mean": 0.8552838116884232,
+          "sd": 0.04894230143246782,
+          "min": 0.8108714818954468,
+          "max": 0.9113849997520447
+        },
+        "test_sensitivity_frozen": {
+          "mean": 0.6108870967741936,
+          "sd": 0.049876277729245855,
+          "min": 0.5806451612903226,
+          "max": 0.6854838709677419
+        },
+        "test_specificity_frozen": {
+          "mean": 0.9612403100775193,
+          "sd": 0.015011563357393074,
+          "min": 0.9437984496124031,
+          "max": 0.9786821705426356
+        },
+        "test_specificity_predicted_shift": {
+          "mean": 0.9603524229074889,
+          "sd": 0.005395351856350594,
+          "min": 0.9537444933920705,
+          "max": 0.9647577092511013
+        },
+        "specificity_prediction_error": {
+          "mean": 0.000887887170030438,
+          "sd": 0.012329166089722406,
+          "min": -0.009946043779667346,
+          "max": 0.013924461291534351
+        },
+        "test_sensitivity_matched": {
+          "mean": 0.6451612903225806,
+          "sd": 0.043178436570454344,
+          "min": 0.5967741935483871,
+          "max": 0.7016129032258065
+        },
+        "transfer_loss": {
+          "mean": 0.034274193548387094,
+          "sd": 0.0639677636252193,
+          "min": -0.040322580645161255,
+          "max": 0.11290322580645162
+        },
+        "negative_mean_shift": {
+          "mean": -0.015422724187374115,
+          "sd": 0.007003866423728611,
+          "min": -0.023331910371780396,
+          "max": -0.006795376539230347
+        },
+        "test_auroc": {
+          "mean": 0.9281070267566892,
+          "sd": 0.0066492505736219665,
+          "min": 0.918745311327832,
+          "max": 0.9335927731932984
+        },
+        "test_partial_auroc": {
+          "mean": 0.7762063871230966,
+          "sd": 0.009373826089625621,
+          "min": 0.7638060830997223,
+          "max": 0.7850284939655966
+        },
+        "excess_specificity": {
+          "mean": 0.011240310077519439,
+          "sd": 0.015011563357393074,
+          "min": -0.006201550387596844,
+          "max": 0.028682170542635665
+        },
+        "local_roc_slope": {
+          "mean": -4.578995601173027,
+          "sd": 0.9342501247033889,
+          "min": -5.485337243401764,
+          "max": -3.467741935483876
+        },
+        "expected_loss_from_excess_spec": {
+          "mean": 0.04198435972629553,
+          "sd": 0.057169333962155115,
+          "min": -0.032258064516128816,
+          "max": 0.09946236559139801
+        },
+        "ppv": {
+          "mean": 0.7959168755221386,
+          "sd": 0.056435890558216996,
+          "min": 0.7456140350877193,
+          "max": 0.8690476190476191
+        },
+        "npv": {
+          "mean": 0.9114971944597448,
+          "sd": 0.009697921538584717,
+          "min": 0.9045871559633027,
+          "max": 0.9258555133079848
+        },
+        "missed_per_100": {
+          "mean": 7.5390625,
+          "sd": 0.9663528810041392,
+          "min": 6.09375,
+          "max": 8.125
+        },
+        "false_alarm_per_100": {
+          "mean": 3.125,
+          "sd": 1.2103072956898178,
+          "min": 1.71875,
+          "max": 4.53125
+        }
+      },
+      "decomposition": {
+        "mean_loss": 0.034274193548387094,
+        "mean_explained": 0.04198435972629553,
+        "share_explained": 1.224955436720152
+      }
+    },
+    "E4": {
+      "seeds": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "rows": [
+        {
+          "seed": 42,
+          "epoch": 18,
+          "val_threshold": 0.9474136829376221,
+          "val_sensitivity": 0.6885245901639344,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity_frozen": 0.6290322580645161,
+          "test_specificity_frozen": 0.9515503875968992,
+          "test_specificity_predicted_shift": 0.9779735682819384,
+          "specificity_prediction_error": -0.026423180685039127,
+          "test_sensitivity_matched": 0.6290322580645161,
+          "test_specificity_matched": 0.9534883720930233,
+          "transfer_loss": 0.0,
+          "excess_specificity": 0.0015503875968992942,
+          "local_roc_slope": -6.142857142857149,
+          "expected_loss_from_excess_spec": 0.009523809523809958,
+          "test_auroc": 0.930951487871968,
+          "test_partial_auroc": 0.7717850515260394,
+          "val_negative_mean": 0.3461274206638336,
+          "test_negative_mean": 0.3187086582183838,
+          "negative_mean_shift": -0.02741876244544983,
+          "val_negative_p95": 0.9362828731536865,
+          "test_negative_p95": 0.9397760629653931,
+          "val_spec_at_test_p95": 0.046255506607929514,
+          "tp": 78,
+          "fn": 46,
+          "tn": 491,
+          "fp": 25,
+          "ppv": 0.7572815533980582,
+          "npv": 0.9143389199255121,
+          "missed_per_100": 7.1875,
+          "false_alarm_per_100": 3.90625
+        },
+        {
+          "seed": 43,
+          "epoch": 18,
+          "val_threshold": 0.8511304259300232,
+          "val_sensitivity": 0.6967213114754098,
+          "val_specificity": 0.9559471365638766,
+          "test_sensitivity_frozen": 0.6290322580645161,
+          "test_specificity_frozen": 0.9554263565891473,
+          "test_specificity_predicted_shift": 0.960352422907489,
+          "specificity_prediction_error": -0.004926066318341693,
+          "test_sensitivity_matched": 0.6370967741935484,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.008064516129032251,
+          "excess_specificity": 0.005426356589147363,
+          "local_roc_slope": -4.895635673624299,
+          "expected_loss_from_excess_spec": 0.026565464895636104,
+          "test_auroc": 0.929497999499875,
+          "test_partial_auroc": 0.7666850923257129,
+          "val_negative_mean": 0.1849292814731598,
+          "test_negative_mean": 0.17205899953842163,
+          "negative_mean_shift": -0.01287028193473816,
+          "val_negative_p95": 0.8176358938217163,
+          "test_negative_p95": 0.8346773386001587,
+          "val_spec_at_test_p95": 0.048458149779735685,
+          "tp": 78,
+          "fn": 46,
+          "tn": 493,
+          "fp": 23,
+          "ppv": 0.7722772277227723,
+          "npv": 0.9146567717996289,
+          "missed_per_100": 7.1875,
+          "false_alarm_per_100": 3.59375
+        },
+        {
+          "seed": 44,
+          "epoch": 17,
+          "val_threshold": 0.8495860695838928,
+          "val_sensitivity": 0.7049180327868853,
+          "val_specificity": 0.9537444933920705,
+          "test_sensitivity_frozen": 0.6612903225806451,
+          "test_specificity_frozen": 0.9457364341085271,
+          "test_specificity_predicted_shift": 0.9581497797356828,
+          "specificity_prediction_error": -0.01241334562715568,
+          "test_sensitivity_matched": 0.6209677419354839,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": -0.040322580645161255,
+          "excess_specificity": -0.004263565891472809,
+          "local_roc_slope": -6.351443123938887,
+          "expected_loss_from_excess_spec": -0.027079796264855346,
+          "test_auroc": 0.9331707926981745,
+          "test_partial_auroc": 0.7846172069333122,
+          "val_negative_mean": 0.22171488404273987,
+          "test_negative_mean": 0.2103506326675415,
+          "negative_mean_shift": -0.011364251375198364,
+          "val_negative_p95": 0.8411007523536682,
+          "test_negative_p95": 0.8600968718528748,
+          "val_spec_at_test_p95": 0.04185022026431718,
+          "tp": 82,
+          "fn": 42,
+          "tn": 488,
+          "fp": 28,
+          "ppv": 0.7454545454545455,
+          "npv": 0.9207547169811321,
+          "missed_per_100": 6.5625,
+          "false_alarm_per_100": 4.375
+        },
+        {
+          "seed": 45,
+          "epoch": 18,
+          "val_threshold": 0.718621551990509,
+          "val_sensitivity": 0.680327868852459,
+          "val_specificity": 0.9647577092511013,
+          "test_sensitivity_frozen": 0.6048387096774194,
+          "test_specificity_frozen": 0.9631782945736435,
+          "test_specificity_predicted_shift": 0.9647577092511013,
+          "specificity_prediction_error": -0.0015794146774578133,
+          "test_sensitivity_matched": 0.6935483870967742,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.08870967741935487,
+          "excess_specificity": 0.013178294573643501,
+          "local_roc_slope": -4.895635673624295,
+          "expected_loss_from_excess_spec": 0.0645161290322586,
+          "test_auroc": 0.9353275818954739,
+          "test_partial_auroc": 0.737895000065806,
+          "val_negative_mean": 0.1529366821050644,
+          "test_negative_mean": 0.1459639072418213,
+          "negative_mean_shift": -0.006972774863243103,
+          "val_negative_p95": 0.657965362071991,
+          "test_negative_p95": 0.6594939827919006,
+          "val_spec_at_test_p95": 0.05066079295154185,
+          "tp": 75,
+          "fn": 49,
+          "tn": 497,
+          "fp": 19,
+          "ppv": 0.7978723404255319,
+          "npv": 0.9102564102564102,
+          "missed_per_100": 7.65625,
+          "false_alarm_per_100": 2.96875
+        }
+      ],
+      "aggregate": {
+        "val_threshold": {
+          "mean": 0.8416879326105118,
+          "sd": 0.09394113328547325,
+          "min": 0.718621551990509,
+          "max": 0.9474136829376221
+        },
+        "test_sensitivity_frozen": {
+          "mean": 0.6310483870967742,
+          "sd": 0.023163559058621063,
+          "min": 0.6048387096774194,
+          "max": 0.6612903225806451
+        },
+        "test_specificity_frozen": {
+          "mean": 0.9539728682170543,
+          "sd": 0.007315731041929034,
+          "min": 0.9457364341085271,
+          "max": 0.9631782945736435
+        },
+        "test_specificity_predicted_shift": {
+          "mean": 0.9653083700440528,
+          "sd": 0.008879138489315602,
+          "min": 0.9581497797356828,
+          "max": 0.9779735682819384
+        },
+        "specificity_prediction_error": {
+          "mean": -0.011335501826998579,
+          "sd": 0.011031196680172812,
+          "min": -0.026423180685039127,
+          "max": -0.0015794146774578133
+        },
+        "test_sensitivity_matched": {
+          "mean": 0.6451612903225807,
+          "sd": 0.03292324923095672,
+          "min": 0.6209677419354839,
+          "max": 0.6935483870967742
+        },
+        "transfer_loss": {
+          "mean": 0.014112903225806467,
+          "sd": 0.05404830447011586,
+          "min": -0.040322580645161255,
+          "max": 0.08870967741935487
+        },
+        "negative_mean_shift": {
+          "mean": -0.014656517654657364,
+          "sd": 0.008868379233484514,
+          "min": -0.02741876244544983,
+          "max": -0.006972774863243103
+        },
+        "test_auroc": {
+          "mean": 0.9322369654913729,
+          "sd": 0.0025546252446646796,
+          "min": 0.929497999499875,
+          "max": 0.9353275818954739
+        },
+        "test_partial_auroc": {
+          "mean": 0.7652455877127176,
+          "sd": 0.019732807169412753,
+          "min": 0.737895000065806,
+          "max": 0.7846172069333122
+        },
+        "excess_specificity": {
+          "mean": 0.003972868217054337,
+          "sd": 0.007315731041929034,
+          "min": -0.004263565891472809,
+          "max": 0.013178294573643501
+        },
+        "local_roc_slope": {
+          "mean": -5.571392903511158,
+          "sd": 0.7849300161435557,
+          "min": -6.351443123938887,
+          "max": -4.895635673624295
+        },
+        "expected_loss_from_excess_spec": {
+          "mean": 0.01838140179671233,
+          "sd": 0.03803756658870931,
+          "min": -0.027079796264855346,
+          "max": 0.0645161290322586
+        },
+        "ppv": {
+          "mean": 0.768221416750227,
+          "sd": 0.022610011913619357,
+          "min": 0.7454545454545455,
+          "max": 0.7978723404255319
+        },
+        "npv": {
+          "mean": 0.9150017047406708,
+          "sd": 0.004327171209395807,
+          "min": 0.9102564102564102,
+          "max": 0.9207547169811321
+        },
+        "missed_per_100": {
+          "mean": 7.1484375,
+          "sd": 0.4487939567607835,
+          "min": 6.5625,
+          "max": 7.65625
+        },
+        "false_alarm_per_100": {
+          "mean": 3.7109375,
+          "sd": 0.5898308152555273,
+          "min": 2.96875,
+          "max": 4.375
+        }
+      },
+      "decomposition": {
+        "mean_loss": 0.014112903225806467,
+        "mean_explained": 0.01838140179671233,
+        "share_explained": 1.3024536130241866
+      }
+    },
+    "E5": {
+      "seeds": [
+        42,
+        43,
+        44,
+        45
+      ],
+      "rows": [
+        {
+          "seed": 42,
+          "epoch": 15,
+          "val_threshold": 0.8632944226264954,
+          "val_sensitivity": 0.7049180327868853,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity_frozen": 0.5403225806451613,
+          "test_specificity_frozen": 0.9709302325581395,
+          "test_specificity_predicted_shift": 0.973568281938326,
+          "specificity_prediction_error": -0.0026380493801865246,
+          "test_sensitivity_matched": 0.7661290322580645,
+          "test_specificity_matched": 0.9534883720930233,
+          "transfer_loss": 0.22580645161290325,
+          "excess_specificity": 0.020930232558139528,
+          "local_roc_slope": -6.7894736842105345,
+          "expected_loss_from_excess_spec": 0.14210526315789487,
+          "test_auroc": 0.9374531132783196,
+          "test_partial_auroc": 0.7913623142627761,
+          "val_negative_mean": 0.22089703381061554,
+          "test_negative_mean": 0.20239759981632233,
+          "negative_mean_shift": -0.018499433994293213,
+          "val_negative_p95": 0.8175521492958069,
+          "test_negative_p95": 0.6929190158843994,
+          "val_spec_at_test_p95": 0.09251101321585903,
+          "tp": 67,
+          "fn": 57,
+          "tn": 501,
+          "fp": 15,
+          "ppv": 0.8170731707317073,
+          "npv": 0.8978494623655914,
+          "missed_per_100": 8.90625,
+          "false_alarm_per_100": 2.34375
+        },
+        {
+          "seed": 43,
+          "epoch": 18,
+          "val_threshold": 0.7815258502960205,
+          "val_sensitivity": 0.7131147540983607,
+          "val_specificity": 0.9537444933920705,
+          "test_sensitivity_frozen": 0.6370967741935484,
+          "test_specificity_frozen": 0.9728682170542635,
+          "test_specificity_predicted_shift": 0.9581497797356828,
+          "specificity_prediction_error": 0.01471843731858069,
+          "test_sensitivity_matched": 0.7661290322580645,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.12903225806451613,
+          "excess_specificity": 0.022868217054263562,
+          "local_roc_slope": -5.548387096774204,
+          "expected_loss_from_excess_spec": 0.12688172043010773,
+          "test_auroc": 0.94493935983996,
+          "test_partial_auroc": 0.830352324923336,
+          "val_negative_mean": 0.16612456738948822,
+          "test_negative_mean": 0.14457708597183228,
+          "negative_mean_shift": -0.021547481417655945,
+          "val_negative_p95": 0.758281946182251,
+          "test_negative_p95": 0.6311575770378113,
+          "val_spec_at_test_p95": 0.08149779735682819,
+          "tp": 79,
+          "fn": 45,
+          "tn": 502,
+          "fp": 14,
+          "ppv": 0.8494623655913979,
+          "npv": 0.9177330895795247,
+          "missed_per_100": 7.03125,
+          "false_alarm_per_100": 2.1875
+        },
+        {
+          "seed": 44,
+          "epoch": 18,
+          "val_threshold": 0.8560752868652344,
+          "val_sensitivity": 0.7049180327868853,
+          "val_specificity": 0.9581497797356828,
+          "test_sensitivity_frozen": 0.6451612903225806,
+          "test_specificity_frozen": 0.9709302325581395,
+          "test_specificity_predicted_shift": 0.9647577092511013,
+          "specificity_prediction_error": 0.0061725233070382135,
+          "test_sensitivity_matched": 0.7338709677419355,
+          "test_specificity_matched": 0.9612403100775194,
+          "transfer_loss": 0.08870967741935487,
+          "excess_specificity": 0.020930232558139528,
+          "local_roc_slope": -4.7287390029325564,
+          "expected_loss_from_excess_spec": 0.09897360703812325,
+          "test_auroc": 0.9413759689922481,
+          "test_partial_auroc": 0.8134895565996763,
+          "val_negative_mean": 0.20846618711948395,
+          "test_negative_mean": 0.18925774097442627,
+          "negative_mean_shift": -0.019208446145057678,
+          "val_negative_p95": 0.8449955582618713,
+          "test_negative_p95": 0.7088543176651001,
+          "val_spec_at_test_p95": 0.0947136563876652,
+          "tp": 80,
+          "fn": 44,
+          "tn": 501,
+          "fp": 15,
+          "ppv": 0.8421052631578947,
+          "npv": 0.9192660550458716,
+          "missed_per_100": 6.875,
+          "false_alarm_per_100": 2.34375
+        },
+        {
+          "seed": 45,
+          "epoch": 15,
+          "val_threshold": 0.7440000772476196,
+          "val_sensitivity": 0.7459016393442623,
+          "val_specificity": 0.9537444933920705,
+          "test_sensitivity_frozen": 0.6612903225806451,
+          "test_specificity_frozen": 0.9670542635658915,
+          "test_specificity_predicted_shift": 0.9581497797356828,
+          "specificity_prediction_error": 0.008904483830208698,
+          "test_sensitivity_matched": 0.7741935483870968,
+          "test_specificity_matched": 0.9515503875968992,
+          "transfer_loss": 0.11290322580645162,
+          "excess_specificity": 0.01705426356589157,
+          "local_roc_slope": -5.548387096774197,
+          "expected_loss_from_excess_spec": 0.09462365591397909,
+          "test_auroc": 0.9393285821455363,
+          "test_partial_auroc": 0.7677544386096524,
+          "val_negative_mean": 0.17535579204559326,
+          "test_negative_mean": 0.15433865785598755,
+          "negative_mean_shift": -0.021017134189605713,
+          "val_negative_p95": 0.7260162234306335,
+          "test_negative_p95": 0.5806395411491394,
+          "val_spec_at_test_p95": 0.0881057268722467,
+          "tp": 82,
+          "fn": 42,
+          "tn": 499,
+          "fp": 17,
+          "ppv": 0.8282828282828283,
+          "npv": 0.922365988909427,
+          "missed_per_100": 6.5625,
+          "false_alarm_per_100": 2.65625
+        }
+      ],
+      "aggregate": {
+        "val_threshold": {
+          "mean": 0.8112239092588425,
+          "sd": 0.058091889083859864,
+          "min": 0.7440000772476196,
+          "max": 0.8632944226264954
+        },
+        "test_sensitivity_frozen": {
+          "mean": 0.6209677419354838,
+          "sd": 0.054696209541332814,
+          "min": 0.5403225806451613,
+          "max": 0.6612903225806451
+        },
+        "test_specificity_frozen": {
+          "mean": 0.9704457364341085,
+          "sd": 0.002438577013976293,
+          "min": 0.9670542635658915,
+          "max": 0.9728682170542635
+        },
+        "test_specificity_predicted_shift": {
+          "mean": 0.9636563876651982,
+          "sd": 0.007305340947919384,
+          "min": 0.9581497797356828,
+          "max": 0.973568281938326
+        },
+        "specificity_prediction_error": {
+          "mean": 0.006789348768910269,
+          "sd": 0.007224969459406174,
+          "min": -0.0026380493801865246,
+          "max": 0.01471843731858069
+        },
+        "test_sensitivity_matched": {
+          "mean": 0.7600806451612903,
+          "sd": 0.01788190147264793,
+          "min": 0.7338709677419355,
+          "max": 0.7741935483870968
+        },
+        "transfer_loss": {
+          "mean": 0.13911290322580647,
+          "sd": 0.06012437969447592,
+          "min": 0.08870967741935487,
+          "max": 0.22580645161290325
+        },
+        "negative_mean_shift": {
+          "mean": -0.020068123936653137,
+          "sd": 0.0014478665980713038,
+          "min": -0.021547481417655945,
+          "max": -0.018499433994293213
+        },
+        "test_auroc": {
+          "mean": 0.940774256064016,
+          "sd": 0.0032057297865925732,
+          "min": 0.9374531132783196,
+          "max": 0.94493935983996
+        },
+        "test_partial_auroc": {
+          "mean": 0.8007396585988602,
+          "sd": 0.027174922449505267,
+          "min": 0.7677544386096524,
+          "max": 0.830352324923336
+        },
+        "excess_specificity": {
+          "mean": 0.020445736434108547,
+          "sd": 0.002438577013976293,
+          "min": 0.01705426356589157,
+          "max": 0.022868217054263562
+        },
+        "local_roc_slope": {
+          "mean": -5.653746720172872,
+          "sd": 0.8500424135068724,
+          "min": -6.7894736842105345,
+          "max": -4.7287390029325564
+        },
+        "expected_loss_from_excess_spec": {
+          "mean": 0.11564606163502623,
+          "sd": 0.022702728605268088,
+          "min": 0.09462365591397909,
+          "max": 0.14210526315789487
+        },
+        "ppv": {
+          "mean": 0.834230906940957,
+          "sd": 0.014419551195059218,
+          "min": 0.8170731707317073,
+          "max": 0.8494623655913979
+        },
+        "npv": {
+          "mean": 0.9143036489751036,
+          "sd": 0.01113744613256983,
+          "min": 0.8978494623655914,
+          "max": 0.922365988909427
+        },
+        "missed_per_100": {
+          "mean": 7.34375,
+          "sd": 1.0597390598633232,
+          "min": 6.5625,
+          "max": 8.90625
+        },
+        "false_alarm_per_100": {
+          "mean": 2.3828125,
+          "sd": 0.19661027175184245,
+          "min": 2.1875,
+          "max": 2.65625
+        }
+      },
+      "decomposition": {
+        "mean_loss": 0.13911290322580647,
+        "mean_explained": 0.11564606163502623,
+        "share_explained": 0.831310819869174
+      }
+    }
+  }
+}
