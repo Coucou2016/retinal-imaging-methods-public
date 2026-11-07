@@ -1,0 +1,557 @@
+{
+  "config": {
+    "target_specificity": 0.95,
+    "n_resample": 200,
+    "seed": 0
+  },
+  "arms": {
+    "E0": {
+      "stability": {
+        "point": {
+          "DR": {
+            "slope": 0.973122427237883,
+            "intercept": -0.5454466579800832,
+            "ece_platt": 0.03332510218163654
+          }
+        },
+        "resample": {
+          "slope": {
+            "lo": 0.8410421901914695,
+            "hi": 1.154488420319675,
+            "sd": 0.07978472473921966
+          },
+          "intercept": {
+            "lo": -0.7965995942109844,
+            "hi": -0.23668927629642564,
+            "sd": 0.15984304893090973
+          },
+          "macro_ece": {
+            "lo": 0.025415352304500826,
+            "hi": 0.045200430734574686,
+            "sd": 0.005768940225484178
+          }
+        }
+      },
+      "shared_map": {
+        "slope": 0.973122427237883,
+        "intercept": -0.5454466579800832,
+        "macro_ece_none": 0.030735863749578138,
+        "macro_ece_shared": 0.03332510218163654,
+        "pooled_ece_none": 0.030735863749578138,
+        "pooled_ece_shared": 0.03332510218163654
+      },
+      "threshold_transfer": {
+        "raw": {
+          "threshold": 0.5707362294197083,
+          "val_sensitivity": 0.7226890756302521,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity": 0.6612903225806451,
+          "test_specificity": 0.9573643410852714,
+          "test_tp": 82,
+          "test_fn": 42,
+          "test_tn": 494,
+          "test_fp": 22,
+          "test_sensitivity_oracle": 0.6774193548387096,
+          "transfer_loss": 0.016129032258064502,
+          "auroc_test": 0.932076769192298
+        },
+        "platt": {
+          "threshold": 0.4333374292576525,
+          "val_sensitivity": 0.7226890756302521,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity": 0.6612903225806451,
+          "test_specificity": 0.9573643410852714,
+          "test_tp": 82,
+          "test_fn": 42,
+          "test_tn": 494,
+          "test_fp": 22,
+          "test_sensitivity_oracle": 0.6774193548387096,
+          "transfer_loss": 0.016129032258064502,
+          "auroc_test": 0.932076769192298
+        },
+        "delta_test_sensitivity": 0.0,
+        "delta_transfer_loss": 0.0
+      }
+    },
+    "E1": {
+      "stability": {
+        "point": {
+          "DR": {
+            "slope": 0.751073246744201,
+            "intercept": -0.43443859188728473,
+            "ece_platt": 0.03246467210940327
+          }
+        },
+        "resample": {
+          "slope": {
+            "lo": 0.6458300047738148,
+            "hi": 0.900976984220158,
+            "sd": 0.06756114012697441
+          },
+          "intercept": {
+            "lo": -0.7748646011190015,
+            "hi": -0.12816262510527227,
+            "sd": 0.16224618417245487
+          },
+          "macro_ece": {
+            "lo": 0.02779299815386821,
+            "hi": 0.04824890501557285,
+            "sd": 0.0059022193522281635
+          }
+        }
+      },
+      "shared_map": {
+        "slope": 0.751073246744201,
+        "intercept": -0.43443859188728473,
+        "macro_ece_none": 0.024485998812087927,
+        "macro_ece_shared": 0.03246467210940327,
+        "pooled_ece_none": 0.024485998812087927,
+        "pooled_ece_shared": 0.03246467210940327
+      },
+      "threshold_transfer": {
+        "raw": {
+          "threshold": 0.5219553112983704,
+          "val_sensitivity": 0.7058823529411765,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity": 0.6451612903225806,
+          "test_specificity": 0.9496124031007752,
+          "test_tp": 80,
+          "test_fn": 44,
+          "test_tn": 490,
+          "test_fp": 26,
+          "test_sensitivity_oracle": 0.6370967741935484,
+          "transfer_loss": -0.008064516129032251,
+          "auroc_test": 0.9335302575643911
+        },
+        "platt": {
+          "threshold": 0.4089190024101035,
+          "val_sensitivity": 0.7058823529411765,
+          "val_specificity": 0.9518599562363238,
+          "test_sensitivity": 0.6451612903225806,
+          "test_specificity": 0.9496124031007752,
+          "test_tp": 80,
+          "test_fn": 44,
+          "test_tn": 490,
+          "test_fp": 26,
+          "test_sensitivity_oracle": 0.6370967741935484,
+          "transfer_loss": -0.008064516129032251,
+          "auroc_test": 0.9335302575643911
+        },
+        "delta_test_sensitivity": 0.0,
+        "delta_transfer_loss": 0.0
+      }
+    },
+    "E2": {
+      "stability": {
+        "point": {
+          "Disease_Risk": {
+            "slope": 1.3589368584772061,
+            "intercept": 1.5852534296757315,
+            "ece_platt": 0.03482092880375328
+          },
+          "DR": {
+            "slope": 0.9707364278877954,
+            "intercept": -1.7314166893965448,
+            "ece_platt": 0.033902955606713164
+          },
+          "MH": {
+            "slope": 0.8766198752939134,
+            "intercept": -1.0669968942678074,
+            "ece_platt": 0.04177329596657019
+          },
+          "ODC": {
+            "slope": 0.5615431053515657,
+            "intercept": -1.6901191637525734,
+            "ece_platt": 0.027204820226320835
+          },
+          "TSLN": {
+            "slope": 0.5640112694157507,
+            "intercept": -1.7176666238103313,
+            "ece_platt": 0.040026418334328344
+          },
+          "DN": {
+            "slope": 0.5631042625510646,
+            "intercept": -2.358062223629054,
+            "ece_platt": 0.009637509102927981
+          },
+          "ARMD": {
+            "slope": 0.9471725851534558,
+            "intercept": -2.1091350785806613,
+            "ece_platt": 0.02064136231123894
+          },
+          "MYA": {
+            "slope": 0.8714867892994576,
+            "intercept": -2.2326429201977063,
+            "ece_platt": 0.01885282487525373
+          }
+        },
+        "resample": {
+          "slope": {
+            "lo": 0.7898527541612288,
+            "hi": 0.942666498224412,
+            "sd": 0.03846954611342759
+          },
+          "intercept": {
+            "lo": -1.5608841329687466,
+            "hi": -1.2861582687615802,
+            "sd": 0.07086893316024405
+          },
+          "macro_ece": {
+            "lo": 0.027315602915870114,
+            "hi": 0.036521841752524466,
+            "sd": 0.0023269456896505944
+          }
+        }
+      },
+      "shared_map": {
+        "slope": 0.8596884214914774,
+        "intercept": -1.1027383944242026,
+        "macro_ece_none": 0.13631525842261,
+        "macro_ece_shared": 0.08381446761062938,
+        "pooled_ece_none": 0.09169284955182776,
+        "pooled_ece_shared": 0.019442680949734635
+      },
+      "threshold_transfer": {
+        "raw": {
+          "threshold": 0.8303467035293579,
+          "val_sensitivity": 0.6967213114754098,
+          "val_specificity": 0.9515418502202643,
+          "test_sensitivity": 0.6532258064516129,
+          "test_specificity": 0.9496124031007752,
+          "test_tp": 81,
+          "test_fn": 43,
+          "test_tn": 490,
+          "test_fp": 26,
+          "test_sensitivity_oracle": 0.6532258064516129,
+          "transfer_loss": 0.0,
+          "auroc_test": 0.9255751437859465
+        },
+        "platt": {
+          "threshold": 0.4526911003409915,
+          "val_sensitivity": 0.6967213114754098,
+          "val_specificity": 0.9515418502202643,
+          "test_sensitivity": 0.6532258064516129,
+          "test_specificity": 0.9496124031007752,
+          "test_tp": 81,
+          "test_fn": 43,
+          "test_tn": 490,
+          "test_fp": 26,
+          "test_sensitivity_oracle": 0.6532258064516129,
+          "transfer_loss": 0.0,
+          "auroc_test": 0.9255751437859465
+        },
+        "delta_test_sensitivity": 0.0,
+        "delta_transfer_loss": 0.0
+      }
+    },
+    "E3": {
+      "stability": {
+        "point": {
+          "Disease_Risk": {
+            "slope": 1.3286122556467665,
+            "intercept": 1.787964065454792,
+            "ece_platt": 0.0362894558615861
+          },
+          "DR": {
+            "slope": 0.8627173457942119,
+            "intercept": -1.7324350497928132,
+            "ece_platt": 0.02976008866584075
+          },
+          "MH": {
+            "slope": 0.9266260605170508,
+            "intercept": -1.2693858497434436,
+            "ece_platt": 0.0502328859907539
+          },
+          "ODC": {
+            "slope": 0.5568679310368171,
+            "intercept": -1.5964737214449587,
+            "ece_platt": 0.024558939103151135
+          },
+          "TSLN": {
+            "slope": 0.5955960528483257,
+            "intercept": -1.6875729025773913,
+            "ece_platt": 0.04146612373015349
+          },
+          "DN": {
+            "slope": 0.9710424339843742,
+            "intercept": -2.437824742400016,
+            "ece_platt": 0.02061966794260544
+          },
+          "ARMD": {
+            "slope": 0.8122885193697224,
+            "intercept": -2.4282895057376335,
+            "ece_platt": 0.011924972217605013
+          },
+          "MYA": {
+            "slope": 0.8959730989366322,
+            "intercept": -2.2352827185840263,
+            "ece_platt": 0.013939009729464142
+          }
+        },
+        "resample": {
+          "slope": {
+            "lo": 0.8150424310176345,
+            "hi": 0.9874248274082422,
+            "sd": 0.04327616465276752
+          },
+          "intercept": {
+            "lo": -1.631583290982855,
+            "hi": -1.3227602562355667,
+            "sd": 0.08167534639007246
+          },
+          "macro_ece": {
+            "lo": 0.02742578669234828,
+            "hi": 0.03593260729967443,
+            "sd": 0.0022121811625078645
+          }
+        }
+      },
+      "shared_map": {
+        "slope": 0.8501760298764288,
+        "intercept": -1.1044255876841003,
+        "macro_ece_none": 0.14919784168887418,
+        "macro_ece_shared": 0.09183273747018023,
+        "pooled_ece_none": 0.09978539507574168,
+        "pooled_ece_shared": 0.017573151677668028
+      },
+      "threshold_transfer": {
+        "raw": {
+          "threshold": 0.8810458183288574,
+          "val_sensitivity": 0.6721311475409836,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity": 0.5806451612903226,
+          "test_specificity": 0.9554263565891473,
+          "test_tp": 72,
+          "test_fn": 52,
+          "test_tn": 493,
+          "test_fp": 23,
+          "test_sensitivity_oracle": 0.5967741935483871,
+          "transfer_loss": 0.016129032258064502,
+          "auroc_test": 0.9335927731932984
+        },
+        "platt": {
+          "threshold": 0.49876134061909205,
+          "val_sensitivity": 0.6721311475409836,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity": 0.5806451612903226,
+          "test_specificity": 0.9554263565891473,
+          "test_tp": 72,
+          "test_fn": 52,
+          "test_tn": 493,
+          "test_fp": 23,
+          "test_sensitivity_oracle": 0.5967741935483871,
+          "transfer_loss": 0.016129032258064502,
+          "auroc_test": 0.9335927731932984
+        },
+        "delta_test_sensitivity": 0.0,
+        "delta_transfer_loss": 0.0
+      }
+    },
+    "E4": {
+      "stability": {
+        "point": {
+          "Disease_Risk": {
+            "slope": 1.3562191854526873,
+            "intercept": 1.777720545436982,
+            "ece_platt": 0.03674770084855661
+          },
+          "DR": {
+            "slope": 0.896913510205303,
+            "intercept": -2.6008735841339328,
+            "ece_platt": 0.03365597518867952
+          },
+          "MH": {
+            "slope": 0.8292501198606995,
+            "intercept": -0.6111290655347249,
+            "ece_platt": 0.04717832401049526
+          },
+          "ODC": {
+            "slope": 0.5697628232814331,
+            "intercept": -1.4156545557786475,
+            "ece_platt": 0.031500164588432036
+          },
+          "TSLN": {
+            "slope": 0.5673214042713008,
+            "intercept": -1.2721678399107768,
+            "ece_platt": 0.051627736348108855
+          },
+          "DN": {
+            "slope": 0.4920683050369754,
+            "intercept": -2.3217651213257295,
+            "ece_platt": 0.009175238441160154
+          },
+          "ARMD": {
+            "slope": 0.7448231422647656,
+            "intercept": -2.221363748736715,
+            "ece_platt": 0.014480996695388132
+          },
+          "MYA": {
+            "slope": 0.7622429036828974,
+            "intercept": -2.1970835519394134,
+            "ece_platt": 0.018359581963939723
+          }
+        },
+        "resample": {
+          "slope": {
+            "lo": 0.7270313270904484,
+            "hi": 0.8562630881757569,
+            "sd": 0.033823749875885926
+          },
+          "intercept": {
+            "lo": -1.5321321168666195,
+            "hi": -1.2539586205786508,
+            "sd": 0.07381835030389339
+          },
+          "macro_ece": {
+            "lo": 0.02692316016389123,
+            "hi": 0.035928068441752656,
+            "sd": 0.0023485562482621087
+          }
+        }
+      },
+      "shared_map": {
+        "slope": 0.7337993890253368,
+        "intercept": -1.0358334665821298,
+        "macro_ece_none": 0.12253832350506856,
+        "macro_ece_shared": 0.09056373145018107,
+        "pooled_ece_none": 0.07493252100066457,
+        "pooled_ece_shared": 0.017720759578669892
+      },
+      "threshold_transfer": {
+        "raw": {
+          "threshold": 0.9474136829376221,
+          "val_sensitivity": 0.6885245901639344,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity": 0.6290322580645161,
+          "test_specificity": 0.9515503875968992,
+          "test_tp": 78,
+          "test_fn": 46,
+          "test_tn": 491,
+          "test_fp": 25,
+          "test_sensitivity_oracle": 0.6290322580645161,
+          "transfer_loss": 0.0,
+          "auroc_test": 0.930951487871968
+        },
+        "platt": {
+          "threshold": 0.49808860959128926,
+          "val_sensitivity": 0.6885245901639344,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity": 0.6290322580645161,
+          "test_specificity": 0.9515503875968992,
+          "test_tp": 78,
+          "test_fn": 46,
+          "test_tn": 491,
+          "test_fp": 25,
+          "test_sensitivity_oracle": 0.6290322580645161,
+          "transfer_loss": 0.0,
+          "auroc_test": 0.930951487871968
+        },
+        "delta_test_sensitivity": 0.0,
+        "delta_transfer_loss": 0.0
+      }
+    },
+    "E5": {
+      "stability": {
+        "point": {
+          "Disease_Risk": {
+            "slope": 1.32902803153296,
+            "intercept": 1.7639589195503258,
+            "ece_platt": 0.03807799173471492
+          },
+          "DR": {
+            "slope": 1.0348071701960646,
+            "intercept": -1.6621659219043237,
+            "ece_platt": 0.021976690096863826
+          },
+          "MH": {
+            "slope": 0.9498963525506703,
+            "intercept": -1.1533704218725611,
+            "ece_platt": 0.04272889176957885
+          },
+          "ODC": {
+            "slope": 0.592692834807292,
+            "intercept": -1.4411571669174201,
+            "ece_platt": 0.027302519015340206
+          },
+          "TSLN": {
+            "slope": 0.7391750806895927,
+            "intercept": -1.6236329156090297,
+            "ece_platt": 0.02523690861402261
+          },
+          "DN": {
+            "slope": 0.5778963593830537,
+            "intercept": -2.2602891137487564,
+            "ece_platt": 0.00899187605269353
+          },
+          "ARMD": {
+            "slope": 0.9975539847073489,
+            "intercept": -1.9698069560095879,
+            "ece_platt": 0.01613718354597861
+          },
+          "MYA": {
+            "slope": 1.0806390767590899,
+            "intercept": -2.431827863321595,
+            "ece_platt": 0.016549740084354
+          }
+        },
+        "resample": {
+          "slope": {
+            "lo": 0.8304324438208645,
+            "hi": 1.0576454967025708,
+            "sd": 0.05729085893148635
+          },
+          "intercept": {
+            "lo": -1.6247612686107693,
+            "hi": -1.222188264073884,
+            "sd": 0.13121466197140652
+          },
+          "macro_ece": {
+            "lo": 0.0231703413964831,
+            "hi": 0.03304909702598194,
+            "sd": 0.002511809525821232
+          }
+        }
+      },
+      "shared_map": {
+        "slope": 0.9151482713424021,
+        "intercept": -0.9465701835500646,
+        "macro_ece_none": 0.12209468592954166,
+        "macro_ece_shared": 0.08315084917409898,
+        "pooled_ece_none": 0.07311382873521312,
+        "pooled_ece_shared": 0.017223337930621276
+      },
+      "threshold_transfer": {
+        "raw": {
+          "threshold": 0.8632944226264954,
+          "val_sensitivity": 0.7049180327868853,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity": 0.5403225806451613,
+          "test_specificity": 0.9709302325581395,
+          "test_tp": 67,
+          "test_fn": 57,
+          "test_tn": 501,
+          "test_fp": 15,
+          "test_sensitivity_oracle": 0.7661290322580645,
+          "transfer_loss": 0.22580645161290325,
+          "auroc_test": 0.9374531132783196
+        },
+        "platt": {
+          "threshold": 0.5609226386016392,
+          "val_sensitivity": 0.7049180327868853,
+          "val_specificity": 0.960352422907489,
+          "test_sensitivity": 0.5403225806451613,
+          "test_specificity": 0.9709302325581395,
+          "test_tp": 67,
+          "test_fn": 57,
+          "test_tn": 501,
+          "test_fp": 15,
+          "test_sensitivity_oracle": 0.7661290322580645,
+          "transfer_loss": 0.22580645161290325,
+          "auroc_test": 0.9374531132783196
+        },
+        "delta_test_sensitivity": 0.0,
+        "delta_transfer_loss": 0.0
+      }
+    }
+  }
+}

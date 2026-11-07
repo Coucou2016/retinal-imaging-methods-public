@@ -1,0 +1,359 @@
+{
+  "per_arm": {
+    "E0": {
+      "per_head": {
+        "DR": {
+          "prevalence": 0.19375,
+          "logit_prevalence": -1.425825199876526,
+          "mean_logit": -2.3779619075765366,
+          "gap": -0.9521367077000107,
+          "logit_sd": 2.5656943432253128,
+          "n": 640
+        }
+      },
+      "summary": {
+        "n_heads": 1
+      }
+    },
+    "E1": {
+      "per_head": {
+        "DR": {
+          "prevalence": 0.19375,
+          "logit_prevalence": -1.425825199876526,
+          "mean_logit": -2.6519409271539187,
+          "gap": -1.2261157272773928,
+          "logit_sd": 2.6980255288654944,
+          "n": 640
+        }
+      },
+      "summary": {
+        "n_heads": 1
+      }
+    },
+    "E2": {
+      "per_head": {
+        "Disease_Risk": {
+          "prevalence": 0.790625,
+          "logit_prevalence": 1.3286968693365544,
+          "mean_logit": 0.8497478124452755,
+          "gap": -0.47894905689127887,
+          "logit_sd": 2.11834146030653,
+          "n": 640
+        },
+        "DR": {
+          "prevalence": 0.19375,
+          "logit_prevalence": -1.425825199876526,
+          "mean_logit": -1.0078291247133166,
+          "gap": 0.41799607516320925,
+          "logit_sd": 2.424465603963835,
+          "n": 640
+        },
+        "MH": {
+          "prevalence": 0.1625,
+          "logit_prevalence": -1.6397432619294292,
+          "mean_logit": -1.4313050693221157,
+          "gap": 0.20843819260731355,
+          "logit_sd": 3.1516368543914073,
+          "n": 640
+        },
+        "ODC": {
+          "prevalence": 0.1421875,
+          "logit_prevalence": -1.7972389349926805,
+          "mean_logit": -0.8916173656762112,
+          "gap": 0.9056215693164693,
+          "logit_sd": 1.2878660001515618,
+          "n": 640
+        },
+        "TSLN": {
+          "prevalence": 0.0828125,
+          "logit_prevalence": -2.404732906275975,
+          "mean_logit": -2.0664432015677447,
+          "gap": 0.33828970470823005,
+          "logit_sd": 2.192062487716124,
+          "n": 640
+        },
+        "DN": {
+          "prevalence": 0.071875,
+          "logit_prevalence": -2.55823792287355,
+          "mean_logit": -1.059307610412361,
+          "gap": 1.498930312461189,
+          "logit_sd": 1.3541530803477355,
+          "n": 640
+        },
+        "ARMD": {
+          "prevalence": 0.0484375,
+          "logit_prevalence": -2.977831063224751,
+          "mean_logit": -2.94798863325268,
+          "gap": 0.02984242997207076,
+          "logit_sd": 1.7750558995436527,
+          "n": 640
+        },
+        "MYA": {
+          "prevalence": 0.05,
+          "logit_prevalence": -2.9444389791664403,
+          "mean_logit": -3.760479528515134,
+          "gap": -0.8160405493486937,
+          "logit_sd": 2.2291496587148285,
+          "n": 640
+        }
+      },
+      "summary": {
+        "n_heads": 8,
+        "r_mean_logit_vs_logit_prevalence": 0.8636526102625509,
+        "slope_mean_logit_on_logit_prevalence": 0.8717301069331905,
+        "intercept_mean_logit_on_logit_prevalence": 0.03182000199320772,
+        "mean_abs_gap": 0.5867634863085568,
+        "max_abs_gap": 1.498930312461189,
+        "sd_mean_logit": 1.3156500849887243,
+        "sd_logit_prevalence": 1.3034592026311,
+        "compression_ratio": 1.0093527149396133,
+        "r_abs_gap_vs_ece": 0.5978395181165874,
+        "mean_head_ece": 0.13631525877398987
+      }
+    },
+    "E3": {
+      "per_head": {
+        "Disease_Risk": {
+          "prevalence": 0.790625,
+          "logit_prevalence": 1.3286968693365544,
+          "mean_logit": 0.6998717445647344,
+          "gap": -0.62882512477182,
+          "logit_sd": 2.139990132855671,
+          "n": 640
+        },
+        "DR": {
+          "prevalence": 0.19375,
+          "logit_prevalence": -1.425825199876526,
+          "mean_logit": -0.9495820184063632,
+          "gap": 0.47624318147016265,
+          "logit_sd": 2.549096086691294,
+          "n": 640
+        },
+        "MH": {
+          "prevalence": 0.1625,
+          "logit_prevalence": -1.6397432619294292,
+          "mean_logit": -1.0423094655066962,
+          "gap": 0.597433796422733,
+          "logit_sd": 2.968557331886697,
+          "n": 640
+        },
+        "ODC": {
+          "prevalence": 0.1421875,
+          "logit_prevalence": -1.7972389349926805,
+          "mean_logit": -1.067068382911384,
+          "gap": 0.7301705520812964,
+          "logit_sd": 1.367130819849863,
+          "n": 640
+        },
+        "TSLN": {
+          "prevalence": 0.0828125,
+          "logit_prevalence": -2.404732906275975,
+          "mean_logit": -2.0540047471469736,
+          "gap": 0.35072815912900124,
+          "logit_sd": 2.1472356284773966,
+          "n": 640
+        },
+        "DN": {
+          "prevalence": 0.071875,
+          "logit_prevalence": -2.55823792287355,
+          "mean_logit": -0.7920787365641445,
+          "gap": 1.7661591863094057,
+          "logit_sd": 1.0671054343574091,
+          "n": 640
+        },
+        "ARMD": {
+          "prevalence": 0.0484375,
+          "logit_prevalence": -2.977831063224751,
+          "mean_logit": -2.6953379306418355,
+          "gap": 0.2824931325829154,
+          "logit_sd": 2.052474007469967,
+          "n": 640
+        },
+        "MYA": {
+          "prevalence": 0.05,
+          "logit_prevalence": -2.9444389791664403,
+          "mean_logit": -3.9092689096578397,
+          "gap": -0.9648299304913994,
+          "logit_sd": 2.2488421364877165,
+          "n": 640
+        }
+      },
+      "summary": {
+        "n_heads": 8,
+        "r_mean_logit_vs_logit_prevalence": 0.8191240376407599,
+        "slope_mean_logit_on_logit_prevalence": 0.8186483821655195,
+        "intercept_mean_logit_on_logit_prevalence": -0.0006749689500935047,
+        "mean_abs_gap": 0.7246103829073418,
+        "max_abs_gap": 1.7661591863094057,
+        "sd_mean_logit": 1.3027022995517197,
+        "sd_logit_prevalence": 1.3034592026311,
+        "compression_ratio": 0.9994193120292123,
+        "r_abs_gap_vs_ece": 0.549153059946594,
+        "mean_head_ece": 0.14919784247435686
+      }
+    },
+    "E4": {
+      "per_head": {
+        "Disease_Risk": {
+          "prevalence": 0.790625,
+          "logit_prevalence": 1.3286968693365544,
+          "mean_logit": 0.844504428061191,
+          "gap": -0.4841924412753634,
+          "logit_sd": 2.2815748756873626,
+          "n": 640
+        },
+        "DR": {
+          "prevalence": 0.19375,
+          "logit_prevalence": -1.425825199876526,
+          "mean_logit": -0.3664053468004568,
+          "gap": 1.059419853076069,
+          "logit_sd": 2.849035041064647,
+          "n": 640
+        },
+        "MH": {
+          "prevalence": 0.1625,
+          "logit_prevalence": -1.6397432619294292,
+          "mean_logit": -1.9295904153725132,
+          "gap": -0.289847153443084,
+          "logit_sd": 3.32597902898008,
+          "n": 640
+        },
+        "ODC": {
+          "prevalence": 0.1421875,
+          "logit_prevalence": -1.7972389349926805,
+          "mean_logit": -1.4105482444661903,
+          "gap": 0.3866906905264902,
+          "logit_sd": 1.437836497173486,
+          "n": 640
+        },
+        "TSLN": {
+          "prevalence": 0.0828125,
+          "logit_prevalence": -2.404732906275975,
+          "mean_logit": -2.9614866843272467,
+          "gap": -0.5567537780512719,
+          "logit_sd": 2.259777656218396,
+          "n": 640
+        },
+        "DN": {
+          "prevalence": 0.071875,
+          "logit_prevalence": -2.55823792287355,
+          "mean_logit": -1.285763810836943,
+          "gap": 1.2724741120366072,
+          "logit_sd": 1.523625270785467,
+          "n": 640
+        },
+        "ARMD": {
+          "prevalence": 0.0484375,
+          "logit_prevalence": -2.977831063224751,
+          "mean_logit": -3.451228400215041,
+          "gap": -0.4733973369902902,
+          "logit_sd": 2.195999543657531,
+          "n": 640
+        },
+        "MYA": {
+          "prevalence": 0.05,
+          "logit_prevalence": -2.9444389791664403,
+          "mean_logit": -4.254147958231624,
+          "gap": -1.3097089790651841,
+          "logit_sd": 2.459982560774042,
+          "n": 640
+        }
+      },
+      "summary": {
+        "n_heads": 8,
+        "r_mean_logit_vs_logit_prevalence": 0.849794035784438,
+        "slope_mean_logit_on_logit_prevalence": 1.019385719726829,
+        "intercept_mean_logit_on_logit_prevalence": -0.01447319104028858,
+        "mean_abs_gap": 0.729060543058045,
+        "max_abs_gap": 1.3097089790651841,
+        "sd_mean_logit": 1.5635879300825213,
+        "sd_logit_prevalence": 1.3034592026311,
+        "compression_ratio": 1.1995679856541255,
+        "r_abs_gap_vs_ece": 0.288692171065053,
+        "mean_head_ece": 0.12253832398145993
+      }
+    },
+    "E5": {
+      "per_head": {
+        "Disease_Risk": {
+          "prevalence": 0.790625,
+          "logit_prevalence": 1.3286968693365544,
+          "mean_logit": 0.5359273533103988,
+          "gap": -0.7927695160261556,
+          "logit_sd": 2.113238768117802,
+          "n": 640
+        },
+        "DR": {
+          "prevalence": 0.19375,
+          "logit_prevalence": -1.425825199876526,
+          "mean_logit": -1.1816572199459188,
+          "gap": 0.24416797993060713,
+          "logit_sd": 2.4579999225538534,
+          "n": 640
+        },
+        "MH": {
+          "prevalence": 0.1625,
+          "logit_prevalence": -1.6397432619294292,
+          "mean_logit": -1.5943611651076934,
+          "gap": 0.04538209682173577,
+          "logit_sd": 3.0872623929095786,
+          "n": 640
+        },
+        "ODC": {
+          "prevalence": 0.1421875,
+          "logit_prevalence": -1.7972389349926805,
+          "mean_logit": -1.5405776494706516,
+          "gap": 0.25666128552202894,
+          "logit_sd": 1.6511404145821833,
+          "n": 640
+        },
+        "TSLN": {
+          "prevalence": 0.0828125,
+          "logit_prevalence": -2.404732906275975,
+          "mean_logit": -2.5023407797096295,
+          "gap": -0.09760787343365473,
+          "logit_sd": 2.430601545687832,
+          "n": 640
+        },
+        "DN": {
+          "prevalence": 0.071875,
+          "logit_prevalence": -2.55823792287355,
+          "mean_logit": -1.2673778374824907,
+          "gap": 1.2908600853910595,
+          "logit_sd": 1.4672657706264547,
+          "n": 640
+        },
+        "ARMD": {
+          "prevalence": 0.0484375,
+          "logit_prevalence": -2.977831063224751,
+          "mean_logit": -4.0228354229591785,
+          "gap": -1.0450043597344276,
+          "logit_sd": 2.7650107404253688,
+          "n": 640
+        },
+        "MYA": {
+          "prevalence": 0.05,
+          "logit_prevalence": -2.9444389791664403,
+          "mean_logit": -5.040751049015671,
+          "gap": -2.0963120698492306,
+          "logit_sd": 2.916448373405608,
+          "n": 640
+        }
+      },
+      "summary": {
+        "n_heads": 8,
+        "r_mean_logit_vs_logit_prevalence": 0.8129870914084879,
+        "slope_mean_logit_on_logit_prevalence": 1.023829102552985,
+        "intercept_mean_logit_on_logit_prevalence": -0.23137777101795998,
+        "mean_abs_gap": 0.7335956583386125,
+        "max_abs_gap": 2.0963120698492306,
+        "sd_mean_logit": 1.6415014208063154,
+        "sd_logit_prevalence": 1.3034592026311,
+        "compression_ratio": 1.259342384857815,
+        "r_abs_gap_vs_ece": -0.22535761021588827,
+        "mean_head_ece": 0.12209468595389258
+      }
+    }
+  },
+  "note": "logits and labels read from the cached test predictions; no refitting"
+}

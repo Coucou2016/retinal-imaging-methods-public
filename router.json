@@ -1,0 +1,44 @@
+{
+  "E0": {
+    "quality_router": "fixed",
+    "quality_gating": false,
+    "monotone_weights": null
+  },
+  "E1": {
+    "quality_router": "monotone",
+    "quality_gating": false,
+    "monotone_weights": [
+      0.0001012335269479081,
+      0.5005667805671692,
+      1.0
+    ]
+  },
+  "E2": {
+    "quality_router": "fixed",
+    "quality_gating": false,
+    "monotone_weights": null
+  },
+  "E3": {
+    "quality_router": "monotone",
+    "quality_gating": false,
+    "monotone_weights": [
+      0.0001017582617350854,
+      0.5031662583351135,
+      1.0
+    ]
+  },
+  "E4": {
+    "quality_router": "free_linear",
+    "quality_gating": false,
+    "monotone_weights": null
+  },
+  "E5": {
+    "quality_router": "monotone",
+    "quality_gating": true,
+    "monotone_weights": [
+      0.00010264815500704572,
+      0.5068389177322388,
+      1.0
+    ]
+  }
+}

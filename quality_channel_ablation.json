@@ -1,0 +1,34 @@
+{
+  "E2": {
+    "n": 640,
+    "macro_auroc_as_trained": 0.8958932364615753,
+    "macro_auroc_constant_quality": 0.8950126825717104,
+    "delta": -0.0008805538898648546,
+    "max_abs_prob_change": 0.4662891924381256,
+    "identical_within_1e-6": false
+  },
+  "E3": {
+    "n": 640,
+    "macro_auroc_as_trained": 0.9059392159125654,
+    "macro_auroc_constant_quality": 0.905398734538813,
+    "delta": -0.0005404813737523995,
+    "max_abs_prob_change": 0.5039317011833191,
+    "identical_within_1e-6": false
+  },
+  "E4": {
+    "n": 640,
+    "macro_auroc_as_trained": 0.8976328925114874,
+    "macro_auroc_constant_quality": 0.8967458767934383,
+    "delta": -0.0008870157180490557,
+    "max_abs_prob_change": 0.6393640041351318,
+    "identical_within_1e-6": false
+  },
+  "E5": {
+    "n": 640,
+    "macro_auroc_as_trained": 0.9159972357764019,
+    "macro_auroc_constant_quality": 0.9154989385575782,
+    "delta": -0.0004982972188236623,
+    "max_abs_prob_change": 0.4103948771953583,
+    "identical_within_1e-6": false
+  }
+}

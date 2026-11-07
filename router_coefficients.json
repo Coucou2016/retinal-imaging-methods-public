@@ -1,0 +1,302 @@
+{
+  "E0": {
+    "router": "fixed",
+    "ckpt": "results\\real_rfmid\\ckpts\\20260917012508\\DR\\y0\\ckpt\\12.pt",
+    "backbones": [
+      {
+        "backbone": 0,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 1,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 2,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "bias": 0.0
+      }
+    ],
+    "mean_weights_good_usable_bad": [
+      1.0,
+      0.5,
+      0.0
+    ],
+    "normalised_to_good": [
+      1.0,
+      0.5,
+      0.0
+    ],
+    "ordering_ok": true,
+    "deviation_from_baseline": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "max_abs_deviation": 0.0
+  },
+  "E1": {
+    "router": "monotone",
+    "ckpt": "results\\real_rfmid\\ckpts\\20260917013929\\DR\\y0\\ckpt\\14.pt",
+    "backbones": [
+      {
+        "backbone": 0,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5005667805671692,
+          0.0001012335269479081
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 1,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5005481243133545,
+          0.0001013682340271771
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 2,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5011778473854065,
+          0.00010152324830414727
+        ],
+        "bias": 0.0
+      }
+    ],
+    "mean_weights_good_usable_bad": [
+      1.0,
+      0.5007642507553101,
+      0.0001013750030930775
+    ],
+    "normalised_to_good": [
+      1.0,
+      0.5007642507553101,
+      0.0001013750030930775
+    ],
+    "ordering_ok": true,
+    "deviation_from_baseline": [
+      0.0,
+      0.0007642507553100586,
+      0.0001013750030930775
+    ],
+    "max_abs_deviation": 0.0007642507553100586
+  },
+  "E2": {
+    "router": "fixed",
+    "ckpt": "results\\real_rfmid\\ckpts\\20260917015318\\multitask\\y0\\ckpt\\15.pt",
+    "backbones": [
+      {
+        "backbone": 0,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 1,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 2,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5,
+          0.0
+        ],
+        "bias": 0.0
+      }
+    ],
+    "mean_weights_good_usable_bad": [
+      1.0,
+      0.5,
+      0.0
+    ],
+    "normalised_to_good": [
+      1.0,
+      0.5,
+      0.0
+    ],
+    "ordering_ok": true,
+    "deviation_from_baseline": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "max_abs_deviation": 0.0
+  },
+  "E3": {
+    "router": "monotone",
+    "ckpt": "results\\real_rfmid\\ckpts\\20260917020322\\multitask\\y0\\ckpt\\15.pt",
+    "backbones": [
+      {
+        "backbone": 0,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5031661987304688,
+          0.0001017582617350854
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 1,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5032258629798889,
+          0.0001018853290588595
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 2,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5051426887512207,
+          0.00010213754285359755
+        ],
+        "bias": 0.0
+      }
+    ],
+    "mean_weights_good_usable_bad": [
+      1.0,
+      0.5038449168205261,
+      0.00010192704454918082
+    ],
+    "normalised_to_good": [
+      1.0,
+      0.5038449168205261,
+      0.00010192704454918082
+    ],
+    "ordering_ok": true,
+    "deviation_from_baseline": [
+      0.0,
+      0.003844916820526123,
+      0.00010192704454918082
+    ],
+    "max_abs_deviation": 0.003844916820526123
+  },
+  "E4": {
+    "router": "free_linear",
+    "ckpt": "C:\\_retinal_runs\\ckpt_e4free\\20261107033000\\multitask\\y0\\ckpt\\18.pt",
+    "backbones": [
+      {
+        "backbone": 0,
+        "weights_good_usable_bad": [
+          1.0082800388336182,
+          0.5080589056015015,
+          -0.0005586192710325122
+        ],
+        "bias": 0.008541841991245747
+      },
+      {
+        "backbone": 1,
+        "weights_good_usable_bad": [
+          1.010079264640808,
+          0.5127293467521667,
+          0.00043134106090292335
+        ],
+        "bias": 0.01243041642010212
+      },
+      {
+        "backbone": 2,
+        "weights_good_usable_bad": [
+          1.0074715614318848,
+          0.5091890692710876,
+          -0.004740545991808176
+        ],
+        "bias": 0.008067701011896133
+      }
+    ],
+    "mean_weights_good_usable_bad": [
+      1.0086102883021038,
+      0.5099924405415853,
+      -0.0016226080673125882
+    ],
+    "normalised_to_good": [
+      1.0,
+      0.5056387451689666,
+      -0.0016087562125150334
+    ],
+    "ordering_ok": true,
+    "deviation_from_baseline": [
+      0.008610288302103752,
+      0.009992440541585323,
+      -0.0016226080673125882
+    ],
+    "max_abs_deviation": 0.009992440541585323
+  },
+  "E5": {
+    "router": "monotone",
+    "ckpt": "results\\real_rfmid\\ckpts\\20260917022709\\multitask\\y0\\ckpt\\15.pt",
+    "backbones": [
+      {
+        "backbone": 0,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5068389177322388,
+          0.0001026481477310881
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 1,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5062918663024902,
+          0.00010277652472723275
+        ],
+        "bias": 0.0
+      },
+      {
+        "backbone": 2,
+        "weights_good_usable_bad": [
+          1.0,
+          0.5043507218360901,
+          0.00010230975021841004
+        ],
+        "bias": 0.0
+      }
+    ],
+    "mean_weights_good_usable_bad": [
+      1.0,
+      0.5058271686236063,
+      0.00010257814089224364
+    ],
+    "normalised_to_good": [
+      1.0,
+      0.5058271686236063,
+      0.00010257814089224364
+    ],
+    "ordering_ok": true,
+    "deviation_from_baseline": [
+      0.0,
+      0.005827168623606327,
+      0.00010257814089224364
+    ],
+    "max_abs_deviation": 0.005827168623606327
+  }
+}

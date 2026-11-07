@@ -1,0 +1,96 @@
+{
+  "E0": {
+    "temperature_per_endpoint_oracle": {
+      "DR": 1.0141
+    },
+    "mean_head_ece_raw": 0.0307,
+    "mean_head_ece_oracle": 0.0303,
+    "mean_head_ece_gain": 0.0005,
+    "mean_head_brier_raw": 0.0753,
+    "mean_head_brier_oracle": 0.0753,
+    "note": "temperature fitted on test labels; an upper bound, not a procedure"
+  },
+  "E1": {
+    "temperature_per_endpoint_oracle": {
+      "DR": 1.1264
+    },
+    "mean_head_ece_raw": 0.0245,
+    "mean_head_ece_oracle": 0.0285,
+    "mean_head_ece_gain": -0.004,
+    "mean_head_brier_raw": 0.0789,
+    "mean_head_brier_oracle": 0.0784,
+    "note": "temperature fitted on test labels; an upper bound, not a procedure"
+  },
+  "E2": {
+    "temperature_per_endpoint_oracle": {
+      "Disease_Risk": 0.9318,
+      "DR": 1.0767,
+      "MH": 1.0317,
+      "ODC": 0.9219,
+      "TSLN": 1.124,
+      "DN": 0.9071,
+      "ARMD": 0.8316,
+      "MYA": 0.8634
+    },
+    "mean_head_ece_raw": 0.1363,
+    "mean_head_ece_oracle": 0.1332,
+    "mean_head_ece_gain": 0.0031,
+    "mean_head_brier_raw": 0.0976,
+    "mean_head_brier_oracle": 0.0976,
+    "note": "temperature fitted on test labels; an upper bound, not a procedure"
+  },
+  "E3": {
+    "temperature_per_endpoint_oracle": {
+      "Disease_Risk": 1.0331,
+      "DR": 1.1091,
+      "MH": 1.0608,
+      "ODC": 0.8275,
+      "TSLN": 1.0861,
+      "DN": 0.5867,
+      "ARMD": 1.0223,
+      "MYA": 0.8615
+    },
+    "mean_head_ece_raw": 0.1492,
+    "mean_head_ece_oracle": 0.1433,
+    "mean_head_ece_gain": 0.0059,
+    "mean_head_brier_raw": 0.1011,
+    "mean_head_brier_oracle": 0.1002,
+    "note": "temperature fitted on test labels; an upper bound, not a procedure"
+  },
+  "E4": {
+    "temperature_per_endpoint_oracle": {
+      "Disease_Risk": 1.0386,
+      "DR": 1.7597,
+      "MH": 1.0144,
+      "ODC": 0.9865,
+      "TSLN": 1.1687,
+      "DN": 0.9753,
+      "ARMD": 1.0326,
+      "MYA": 0.9764
+    },
+    "mean_head_ece_raw": 0.1225,
+    "mean_head_ece_oracle": 0.1261,
+    "mean_head_ece_gain": -0.0035,
+    "mean_head_brier_raw": 0.0973,
+    "mean_head_brier_oracle": 0.0963,
+    "note": "temperature fitted on test labels; an upper bound, not a procedure"
+  },
+  "E5": {
+    "temperature_per_endpoint_oracle": {
+      "Disease_Risk": 0.9256,
+      "DR": 0.8736,
+      "MH": 1.0419,
+      "ODC": 0.9151,
+      "TSLN": 1.1447,
+      "DN": 0.7814,
+      "ARMD": 0.9257,
+      "MYA": 0.8739
+    },
+    "mean_head_ece_raw": 0.1221,
+    "mean_head_ece_oracle": 0.1174,
+    "mean_head_ece_gain": 0.0047,
+    "mean_head_brier_raw": 0.0874,
+    "mean_head_brier_oracle": 0.0871,
+    "note": "temperature fitted on test labels; an upper bound, not a procedure"
+  }
+}

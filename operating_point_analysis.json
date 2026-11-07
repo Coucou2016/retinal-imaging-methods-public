@@ -1,0 +1,164 @@
+{
+  "per_arm": {
+    "E0": {
+      "temperature": 1.0994,
+      "val_threshold": 0.5644,
+      "val_sensitivity": 0.7227,
+      "val_specificity": 0.9519,
+      "test_sensitivity_frozen": 0.6613,
+      "test_specificity_frozen": 0.9574,
+      "test_sensitivity_matched": 0.6774,
+      "test_specificity_matched": 0.9535,
+      "test_sensitivity_frozen_ci": [
+        0.5793,
+        0.7422
+      ],
+      "test_sensitivity_matched_ci": [
+        0.5676,
+        0.8209
+      ]
+    },
+    "E1": {
+      "temperature": 1.3245,
+      "val_threshold": 0.5166,
+      "val_sensitivity": 0.7059,
+      "val_specificity": 0.9519,
+      "test_sensitivity_frozen": 0.6452,
+      "test_specificity_frozen": 0.9496,
+      "test_sensitivity_matched": 0.6371,
+      "test_specificity_matched": 0.9516,
+      "test_sensitivity_frozen_ci": [
+        0.5574,
+        0.7242
+      ],
+      "test_sensitivity_matched_ci": [
+        0.5039,
+        0.7522
+      ]
+    },
+    "E2": {
+      "temperature": 1.2159,
+      "val_threshold": 0.7869,
+      "val_sensitivity": 0.6967,
+      "val_specificity": 0.9515,
+      "test_sensitivity_frozen": 0.6532,
+      "test_specificity_frozen": 0.9496,
+      "test_sensitivity_matched": 0.6532,
+      "test_specificity_matched": 0.9516,
+      "test_sensitivity_frozen_ci": [
+        0.5714,
+        0.7333
+      ],
+      "test_sensitivity_matched_ci": [
+        0.4999,
+        0.7627
+      ]
+    },
+    "E3": {
+      "temperature": 1.2613,
+      "val_threshold": 0.8303,
+      "val_sensitivity": 0.6721,
+      "val_specificity": 0.9604,
+      "test_sensitivity_frozen": 0.5806,
+      "test_specificity_frozen": 0.9554,
+      "test_sensitivity_matched": 0.5968,
+      "test_specificity_matched": 0.9554,
+      "test_sensitivity_frozen_ci": [
+        0.4959,
+        0.6641
+      ],
+      "test_sensitivity_matched_ci": [
+        0.4907,
+        0.7521
+      ]
+    },
+    "E4": {
+      "temperature": 1.3818,
+      "val_threshold": 0.8902,
+      "val_sensitivity": 0.6885,
+      "val_specificity": 0.9604,
+      "test_sensitivity_frozen": 0.629,
+      "test_specificity_frozen": 0.9516,
+      "test_sensitivity_matched": 0.629,
+      "test_specificity_matched": 0.9535,
+      "test_sensitivity_frozen_ci": [
+        0.5454,
+        0.7094
+      ],
+      "test_sensitivity_matched_ci": [
+        0.537,
+        0.7734
+      ]
+    },
+    "E5": {
+      "temperature": 1.1319,
+      "val_threshold": 0.8359,
+      "val_sensitivity": 0.7049,
+      "val_specificity": 0.9604,
+      "test_sensitivity_frozen": 0.5403,
+      "test_specificity_frozen": 0.9709,
+      "test_sensitivity_matched": 0.7661,
+      "test_specificity_matched": 0.9535,
+      "test_sensitivity_frozen_ci": [
+        0.4525,
+        0.6273
+      ],
+      "test_sensitivity_matched_ci": [
+        0.5849,
+        0.8387
+      ]
+    }
+  },
+  "paired": {
+    "E5_minus_E0": {
+      "frozen_delta": -0.121,
+      "frozen_ci": [
+        -0.1917,
+        -0.05
+      ],
+      "matched_delta": 0.0887,
+      "matched_ci": [
+        -0.0792,
+        0.1641
+      ]
+    },
+    "E3_minus_E0": {
+      "frozen_delta": -0.0807,
+      "frozen_ci": [
+        -0.16,
+        0.0
+      ],
+      "matched_delta": -0.0806,
+      "matched_ci": [
+        -0.2239,
+        0.0484
+      ]
+    },
+    "E5_minus_E3": {
+      "frozen_delta": -0.0403,
+      "frozen_ci": [
+        -0.1032,
+        0.02
+      ],
+      "matched_delta": 0.1693,
+      "matched_ci": [
+        0.0214,
+        0.2362
+      ]
+    },
+    "E1_minus_E0": {
+      "frozen_delta": -0.0161,
+      "frozen_ci": [
+        -0.1062,
+        0.0709
+      ],
+      "matched_delta": -0.0403,
+      "matched_ci": [
+        -0.2256,
+        0.0726
+      ]
+    }
+  },
+  "n_boot": 1000,
+  "target_specificity": 0.95
+}

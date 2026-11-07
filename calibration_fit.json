@@ -1,0 +1,38 @@
+{
+  "E0": {
+    "temperature": 1.0994,
+    "n_cal_images": 64,
+    "ece_on_cal_raw": 0.09,
+    "ece_on_cal_post": 0.1042
+  },
+  "E1": {
+    "temperature": 1.3245,
+    "n_cal_images": 64,
+    "ece_on_cal_raw": 0.0859,
+    "ece_on_cal_post": 0.0877
+  },
+  "E2": {
+    "temperature": 1.2159,
+    "n_cal_images": 64,
+    "ece_on_cal_raw": 0.1224,
+    "ece_on_cal_post": 0.1343
+  },
+  "E3": {
+    "temperature": 1.2613,
+    "n_cal_images": 64,
+    "ece_on_cal_raw": 0.1333,
+    "ece_on_cal_post": 0.1477
+  },
+  "E4": {
+    "temperature": 1.3818,
+    "n_cal_images": 64,
+    "ece_on_cal_raw": 0.1122,
+    "ece_on_cal_post": 0.1295
+  },
+  "E5": {
+    "temperature": 1.1319,
+    "n_cal_images": 64,
+    "ece_on_cal_raw": 0.1053,
+    "ece_on_cal_post": 0.1115
+  }
+}

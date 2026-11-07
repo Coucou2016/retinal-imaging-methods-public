@@ -1,0 +1,638 @@
+{
+  "E0": {
+    "run_dir": "results\\real_rfmid\\ckpts\\20260917012508\\DR\\y0",
+    "n_epochs_scored": 15,
+    "selected_epoch": 12,
+    "selected_val_macro_auroc": 0.9435301472886748,
+    "per_epoch": [
+      {
+        "epoch": 10,
+        "val_macro_auroc": 0.9378666127282422,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 11,
+        "val_macro_auroc": 0.9343360976775831,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 12,
+        "val_macro_auroc": 0.9435301472886748,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 13,
+        "val_macro_auroc": 0.9424820256330102,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 14,
+        "val_macro_auroc": 0.9425188018314548,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 15,
+        "val_macro_auroc": 0.9419119945571226,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 1,
+        "val_macro_auroc": 0.6639390986153761,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 2,
+        "val_macro_auroc": 0.8381663387455639,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 3,
+        "val_macro_auroc": 0.9012742952760974,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 4,
+        "val_macro_auroc": 0.9279002629498189,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 5,
+        "val_macro_auroc": 0.9366162219811338,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 6,
+        "val_macro_auroc": 0.9357887575161355,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 7,
+        "val_macro_auroc": 0.9395215416582388,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 8,
+        "val_macro_auroc": 0.9407719324053472,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 9,
+        "val_macro_auroc": 0.9411580824890132,
+        "n": 576,
+        "k": 1
+      }
+    ]
+  },
+  "E1": {
+    "run_dir": "results\\real_rfmid\\ckpts\\20260917013929\\DR\\y0",
+    "n_epochs_scored": 15,
+    "selected_epoch": 14,
+    "selected_val_macro_auroc": 0.9215747568173878,
+    "per_epoch": [
+      {
+        "epoch": 10,
+        "val_macro_auroc": 0.9145505029145138,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 11,
+        "val_macro_auroc": 0.9136862622510711,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 12,
+        "val_macro_auroc": 0.9145321148152915,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 13,
+        "val_macro_auroc": 0.9187981538348381,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 14,
+        "val_macro_auroc": 0.9215747568173878,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 15,
+        "val_macro_auroc": 0.9215563687181656,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 1,
+        "val_macro_auroc": 0.5776253608664473,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 2,
+        "val_macro_auroc": 0.8544030303587519,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 3,
+        "val_macro_auroc": 0.8848353345714655,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 4,
+        "val_macro_auroc": 0.9060919772723094,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 5,
+        "val_macro_auroc": 0.9095489399260798,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 6,
+        "val_macro_auroc": 0.9083721015758601,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 7,
+        "val_macro_auroc": 0.9177684202783958,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 8,
+        "val_macro_auroc": 0.91519408638729,
+        "n": 576,
+        "k": 1
+      },
+      {
+        "epoch": 9,
+        "val_macro_auroc": 0.9148998767997352,
+        "n": 576,
+        "k": 1
+      }
+    ]
+  },
+  "E2": {
+    "run_dir": "results\\real_rfmid\\ckpts\\20260917015318\\multitask\\y0",
+    "n_epochs_scored": 15,
+    "selected_epoch": 15,
+    "selected_val_macro_auroc": 0.8814430722764052,
+    "per_epoch": [
+      {
+        "epoch": 10,
+        "val_macro_auroc": 0.8727927629557317,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 11,
+        "val_macro_auroc": 0.8804293699521577,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 12,
+        "val_macro_auroc": 0.87429991532861,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 13,
+        "val_macro_auroc": 0.8795616576366667,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 14,
+        "val_macro_auroc": 0.8800009869145224,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 15,
+        "val_macro_auroc": 0.8814430722764052,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 1,
+        "val_macro_auroc": 0.5623399094239512,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 2,
+        "val_macro_auroc": 0.801705086055384,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 3,
+        "val_macro_auroc": 0.8413202514476463,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 4,
+        "val_macro_auroc": 0.8533444223413897,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 5,
+        "val_macro_auroc": 0.8672236322677116,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 6,
+        "val_macro_auroc": 0.8714769995314164,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 7,
+        "val_macro_auroc": 0.8736338152496965,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 8,
+        "val_macro_auroc": 0.8757757299114162,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 9,
+        "val_macro_auroc": 0.8757089806054403,
+        "n": 576,
+        "k": 8
+      }
+    ]
+  },
+  "E3": {
+    "run_dir": "results\\real_rfmid\\ckpts\\20260917020322\\multitask\\y0",
+    "n_epochs_scored": 15,
+    "selected_epoch": 15,
+    "selected_val_macro_auroc": 0.890572929402634,
+    "per_epoch": [
+      {
+        "epoch": 10,
+        "val_macro_auroc": 0.8852351385103323,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 11,
+        "val_macro_auroc": 0.8854642161760453,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 12,
+        "val_macro_auroc": 0.8876416075063045,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 13,
+        "val_macro_auroc": 0.8900066578590606,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 14,
+        "val_macro_auroc": 0.8904358064634317,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 15,
+        "val_macro_auroc": 0.890572929402634,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 1,
+        "val_macro_auroc": 0.5215912487986598,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 2,
+        "val_macro_auroc": 0.8149484212105111,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 3,
+        "val_macro_auroc": 0.8465539523697496,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 4,
+        "val_macro_auroc": 0.8692890405204265,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 5,
+        "val_macro_auroc": 0.8743414178985978,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 6,
+        "val_macro_auroc": 0.8780075339057192,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 7,
+        "val_macro_auroc": 0.880692065700929,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 8,
+        "val_macro_auroc": 0.880851607928768,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 9,
+        "val_macro_auroc": 0.8815860218097733,
+        "n": 576,
+        "k": 8
+      }
+    ]
+  },
+  "E4": {
+    "run_dir": "C:\\_retinal_runs\\ckpt_e4free\\20261107033000\\multitask\\y0",
+    "n_epochs_scored": 23,
+    "selected_epoch": 18,
+    "selected_val_macro_auroc": 0.8870806697242589,
+    "per_epoch": [
+      {
+        "epoch": 10,
+        "val_macro_auroc": 0.8775665601796456,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 11,
+        "val_macro_auroc": 0.8793050705423988,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 12,
+        "val_macro_auroc": 0.8793927244629282,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 13,
+        "val_macro_auroc": 0.8796385120198111,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 14,
+        "val_macro_auroc": 0.8812664444709732,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 15,
+        "val_macro_auroc": 0.8804791118168669,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 16,
+        "val_macro_auroc": 0.8818445833908006,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 17,
+        "val_macro_auroc": 0.8865520772741406,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 18,
+        "val_macro_auroc": 0.8870806697242589,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 19,
+        "val_macro_auroc": 0.8849369201987413,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 1,
+        "val_macro_auroc": 0.5623606622052133,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 20,
+        "val_macro_auroc": 0.8859628304839773,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 21,
+        "val_macro_auroc": 0.8843758276311304,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 22,
+        "val_macro_auroc": 0.8846776703191045,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 23,
+        "val_macro_auroc": 0.8843463809931124,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 2,
+        "val_macro_auroc": 0.8016834312770569,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 3,
+        "val_macro_auroc": 0.8406466062670401,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 4,
+        "val_macro_auroc": 0.8564797094558639,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 5,
+        "val_macro_auroc": 0.8648314931701648,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 6,
+        "val_macro_auroc": 0.8683461403781896,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 7,
+        "val_macro_auroc": 0.8743413015198641,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 8,
+        "val_macro_auroc": 0.8758286751227526,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 9,
+        "val_macro_auroc": 0.8780501129075949,
+        "n": 576,
+        "k": 8
+      }
+    ]
+  },
+  "E5": {
+    "run_dir": "results\\real_rfmid\\ckpts\\20260917022709\\multitask\\y0",
+    "n_epochs_scored": 15,
+    "selected_epoch": 15,
+    "selected_val_macro_auroc": 0.8982382282923163,
+    "per_epoch": [
+      {
+        "epoch": 10,
+        "val_macro_auroc": 0.8889937299427632,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 11,
+        "val_macro_auroc": 0.8937738302226853,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 12,
+        "val_macro_auroc": 0.8946240801611087,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 13,
+        "val_macro_auroc": 0.8970398082040897,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 14,
+        "val_macro_auroc": 0.8977546366561797,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 15,
+        "val_macro_auroc": 0.8982382282923163,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 1,
+        "val_macro_auroc": 0.5230898826185458,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 2,
+        "val_macro_auroc": 0.7936904219180592,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 3,
+        "val_macro_auroc": 0.8354992609062125,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 4,
+        "val_macro_auroc": 0.8627293609576311,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 5,
+        "val_macro_auroc": 0.8743633630408426,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 6,
+        "val_macro_auroc": 0.879009296058978,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 7,
+        "val_macro_auroc": 0.881583090017689,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 8,
+        "val_macro_auroc": 0.8840888146131383,
+        "n": 576,
+        "k": 8
+      },
+      {
+        "epoch": 9,
+        "val_macro_auroc": 0.884714430083591,
+        "n": 576,
+        "k": 8
+      }
+    ]
+  }
+}

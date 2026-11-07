@@ -1,0 +1,152 @@
+{
+  "E3_minus_E2": {
+    "endpoints": [
+      "Disease_Risk",
+      "DR",
+      "MH",
+      "ODC",
+      "TSLN",
+      "DN",
+      "ARMD",
+      "MYA"
+    ],
+    "full_delta": 0.010045979450990172,
+    "leave_one_out": {
+      "Disease_Risk": {
+        "delta": 0.011531685289446703,
+        "n_endpoints": 7
+      },
+      "DR": {
+        "delta": 0.010335743742938663,
+        "n_endpoints": 7
+      },
+      "MH": {
+        "delta": 0.011591317010743007,
+        "n_endpoints": 7
+      },
+      "ODC": {
+        "delta": 0.003894898671585323,
+        "n_endpoints": 7
+      },
+      "TSLN": {
+        "delta": 0.01110458741555842,
+        "n_endpoints": 7
+      },
+      "DN": {
+        "delta": 0.005620233076891412,
+        "n_endpoints": 7
+      },
+      "ARMD": {
+        "delta": 0.015226777813912351,
+        "n_endpoints": 7
+      },
+      "MYA": {
+        "delta": 0.011062592586846054,
+        "n_endpoints": 7
+      }
+    },
+    "min_delta": 0.003894898671585323,
+    "max_delta": 0.015226777813912351,
+    "sign_stable": true
+  },
+  "E4_minus_E3": {
+    "endpoints": [
+      "Disease_Risk",
+      "DR",
+      "MH",
+      "ODC",
+      "TSLN",
+      "DN",
+      "ARMD",
+      "MYA"
+    ],
+    "full_delta": -0.008306323401078175,
+    "leave_one_out": {
+      "Disease_Risk": {
+        "delta": -0.01022193299825036,
+        "n_endpoints": 7
+      },
+      "DR": {
+        "delta": -0.009115614555327944,
+        "n_endpoints": 7
+      },
+      "MH": {
+        "delta": -0.009672332533822048,
+        "n_endpoints": 7
+      },
+      "ODC": {
+        "delta": -0.00345656262808558,
+        "n_endpoints": 7
+      },
+      "TSLN": {
+        "delta": -0.008680183025055688,
+        "n_endpoints": 7
+      },
+      "DN": {
+        "delta": -0.002764162561894712,
+        "n_endpoints": 7
+      },
+      "ARMD": {
+        "delta": -0.013458042086911703,
+        "n_endpoints": 7
+      },
+      "MYA": {
+        "delta": -0.009081756819277365,
+        "n_endpoints": 7
+      }
+    },
+    "min_delta": -0.013458042086911703,
+    "max_delta": -0.002764162561894712,
+    "sign_stable": true
+  },
+  "E5_minus_E3": {
+    "endpoints": [
+      "Disease_Risk",
+      "DR",
+      "MH",
+      "ODC",
+      "TSLN",
+      "DN",
+      "ARMD",
+      "MYA"
+    ],
+    "full_delta": 0.010058019863836365,
+    "leave_one_out": {
+      "Disease_Risk": {
+        "delta": 0.008854917600269019,
+        "n_endpoints": 7
+      },
+      "DR": {
+        "delta": 0.01094340268938121,
+        "n_endpoints": 7
+      },
+      "MH": {
+        "delta": 0.011697335970347944,
+        "n_endpoints": 7
+      },
+      "ODC": {
+        "delta": 0.008775507101592583,
+        "n_endpoints": 7
+      },
+      "TSLN": {
+        "delta": 0.01106783750290663,
+        "n_endpoints": 7
+      },
+      "DN": {
+        "delta": 0.015081470387496632,
+        "n_endpoints": 7
+      },
+      "ARMD": {
+        "delta": 0.002982019750402465,
+        "n_endpoints": 7
+      },
+      "MYA": {
+        "delta": 0.011061667908294104,
+        "n_endpoints": 7
+      }
+    },
+    "min_delta": 0.002982019750402465,
+    "max_delta": 0.015081470387496632,
+    "sign_stable": true
+  }
+}

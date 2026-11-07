@@ -1,0 +1,42 @@
+{
+  "E1": {
+    "router": "monotone",
+    "heads_overwritten": 3,
+    "n": 640,
+    "macro_auroc_as_trained": 0.9335302575643911,
+    "macro_auroc_router_forced_to_fixed": 0.9334989997499374,
+    "delta": 3.1257814453677923e-05,
+    "max_abs_prob_change": 0.0005722641944885254,
+    "identical_within_1e-6": false
+  },
+  "E3": {
+    "router": "monotone",
+    "heads_overwritten": 3,
+    "n": 640,
+    "macro_auroc_as_trained": 0.9059392159125654,
+    "macro_auroc_router_forced_to_fixed": 0.9059199420359119,
+    "delta": 1.927387665356939e-05,
+    "max_abs_prob_change": 0.0066225528717041016,
+    "identical_within_1e-6": false
+  },
+  "E4": {
+    "router": "free_linear",
+    "heads_overwritten": 3,
+    "n": 640,
+    "macro_auroc_as_trained": 0.8976328925114874,
+    "macro_auroc_router_forced_to_fixed": 0.8976520840084292,
+    "delta": -1.9191496941850517e-05,
+    "max_abs_prob_change": 0.03647434711456299,
+    "identical_within_1e-6": false
+  },
+  "E5": {
+    "router": "monotone",
+    "heads_overwritten": 3,
+    "n": 640,
+    "macro_auroc_as_trained": 0.9159972357764019,
+    "macro_auroc_router_forced_to_fixed": 0.9160013554441846,
+    "delta": -4.119667782687131e-06,
+    "max_abs_prob_change": 0.007958948612213135,
+    "identical_within_1e-6": false
+  }
+}

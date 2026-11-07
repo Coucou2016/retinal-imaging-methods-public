@@ -1,0 +1,318 @@
+{
+  "E0": {
+    "temperature_single": 0.958,
+    "temperature_per_head": {
+      "DR": 0.958
+    },
+    "n_val_total": 640,
+    "none": {
+      "pooled_ece": 0.0307,
+      "mean_head_ece": 0.0307,
+      "worst_head_ece": 0.0307,
+      "pooled_brier": 0.0753,
+      "per_head_ece": {
+        "DR": 0.0307
+      }
+    },
+    "single": {
+      "pooled_ece": 0.0275,
+      "mean_head_ece": 0.0275,
+      "worst_head_ece": 0.0275,
+      "pooled_brier": 0.0753,
+      "per_head_ece": {
+        "DR": 0.0275
+      }
+    },
+    "per_head": {
+      "pooled_ece": 0.0275,
+      "mean_head_ece": 0.0275,
+      "worst_head_ece": 0.0275,
+      "pooled_brier": 0.0753,
+      "per_head_ece": {
+        "DR": 0.0275
+      }
+    }
+  },
+  "E1": {
+    "temperature_single": 1.2264,
+    "temperature_per_head": {
+      "DR": 1.2264
+    },
+    "n_val_total": 640,
+    "none": {
+      "pooled_ece": 0.0245,
+      "mean_head_ece": 0.0245,
+      "worst_head_ece": 0.0245,
+      "pooled_brier": 0.0789,
+      "per_head_ece": {
+        "DR": 0.0245
+      }
+    },
+    "single": {
+      "pooled_ece": 0.0327,
+      "mean_head_ece": 0.0327,
+      "worst_head_ece": 0.0327,
+      "pooled_brier": 0.0783,
+      "per_head_ece": {
+        "DR": 0.0327
+      }
+    },
+    "per_head": {
+      "pooled_ece": 0.0327,
+      "mean_head_ece": 0.0327,
+      "worst_head_ece": 0.0327,
+      "pooled_brier": 0.0783,
+      "per_head_ece": {
+        "DR": 0.0327
+      }
+    }
+  },
+  "E2": {
+    "temperature_single": 1.0716,
+    "temperature_per_head": {
+      "Disease_Risk": 0.9368,
+      "DR": 1.1947,
+      "MH": 0.9929,
+      "ODC": 1.0129,
+      "TSLN": 1.3133,
+      "DN": 1.1427,
+      "ARMD": 0.9291,
+      "MYA": 1.0109
+    },
+    "n_val_total": 640,
+    "none": {
+      "pooled_ece": 0.0917,
+      "mean_head_ece": 0.1363,
+      "worst_head_ece": 0.2394,
+      "pooled_brier": 0.0976,
+      "per_head_ece": {
+        "Disease_Risk": 0.1776,
+        "DR": 0.147,
+        "MH": 0.1109,
+        "ODC": 0.1821,
+        "TSLN": 0.125,
+        "DN": 0.2394,
+        "ARMD": 0.0725,
+        "MYA": 0.0361
+      }
+    },
+    "single": {
+      "pooled_ece": 0.0965,
+      "mean_head_ece": 0.1414,
+      "worst_head_ece": 0.2461,
+      "pooled_brier": 0.0978,
+      "per_head_ece": {
+        "Disease_Risk": 0.1798,
+        "DR": 0.1512,
+        "MH": 0.1159,
+        "ODC": 0.1896,
+        "TSLN": 0.1315,
+        "DN": 0.2461,
+        "ARMD": 0.079,
+        "MYA": 0.0384
+      }
+    },
+    "per_head": {
+      "pooled_ece": 0.0979,
+      "mean_head_ece": 0.1418,
+      "worst_head_ece": 0.2525,
+      "pooled_brier": 0.0981,
+      "per_head_ece": {
+        "Disease_Risk": 0.1756,
+        "DR": 0.1584,
+        "MH": 0.1104,
+        "ODC": 0.1835,
+        "TSLN": 0.1532,
+        "DN": 0.2525,
+        "ARMD": 0.0662,
+        "MYA": 0.0348
+      }
+    }
+  },
+  "E3": {
+    "temperature_single": 1.0769,
+    "temperature_per_head": {
+      "Disease_Risk": 1.0257,
+      "DR": 1.2882,
+      "MH": 0.9406,
+      "ODC": 0.9929,
+      "TSLN": 1.2633,
+      "DN": 0.8863,
+      "ARMD": 1.0926,
+      "MYA": 1.0269
+    },
+    "n_val_total": 640,
+    "none": {
+      "pooled_ece": 0.0998,
+      "mean_head_ece": 0.1492,
+      "worst_head_ece": 0.2747,
+      "pooled_brier": 0.1011,
+      "per_head_ece": {
+        "Disease_Risk": 0.1972,
+        "DR": 0.1457,
+        "MH": 0.1459,
+        "ODC": 0.1663,
+        "TSLN": 0.1244,
+        "DN": 0.2747,
+        "ARMD": 0.1069,
+        "MYA": 0.0325
+      }
+    },
+    "single": {
+      "pooled_ece": 0.1049,
+      "mean_head_ece": 0.1548,
+      "worst_head_ece": 0.2817,
+      "pooled_brier": 0.1015,
+      "per_head_ece": {
+        "Disease_Risk": 0.1992,
+        "DR": 0.1505,
+        "MH": 0.1517,
+        "ODC": 0.1739,
+        "TSLN": 0.1315,
+        "DN": 0.2817,
+        "ARMD": 0.1132,
+        "MYA": 0.0367
+      }
+    },
+    "per_head": {
+      "pooled_ece": 0.104,
+      "mean_head_ece": 0.1537,
+      "worst_head_ece": 0.2639,
+      "pooled_brier": 0.1012,
+      "per_head_ece": {
+        "Disease_Risk": 0.1979,
+        "DR": 0.1634,
+        "MH": 0.1415,
+        "ODC": 0.1656,
+        "TSLN": 0.1486,
+        "DN": 0.2639,
+        "ARMD": 0.1145,
+        "MYA": 0.0339
+      }
+    }
+  },
+  "E4": {
+    "temperature_single": 1.2357,
+    "temperature_per_head": {
+      "Disease_Risk": 1.0331,
+      "DR": 2.0675,
+      "MH": 1.0626,
+      "ODC": 0.939,
+      "TSLN": 1.3159,
+      "DN": 1.2535,
+      "ARMD": 1.1743,
+      "MYA": 1.1318
+    },
+    "n_val_total": 640,
+    "none": {
+      "pooled_ece": 0.0749,
+      "mean_head_ece": 0.1225,
+      "worst_head_ece": 0.2364,
+      "pooled_brier": 0.0973,
+      "per_head_ece": {
+        "Disease_Risk": 0.1876,
+        "DR": 0.2364,
+        "MH": 0.0736,
+        "ODC": 0.1098,
+        "TSLN": 0.0645,
+        "DN": 0.2146,
+        "ARMD": 0.0667,
+        "MYA": 0.027
+      }
+    },
+    "single": {
+      "pooled_ece": 0.0888,
+      "mean_head_ece": 0.1376,
+      "worst_head_ece": 0.2432,
+      "pooled_brier": 0.0971,
+      "per_head_ece": {
+        "Disease_Risk": 0.193,
+        "DR": 0.2432,
+        "MH": 0.0891,
+        "ODC": 0.1369,
+        "TSLN": 0.0792,
+        "DN": 0.2358,
+        "ARMD": 0.0833,
+        "MYA": 0.04
+      }
+    },
+    "per_head": {
+      "pooled_ece": 0.0858,
+      "mean_head_ece": 0.1342,
+      "worst_head_ece": 0.2624,
+      "pooled_brier": 0.0966,
+      "per_head_ece": {
+        "Disease_Risk": 0.1883,
+        "DR": 0.2624,
+        "MH": 0.0776,
+        "ODC": 0.1095,
+        "TSLN": 0.0857,
+        "DN": 0.2373,
+        "ARMD": 0.0788,
+        "MYA": 0.0337
+      }
+    }
+  },
+  "E5": {
+    "temperature_single": 1.0253,
+    "temperature_per_head": {
+      "Disease_Risk": 0.9507,
+      "DR": 1.055,
+      "MH": 0.9681,
+      "ODC": 1.0072,
+      "TSLN": 1.1677,
+      "DN": 1.014,
+      "ARMD": 0.9837,
+      "MYA": 1.046
+    },
+    "n_val_total": 640,
+    "none": {
+      "pooled_ece": 0.0731,
+      "mean_head_ece": 0.1221,
+      "worst_head_ece": 0.2171,
+      "pooled_brier": 0.0874,
+      "per_head_ece": {
+        "Disease_Risk": 0.1955,
+        "DR": 0.1241,
+        "MH": 0.1187,
+        "ODC": 0.1134,
+        "TSLN": 0.1103,
+        "DN": 0.2171,
+        "ARMD": 0.0644,
+        "MYA": 0.0332
+      }
+    },
+    "single": {
+      "pooled_ece": 0.0746,
+      "mean_head_ece": 0.124,
+      "worst_head_ece": 0.2196,
+      "pooled_brier": 0.0875,
+      "per_head_ece": {
+        "Disease_Risk": 0.1968,
+        "DR": 0.1272,
+        "MH": 0.1204,
+        "ODC": 0.1161,
+        "TSLN": 0.1121,
+        "DN": 0.2196,
+        "ARMD": 0.0659,
+        "MYA": 0.034
+      }
+    },
+    "per_head": {
+      "pooled_ece": 0.0755,
+      "mean_head_ece": 0.124,
+      "worst_head_ece": 0.2185,
+      "pooled_brier": 0.0875,
+      "per_head_ece": {
+        "Disease_Risk": 0.193,
+        "DR": 0.1281,
+        "MH": 0.1167,
+        "ODC": 0.1142,
+        "TSLN": 0.1226,
+        "DN": 0.2185,
+        "ARMD": 0.0641,
+        "MYA": 0.0347
+      }
+    }
+  }
+}

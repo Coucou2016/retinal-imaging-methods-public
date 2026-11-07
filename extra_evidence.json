@@ -1,0 +1,104 @@
+{
+ "config": {
+  "n_boot": 1000,
+  "seed": 0
+ },
+ "pairs": {
+  "E1_minus_E0": {
+   "delta": 0.0013466087062715788,
+   "ci_low": -0.017297919235879013,
+   "ci_high": 0.019673359676034872,
+   "frac_negative": 0.444,
+   "frac_positive": 0.556,
+   "frac_within_pm_0p002": 0.159,
+   "frac_within_pm_0p005": 0.395,
+   "n_boot": 1000
+  },
+  "E3_minus_E2": {
+   "delta": 0.009841045140653261,
+   "ci_low": -0.000898681773093046,
+   "ci_high": 0.02107354119121276,
+   "frac_negative": 0.039,
+   "frac_positive": 0.961,
+   "frac_within_pm_0p002": 0.061,
+   "frac_within_pm_0p005": 0.186,
+   "n_boot": 1000
+  },
+  "E4_minus_E3": {
+   "delta": -0.008088354398691069,
+   "ci_low": -0.01963997940712936,
+   "ci_high": 0.0028645063442415846,
+   "frac_negative": 0.931,
+   "frac_positive": 0.069,
+   "frac_within_pm_0p002": 0.106,
+   "frac_within_pm_0p005": 0.259,
+   "n_boot": 1000
+  },
+  "E5_minus_E3": {
+   "delta": 0.010485169456093665,
+   "ci_low": 5.315128562549409e-05,
+   "ci_high": 0.021120119054643435,
+   "frac_negative": 0.025,
+   "frac_positive": 0.975,
+   "frac_within_pm_0p002": 0.039,
+   "frac_within_pm_0p005": 0.151,
+   "n_boot": 1000
+  }
+ },
+ "temperature": {
+  "E0": {
+   "true_single": 0.958,
+   "raw": 0.0307,
+   "single": 0.0275,
+   "per_head": 0.0275,
+   "worst_after_single": 0.0275,
+   "oracle": 0.0303,
+   "oracle_gain": 0.0005
+  },
+  "E1": {
+   "true_single": 1.2264,
+   "raw": 0.0245,
+   "single": 0.0327,
+   "per_head": 0.0327,
+   "worst_after_single": 0.0327,
+   "oracle": 0.0285,
+   "oracle_gain": -0.004
+  },
+  "E2": {
+   "true_single": 1.0716,
+   "raw": 0.1363,
+   "single": 0.1414,
+   "per_head": 0.1418,
+   "worst_after_single": 0.2461,
+   "oracle": 0.1332,
+   "oracle_gain": 0.0031
+  },
+  "E3": {
+   "true_single": 1.0769,
+   "raw": 0.1492,
+   "single": 0.1548,
+   "per_head": 0.1537,
+   "worst_after_single": 0.2817,
+   "oracle": 0.1433,
+   "oracle_gain": 0.0059
+  },
+  "E4": {
+   "true_single": 1.2357,
+   "raw": 0.1225,
+   "single": 0.1376,
+   "per_head": 0.1342,
+   "worst_after_single": 0.2432,
+   "oracle": 0.1261,
+   "oracle_gain": -0.0035
+  },
+  "E5": {
+   "true_single": 1.0253,
+   "raw": 0.1221,
+   "single": 0.124,
+   "per_head": 0.124,
+   "worst_after_single": 0.2196,
+   "oracle": 0.1174,
+   "oracle_gain": 0.0047
+  }
+ }
+}

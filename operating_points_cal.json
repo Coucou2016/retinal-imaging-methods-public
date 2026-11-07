@@ -1,0 +1,932 @@
+{
+  "E0": {
+    "DR": {
+      "youden": {
+        "threshold": 0.2391240452285998,
+        "sensitivity": 0.907563025210084,
+        "specificity": 0.8205689277899344,
+        "youden_j": 0.7281319530000183,
+        "test_tp": 106,
+        "test_fn": 18,
+        "test_tn": 448,
+        "test_fp": 68,
+        "test_sensitivity": 0.8548,
+        "test_specificity": 0.8682
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5644125588955693,
+        "sensitivity": 0.7226890756302521,
+        "specificity": 0.9518599562363238,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 82,
+        "test_fn": 42,
+        "test_tn": 494,
+        "test_fp": 22,
+        "test_sensitivity": 0.6613,
+        "test_specificity": 0.9574
+      }
+    }
+  },
+  "E1": {
+    "DR": {
+      "youden": {
+        "threshold": 0.40224798488668617,
+        "sensitivity": 0.7815126050420168,
+        "specificity": 0.9190371991247265,
+        "youden_j": 0.7005498041667433,
+        "test_tp": 95,
+        "test_fn": 29,
+        "test_tn": 475,
+        "test_fp": 41,
+        "test_sensitivity": 0.7661,
+        "test_specificity": 0.9205
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5165810066799491,
+        "sensitivity": 0.7058823529411765,
+        "specificity": 0.9518599562363238,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 80,
+        "test_fn": 44,
+        "test_tn": 490,
+        "test_fp": 26,
+        "test_sensitivity": 0.6452,
+        "test_specificity": 0.9496
+      }
+    }
+  },
+  "E2": {
+    "Disease_Risk": {
+      "youden": {
+        "threshold": 0.4427112256123649,
+        "sensitivity": 0.8483516483516483,
+        "specificity": 0.9008264462809917,
+        "youden_j": 0.7491780946326401,
+        "test_tp": 420,
+        "test_fn": 86,
+        "test_tn": 123,
+        "test_fp": 11,
+        "test_sensitivity": 0.83,
+        "test_specificity": 0.9179
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5512968438009123,
+        "sensitivity": 0.7648351648351648,
+        "specificity": 0.9504132231404958,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 387,
+        "test_fn": 119,
+        "test_tn": 129,
+        "test_fp": 5,
+        "test_sensitivity": 0.7648,
+        "test_specificity": 0.9627
+      }
+    },
+    "DR": {
+      "youden": {
+        "threshold": 0.590837178158986,
+        "sensitivity": 0.8852459016393442,
+        "specificity": 0.8568281938325991,
+        "youden_j": 0.7420740954719434,
+        "test_tp": 98,
+        "test_fn": 26,
+        "test_tn": 453,
+        "test_fp": 63,
+        "test_sensitivity": 0.7903,
+        "test_specificity": 0.8779
+      },
+      "sens_at_95spec": {
+        "threshold": 0.7868550729187945,
+        "sensitivity": 0.6967213114754098,
+        "specificity": 0.9515418502202643,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 81,
+        "test_fn": 43,
+        "test_tn": 490,
+        "test_fp": 26,
+        "test_sensitivity": 0.6532,
+        "test_specificity": 0.9496
+      }
+    },
+    "MH": {
+      "youden": {
+        "threshold": 0.21334933175192872,
+        "sensitivity": 0.9578947368421052,
+        "specificity": 0.8274428274428274,
+        "youden_j": 0.7853375642849327,
+        "test_tp": 101,
+        "test_fn": 3,
+        "test_tn": 401,
+        "test_fp": 135,
+        "test_sensitivity": 0.9712,
+        "test_specificity": 0.7481
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6745115162250818,
+        "sensitivity": 0.7157894736842105,
+        "specificity": 0.9521829521829521,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 85,
+        "test_fn": 19,
+        "test_tn": 504,
+        "test_fp": 32,
+        "test_sensitivity": 0.8173,
+        "test_specificity": 0.9403
+      }
+    },
+    "ODC": {
+      "youden": {
+        "threshold": 0.5737866806246813,
+        "sensitivity": 0.45714285714285713,
+        "specificity": 0.8715415019762845,
+        "youden_j": 0.32868435911914173,
+        "test_tp": 38,
+        "test_fn": 53,
+        "test_tn": 484,
+        "test_fp": 65,
+        "test_sensitivity": 0.4176,
+        "test_specificity": 0.8816
+      },
+      "sens_at_95spec": {
+        "threshold": 0.7077006328861121,
+        "sensitivity": 0.2714285714285714,
+        "specificity": 0.950592885375494,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 25,
+        "test_fn": 66,
+        "test_tn": 523,
+        "test_fp": 26,
+        "test_sensitivity": 0.2747,
+        "test_specificity": 0.9526
+      }
+    },
+    "TSLN": {
+      "youden": {
+        "threshold": 0.3795091536693234,
+        "sensitivity": 0.8448275862068966,
+        "specificity": 0.8474903474903475,
+        "youden_j": 0.692317933697244,
+        "test_tp": 47,
+        "test_fn": 6,
+        "test_tn": 502,
+        "test_fp": 85,
+        "test_sensitivity": 0.8868,
+        "test_specificity": 0.8552
+      },
+      "sens_at_95spec": {
+        "threshold": 0.75437280438757,
+        "sensitivity": 0.5344827586206896,
+        "specificity": 0.9517374517374517,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 26,
+        "test_fn": 27,
+        "test_tn": 558,
+        "test_fp": 29,
+        "test_sensitivity": 0.4906,
+        "test_specificity": 0.9506
+      }
+    },
+    "DN": {
+      "youden": {
+        "threshold": 0.4910184952953989,
+        "sensitivity": 0.675,
+        "specificity": 0.7425373134328358,
+        "youden_j": 0.41753731343283595,
+        "test_tp": 26,
+        "test_fn": 20,
+        "test_tn": 465,
+        "test_fp": 129,
+        "test_sensitivity": 0.5652,
+        "test_specificity": 0.7828
+      },
+      "sens_at_95spec": {
+        "threshold": 0.771290067518143,
+        "sensitivity": 0.15,
+        "specificity": 0.9589552238805971,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 9,
+        "test_fn": 37,
+        "test_tn": 578,
+        "test_fp": 16,
+        "test_sensitivity": 0.1957,
+        "test_specificity": 0.9731
+      }
+    },
+    "ARMD": {
+      "youden": {
+        "threshold": 0.5300357931681322,
+        "sensitivity": 0.84375,
+        "specificity": 0.9301470588235294,
+        "youden_j": 0.7738970588235294,
+        "test_tp": 19,
+        "test_fn": 12,
+        "test_tn": 584,
+        "test_fp": 25,
+        "test_sensitivity": 0.6129,
+        "test_specificity": 0.9589
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6804894693613265,
+        "sensitivity": 0.75,
+        "specificity": 0.9669117647058824,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 16,
+        "test_fn": 15,
+        "test_tn": 594,
+        "test_fp": 15,
+        "test_sensitivity": 0.5161,
+        "test_specificity": 0.9754
+      }
+    },
+    "MYA": {
+      "youden": {
+        "threshold": 0.15786293708571056,
+        "sensitivity": 1.0,
+        "specificity": 0.9051094890510949,
+        "youden_j": 0.9051094890510949,
+        "test_tp": 29,
+        "test_fn": 3,
+        "test_tn": 568,
+        "test_fp": 40,
+        "test_sensitivity": 0.9062,
+        "test_specificity": 0.9342
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5667544069765703,
+        "sensitivity": 0.8928571428571429,
+        "specificity": 0.9616788321167883,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 28,
+        "test_fn": 4,
+        "test_tn": 597,
+        "test_fp": 11,
+        "test_sensitivity": 0.875,
+        "test_specificity": 0.9819
+      }
+    }
+  },
+  "E3": {
+    "Disease_Risk": {
+      "youden": {
+        "threshold": 0.3536736828363117,
+        "sensitivity": 0.8791208791208791,
+        "specificity": 0.8512396694214877,
+        "youden_j": 0.7303605485423668,
+        "test_tp": 433,
+        "test_fn": 73,
+        "test_tn": 120,
+        "test_fp": 14,
+        "test_sensitivity": 0.8557,
+        "test_specificity": 0.8955
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5584771248240771,
+        "sensitivity": 0.7362637362637363,
+        "specificity": 0.9504132231404958,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 370,
+        "test_fn": 136,
+        "test_tn": 130,
+        "test_fp": 4,
+        "test_sensitivity": 0.7312,
+        "test_specificity": 0.9701
+      }
+    },
+    "DR": {
+      "youden": {
+        "threshold": 0.5415797136913031,
+        "sensitivity": 0.8852459016393442,
+        "specificity": 0.8370044052863437,
+        "youden_j": 0.7222503069256878,
+        "test_tp": 107,
+        "test_fn": 17,
+        "test_tn": 439,
+        "test_fp": 77,
+        "test_sensitivity": 0.8629,
+        "test_specificity": 0.8508
+      },
+      "sens_at_95spec": {
+        "threshold": 0.8302731379451701,
+        "sensitivity": 0.6721311475409836,
+        "specificity": 0.960352422907489,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 72,
+        "test_fn": 52,
+        "test_tn": 493,
+        "test_fp": 23,
+        "test_sensitivity": 0.5806,
+        "test_specificity": 0.9554
+      }
+    },
+    "MH": {
+      "youden": {
+        "threshold": 0.29653869174032105,
+        "sensitivity": 0.9368421052631579,
+        "specificity": 0.8253638253638254,
+        "youden_j": 0.7622059306269833,
+        "test_tp": 102,
+        "test_fn": 2,
+        "test_tn": 404,
+        "test_fp": 132,
+        "test_sensitivity": 0.9808,
+        "test_specificity": 0.7537
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6801797008219571,
+        "sensitivity": 0.7473684210526316,
+        "specificity": 0.9501039501039501,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 87,
+        "test_fn": 17,
+        "test_tn": 497,
+        "test_fp": 39,
+        "test_sensitivity": 0.8365,
+        "test_specificity": 0.9272
+      }
+    },
+    "ODC": {
+      "youden": {
+        "threshold": 0.49073933983759016,
+        "sensitivity": 0.5142857142857142,
+        "specificity": 0.8221343873517787,
+        "youden_j": 0.33642010163749303,
+        "test_tp": 50,
+        "test_fn": 41,
+        "test_tn": 460,
+        "test_fp": 89,
+        "test_sensitivity": 0.5495,
+        "test_specificity": 0.8379
+      },
+      "sens_at_95spec": {
+        "threshold": 0.7140428816229742,
+        "sensitivity": 0.18571428571428572,
+        "specificity": 0.9545454545454546,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 25,
+        "test_fn": 66,
+        "test_tn": 537,
+        "test_fp": 12,
+        "test_sensitivity": 0.2747,
+        "test_specificity": 0.9781
+      }
+    },
+    "TSLN": {
+      "youden": {
+        "threshold": 0.4449425152480551,
+        "sensitivity": 0.8275862068965517,
+        "specificity": 0.8822393822393823,
+        "youden_j": 0.709825589135934,
+        "test_tp": 45,
+        "test_fn": 8,
+        "test_tn": 517,
+        "test_fp": 70,
+        "test_sensitivity": 0.8491,
+        "test_specificity": 0.8807
+      },
+      "sens_at_95spec": {
+        "threshold": 0.782891985304086,
+        "sensitivity": 0.46551724137931033,
+        "specificity": 0.9517374517374517,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 25,
+        "test_fn": 28,
+        "test_tn": 563,
+        "test_fp": 24,
+        "test_sensitivity": 0.4717,
+        "test_specificity": 0.9591
+      }
+    },
+    "DN": {
+      "youden": {
+        "threshold": 0.41579507501018215,
+        "sensitivity": 0.85,
+        "specificity": 0.6194029850746269,
+        "youden_j": 0.46940298507462686,
+        "test_tp": 38,
+        "test_fn": 8,
+        "test_tn": 382,
+        "test_fp": 212,
+        "test_sensitivity": 0.8261,
+        "test_specificity": 0.6431
+      },
+      "sens_at_95spec": {
+        "threshold": 0.720954066467843,
+        "sensitivity": 0.3,
+        "specificity": 0.9589552238805971,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 7,
+        "test_fn": 39,
+        "test_tn": 589,
+        "test_fp": 5,
+        "test_sensitivity": 0.1522,
+        "test_specificity": 0.9916
+      }
+    },
+    "ARMD": {
+      "youden": {
+        "threshold": 0.2947372699714106,
+        "sensitivity": 0.9375,
+        "specificity": 0.8125,
+        "youden_j": 0.75,
+        "test_tp": 24,
+        "test_fn": 7,
+        "test_tn": 517,
+        "test_fp": 92,
+        "test_sensitivity": 0.7742,
+        "test_specificity": 0.8489
+      },
+      "sens_at_95spec": {
+        "threshold": 0.7103055394701774,
+        "sensitivity": 0.65625,
+        "specificity": 0.9503676470588235,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 16,
+        "test_fn": 15,
+        "test_tn": 582,
+        "test_fp": 27,
+        "test_sensitivity": 0.5161,
+        "test_specificity": 0.9557
+      }
+    },
+    "MYA": {
+      "youden": {
+        "threshold": 0.15919465880874578,
+        "sensitivity": 1.0,
+        "specificity": 0.8996350364963503,
+        "youden_j": 0.8996350364963503,
+        "test_tp": 30,
+        "test_fn": 2,
+        "test_tn": 562,
+        "test_fp": 46,
+        "test_sensitivity": 0.9375,
+        "test_specificity": 0.9243
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5374569349643676,
+        "sensitivity": 0.9285714285714286,
+        "specificity": 0.9598540145985401,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 28,
+        "test_fn": 4,
+        "test_tn": 597,
+        "test_fp": 11,
+        "test_sensitivity": 0.875,
+        "test_specificity": 0.9819
+      }
+    }
+  },
+  "E4": {
+    "Disease_Risk": {
+      "youden": {
+        "threshold": 0.42478233471673316,
+        "sensitivity": 0.8417582417582418,
+        "specificity": 0.9173553719008265,
+        "youden_j": 0.7591136136590682,
+        "test_tp": 420,
+        "test_fn": 86,
+        "test_tn": 127,
+        "test_fp": 7,
+        "test_sensitivity": 0.83,
+        "test_specificity": 0.9478
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5186635621410639,
+        "sensitivity": 0.7714285714285715,
+        "specificity": 0.9504132231404958,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 392,
+        "test_fn": 114,
+        "test_tn": 130,
+        "test_fp": 4,
+        "test_sensitivity": 0.7747,
+        "test_specificity": 0.9701
+      }
+    },
+    "DR": {
+      "youden": {
+        "threshold": 0.7601443027105927,
+        "sensitivity": 0.8770491803278688,
+        "specificity": 0.8568281938325991,
+        "youden_j": 0.733877374160468,
+        "test_tp": 99,
+        "test_fn": 25,
+        "test_tn": 460,
+        "test_fp": 56,
+        "test_sensitivity": 0.7984,
+        "test_specificity": 0.8915
+      },
+      "sens_at_95spec": {
+        "threshold": 0.8901558324925412,
+        "sensitivity": 0.6885245901639344,
+        "specificity": 0.960352422907489,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 78,
+        "test_fn": 46,
+        "test_tn": 491,
+        "test_fp": 25,
+        "test_sensitivity": 0.629,
+        "test_specificity": 0.9516
+      }
+    },
+    "MH": {
+      "youden": {
+        "threshold": 0.21465603078556758,
+        "sensitivity": 0.9157894736842105,
+        "specificity": 0.8607068607068606,
+        "youden_j": 0.7764963343910711,
+        "test_tp": 100,
+        "test_fn": 4,
+        "test_tn": 419,
+        "test_fp": 117,
+        "test_sensitivity": 0.9615,
+        "test_specificity": 0.7817
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5933328835473246,
+        "sensitivity": 0.6526315789473685,
+        "specificity": 0.9563409563409564,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 84,
+        "test_fn": 20,
+        "test_tn": 508,
+        "test_fp": 28,
+        "test_sensitivity": 0.8077,
+        "test_specificity": 0.9478
+      }
+    },
+    "ODC": {
+      "youden": {
+        "threshold": 0.42774114955334885,
+        "sensitivity": 0.5285714285714286,
+        "specificity": 0.83399209486166,
+        "youden_j": 0.3625635234330886,
+        "test_tp": 42,
+        "test_fn": 49,
+        "test_tn": 460,
+        "test_fp": 89,
+        "test_sensitivity": 0.4615,
+        "test_specificity": 0.8379
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6273620165115507,
+        "sensitivity": 0.24285714285714285,
+        "specificity": 0.950592885375494,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 30,
+        "test_fn": 61,
+        "test_tn": 523,
+        "test_fp": 26,
+        "test_sensitivity": 0.3297,
+        "test_specificity": 0.9526
+      }
+    },
+    "TSLN": {
+      "youden": {
+        "threshold": 0.27563437357537646,
+        "sensitivity": 0.8275862068965517,
+        "specificity": 0.8706563706563707,
+        "youden_j": 0.6982425775529224,
+        "test_tp": 42,
+        "test_fn": 11,
+        "test_tn": 513,
+        "test_fp": 74,
+        "test_sensitivity": 0.7925,
+        "test_specificity": 0.8739
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6378272221044597,
+        "sensitivity": 0.5517241379310345,
+        "specificity": 0.9517374517374517,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 26,
+        "test_fn": 27,
+        "test_tn": 557,
+        "test_fp": 30,
+        "test_sensitivity": 0.4906,
+        "test_specificity": 0.9489
+      }
+    },
+    "DN": {
+      "youden": {
+        "threshold": 0.47559568225377147,
+        "sensitivity": 0.675,
+        "specificity": 0.7518656716417911,
+        "youden_j": 0.4268656716417911,
+        "test_tp": 25,
+        "test_fn": 21,
+        "test_tn": 468,
+        "test_fp": 126,
+        "test_sensitivity": 0.5435,
+        "test_specificity": 0.7879
+      },
+      "sens_at_95spec": {
+        "threshold": 0.7586810266738988,
+        "sensitivity": 0.2,
+        "specificity": 0.9533582089552238,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 8,
+        "test_fn": 38,
+        "test_tn": 575,
+        "test_fp": 19,
+        "test_sensitivity": 0.1739,
+        "test_specificity": 0.968
+      }
+    },
+    "ARMD": {
+      "youden": {
+        "threshold": 0.5059792544257544,
+        "sensitivity": 0.8125,
+        "specificity": 0.9209558823529411,
+        "youden_j": 0.7334558823529411,
+        "test_tp": 20,
+        "test_fn": 11,
+        "test_tn": 579,
+        "test_fp": 30,
+        "test_sensitivity": 0.6452,
+        "test_specificity": 0.9507
+      },
+      "sens_at_95spec": {
+        "threshold": 0.7013893020933158,
+        "sensitivity": 0.71875,
+        "specificity": 0.9577205882352942,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 17,
+        "test_fn": 14,
+        "test_tn": 592,
+        "test_fp": 17,
+        "test_sensitivity": 0.5484,
+        "test_specificity": 0.9721
+      }
+    },
+    "MYA": {
+      "youden": {
+        "threshold": 0.37112639524899865,
+        "sensitivity": 0.9285714285714286,
+        "specificity": 0.948905109489051,
+        "youden_j": 0.8774765380604796,
+        "test_tp": 29,
+        "test_fn": 3,
+        "test_tn": 590,
+        "test_fp": 18,
+        "test_sensitivity": 0.9062,
+        "test_specificity": 0.9704
+      },
+      "sens_at_95spec": {
+        "threshold": 0.5261395300721913,
+        "sensitivity": 0.8928571428571429,
+        "specificity": 0.9543795620437956,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 28,
+        "test_fn": 4,
+        "test_tn": 597,
+        "test_fp": 11,
+        "test_sensitivity": 0.875,
+        "test_specificity": 0.9819
+      }
+    }
+  },
+  "E5": {
+    "Disease_Risk": {
+      "youden": {
+        "threshold": 0.3800852975049256,
+        "sensitivity": 0.8615384615384616,
+        "specificity": 0.8677685950413223,
+        "youden_j": 0.7293070565797839,
+        "test_tp": 438,
+        "test_fn": 68,
+        "test_tn": 126,
+        "test_fp": 8,
+        "test_sensitivity": 0.8656,
+        "test_specificity": 0.9403
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6361062700489881,
+        "sensitivity": 0.6901098901098901,
+        "specificity": 0.9669421487603306,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 356,
+        "test_fn": 150,
+        "test_tn": 132,
+        "test_fp": 2,
+        "test_sensitivity": 0.7036,
+        "test_specificity": 0.9851
+      }
+    },
+    "DR": {
+      "youden": {
+        "threshold": 0.48667326808141675,
+        "sensitivity": 0.9016393442622951,
+        "specificity": 0.8436123348017621,
+        "youden_j": 0.7452516790640571,
+        "test_tp": 109,
+        "test_fn": 15,
+        "test_tn": 456,
+        "test_fp": 60,
+        "test_sensitivity": 0.879,
+        "test_specificity": 0.8837
+      },
+      "sens_at_95spec": {
+        "threshold": 0.8359217039905599,
+        "sensitivity": 0.7049180327868853,
+        "specificity": 0.960352422907489,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 67,
+        "test_fn": 57,
+        "test_tn": 501,
+        "test_fp": 15,
+        "test_sensitivity": 0.5403,
+        "test_specificity": 0.9709
+      }
+    },
+    "MH": {
+      "youden": {
+        "threshold": 0.3680321134784048,
+        "sensitivity": 0.9157894736842105,
+        "specificity": 0.8918918918918919,
+        "youden_j": 0.8076813655761024,
+        "test_tp": 97,
+        "test_fn": 7,
+        "test_tn": 446,
+        "test_fp": 90,
+        "test_sensitivity": 0.9327,
+        "test_specificity": 0.8321
+      },
+      "sens_at_95spec": {
+        "threshold": 0.7408050488909103,
+        "sensitivity": 0.6842105263157895,
+        "specificity": 0.9584199584199584,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 86,
+        "test_fn": 18,
+        "test_tn": 510,
+        "test_fp": 26,
+        "test_sensitivity": 0.8269,
+        "test_specificity": 0.9515
+      }
+    },
+    "ODC": {
+      "youden": {
+        "threshold": 0.3157983349863243,
+        "sensitivity": 0.7142857142857143,
+        "specificity": 0.6877470355731226,
+        "youden_j": 0.40203274985883697,
+        "test_tp": 59,
+        "test_fn": 32,
+        "test_tn": 402,
+        "test_fp": 147,
+        "test_sensitivity": 0.6484,
+        "test_specificity": 0.7322
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6965570118378757,
+        "sensitivity": 0.22857142857142856,
+        "specificity": 0.9604743083003953,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 29,
+        "test_fn": 62,
+        "test_tn": 532,
+        "test_fp": 17,
+        "test_sensitivity": 0.3187,
+        "test_specificity": 0.969
+      }
+    },
+    "TSLN": {
+      "youden": {
+        "threshold": 0.2766697621665654,
+        "sensitivity": 0.9655172413793104,
+        "specificity": 0.8416988416988417,
+        "youden_j": 0.8072160830781521,
+        "test_tp": 46,
+        "test_fn": 7,
+        "test_tn": 485,
+        "test_fp": 102,
+        "test_sensitivity": 0.8679,
+        "test_specificity": 0.8262
+      },
+      "sens_at_95spec": {
+        "threshold": 0.8167094772401295,
+        "sensitivity": 0.5344827586206896,
+        "specificity": 0.9536679536679536,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 30,
+        "test_fn": 23,
+        "test_tn": 561,
+        "test_fp": 26,
+        "test_sensitivity": 0.566,
+        "test_specificity": 0.9557
+      }
+    },
+    "DN": {
+      "youden": {
+        "threshold": 0.45622767756871285,
+        "sensitivity": 0.65,
+        "specificity": 0.7388059701492538,
+        "youden_j": 0.3888059701492539,
+        "test_tp": 30,
+        "test_fn": 16,
+        "test_tn": 457,
+        "test_fp": 137,
+        "test_sensitivity": 0.6522,
+        "test_specificity": 0.7694
+      },
+      "sens_at_95spec": {
+        "threshold": 0.754476813448014,
+        "sensitivity": 0.225,
+        "specificity": 0.9589552238805971,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 9,
+        "test_fn": 37,
+        "test_tn": 578,
+        "test_fp": 16,
+        "test_sensitivity": 0.1957,
+        "test_specificity": 0.9731
+      }
+    },
+    "ARMD": {
+      "youden": {
+        "threshold": 0.18052243835786855,
+        "sensitivity": 0.96875,
+        "specificity": 0.8235294117647058,
+        "youden_j": 0.7922794117647058,
+        "test_tp": 28,
+        "test_fn": 3,
+        "test_tn": 513,
+        "test_fp": 96,
+        "test_sensitivity": 0.9032,
+        "test_specificity": 0.8424
+      },
+      "sens_at_95spec": {
+        "threshold": 0.6477212111365281,
+        "sensitivity": 0.78125,
+        "specificity": 0.9724264705882353,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 20,
+        "test_fn": 11,
+        "test_tn": 591,
+        "test_fp": 18,
+        "test_sensitivity": 0.6452,
+        "test_specificity": 0.9704
+      }
+    },
+    "MYA": {
+      "youden": {
+        "threshold": 0.20719591967123827,
+        "sensitivity": 1.0,
+        "specificity": 0.9215328467153284,
+        "youden_j": 0.9215328467153285,
+        "test_tp": 32,
+        "test_fn": 0,
+        "test_tn": 569,
+        "test_fp": 39,
+        "test_sensitivity": 1.0,
+        "test_specificity": 0.9359
+      },
+      "sens_at_95spec": {
+        "threshold": 0.653493178327103,
+        "sensitivity": 0.9285714285714286,
+        "specificity": 0.9671532846715328,
+        "target_specificity": 0.95,
+        "met_target": 1.0,
+        "test_tp": 25,
+        "test_fn": 7,
+        "test_tn": 599,
+        "test_fp": 9,
+        "test_sensitivity": 0.7812,
+        "test_specificity": 0.9852
+      }
+    }
+  }
+}

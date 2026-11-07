@@ -1,0 +1,158 @@
+{
+  "E0": {
+    "good": {
+      "n": 9,
+      "note": "too few images for a stable estimate"
+    },
+    "usable": {
+      "n": 546,
+      "macro_auroc": 0.9287890938251805,
+      "dr_auroc": 0.9287890938251805,
+      "pooled_ece": 0.03218333656821169,
+      "pooled_brier": 0.07994226052441399,
+      "dr_prevalence": 0.21245421469211578,
+      "any_disease_prevalence": 0.21245421469211578,
+      "mean_quality_scalar": 0.4815571067849277
+    },
+    "bad": {
+      "n": 85,
+      "macro_auroc": 0.9468864468864469,
+      "dr_auroc": 0.9468864468864469,
+      "pooled_ece": 0.040810805375632996,
+      "pooled_brier": 0.04523200835838345,
+      "dr_prevalence": 0.08235294371843338,
+      "any_disease_prevalence": 0.08235294371843338,
+      "mean_quality_scalar": 0.18571957094917624
+    }
+  },
+  "E1": {
+    "good": {
+      "n": 9,
+      "note": "too few images for a stable estimate"
+    },
+    "usable": {
+      "n": 546,
+      "macro_auroc": 0.9313753007217321,
+      "dr_auroc": 0.9313753007217321,
+      "pooled_ece": 0.027563012286512374,
+      "pooled_brier": 0.08441907356133589,
+      "dr_prevalence": 0.21245421469211578,
+      "any_disease_prevalence": 0.21245421469211578,
+      "mean_quality_scalar": 0.4815571067849277
+    },
+    "bad": {
+      "n": 85,
+      "macro_auroc": 0.9304029304029304,
+      "dr_auroc": 0.9304029304029304,
+      "pooled_ece": 0.05723177401677649,
+      "pooled_brier": 0.047878581814129045,
+      "dr_prevalence": 0.08235294371843338,
+      "any_disease_prevalence": 0.08235294371843338,
+      "mean_quality_scalar": 0.18571957094917624
+    }
+  },
+  "E2": {
+    "good": {
+      "n": 9,
+      "note": "too few images for a stable estimate"
+    },
+    "usable": {
+      "n": 546,
+      "macro_auroc": 0.8904016509792275,
+      "dr_auroc": 0.9196872493985565,
+      "pooled_ece": 0.09103868998278611,
+      "pooled_brier": 0.10270574461613778,
+      "dr_prevalence": 0.21245421469211578,
+      "any_disease_prevalence": 0.831501841545105,
+      "mean_quality_scalar": 0.4815571067849277
+    },
+    "bad": {
+      "n": 85,
+      "macro_auroc": 0.9345340075307416,
+      "dr_auroc": 0.9377289377289377,
+      "pooled_ece": 0.09190078024368951,
+      "pooled_brier": 0.06362618241010848,
+      "dr_prevalence": 0.08235294371843338,
+      "any_disease_prevalence": 0.5058823823928833,
+      "mean_quality_scalar": 0.18571957094917624
+    }
+  },
+  "E3": {
+    "good": {
+      "n": 9,
+      "note": "too few images for a stable estimate"
+    },
+    "usable": {
+      "n": 546,
+      "macro_auroc": 0.9008511539846882,
+      "dr_auroc": 0.9302927024859663,
+      "pooled_ece": 0.098605479592425,
+      "pooled_brier": 0.10586714316870847,
+      "dr_prevalence": 0.21245421469211578,
+      "any_disease_prevalence": 0.831501841545105,
+      "mean_quality_scalar": 0.4815571067849277
+    },
+    "bad": {
+      "n": 85,
+      "macro_auroc": 0.9506602174909726,
+      "dr_auroc": 0.9413919413919414,
+      "pooled_ece": 0.10289530206047107,
+      "pooled_brier": 0.06864312668139182,
+      "dr_prevalence": 0.08235294371843338,
+      "any_disease_prevalence": 0.5058823823928833,
+      "mean_quality_scalar": 0.18571957094917624
+    }
+  },
+  "E4": {
+    "good": {
+      "n": 9,
+      "note": "too few images for a stable estimate"
+    },
+    "usable": {
+      "n": 546,
+      "macro_auroc": 0.8913443149683691,
+      "dr_auroc": 0.9246190858059342,
+      "pooled_ece": 0.07451644541112357,
+      "pooled_brier": 0.10254129818576599,
+      "dr_prevalence": 0.21245421469211578,
+      "any_disease_prevalence": 0.831501841545105,
+      "mean_quality_scalar": 0.4815571067849277
+    },
+    "bad": {
+      "n": 85,
+      "macro_auroc": 0.9410832212979778,
+      "dr_auroc": 0.9468864468864469,
+      "pooled_ece": 0.07310625364325997,
+      "pooled_brier": 0.06215224104463384,
+      "dr_prevalence": 0.08235294371843338,
+      "any_disease_prevalence": 0.5058823823928833,
+      "mean_quality_scalar": 0.18571957094917624
+    }
+  },
+  "E5": {
+    "good": {
+      "n": 9,
+      "note": "too few images for a stable estimate"
+    },
+    "usable": {
+      "n": 546,
+      "macro_auroc": 0.9097709068057721,
+      "dr_auroc": 0.9332598235765838,
+      "pooled_ece": 0.07385751345070224,
+      "pooled_brier": 0.09269407719694508,
+      "dr_prevalence": 0.21245421469211578,
+      "any_disease_prevalence": 0.831501841545105,
+      "mean_quality_scalar": 0.4815571067849277
+    },
+    "bad": {
+      "n": 85,
+      "macro_auroc": 0.9531152112084096,
+      "dr_auroc": 0.9578754578754579,
+      "pooled_ece": 0.06620667152886146,
+      "pooled_brier": 0.054362582603168556,
+      "dr_prevalence": 0.08235294371843338,
+      "any_disease_prevalence": 0.5058823823928833,
+      "mean_quality_scalar": 0.18571957094917624
+    }
+  }
+}
