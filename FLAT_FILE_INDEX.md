@@ -3,7 +3,7 @@
 Authoritative map for this flat snapshot: **flat filename -> original
 nested path**.  Every entry is one level deep; there are no directories.
 
-Generated: 2026-11-07T21:32:38+00:00  
+Generated: 2026-11-07T21:50:42+00:00  
 Copied: 344  |  Generated: 7
 
 ## Generated for this snapshot

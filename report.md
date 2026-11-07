@@ -112,25 +112,25 @@ Reti-Pioneer **发表文本**描述多任务筛查，但**发布训练代码**�
 
 <figure>
 
-![Fig1](../paper_assets/fig1_architecture.png)
+![Fig1](fig1_architecture.png)
 
 <figcaption>图 1. 方法概览（示意；无性能数字）。黄框=单调质量路由；橙框=可选 E5；绿框=部分标签 MTL + 校准/DCA 评估。</figcaption>
 </figure>
 <figure>
 
-![Fig2](../paper_assets/fig2_ablation_bars.png)
+![Fig2](fig2_ablation_bars.png)
 
 <figcaption>图 2. 消融柱状图（SYNTHETIC）。左 AUROC_D，右 ECE；虚线 0.5=随机。n_val=10，n_cross=48。</figcaption>
 </figure>
 <figure>
 
-![Fig3](../paper_assets/fig3_calibration.png)
+![Fig3](fig3_calibration.png)
 
 <figcaption>图 3. 温度缩放与 ECE（SYNTHETIC）。评估框架动机成立，≠临床已校准可用。</figcaption>
 </figure>
 <figure>
 
-![Fig4](../paper_assets/fig4_cross_domain.png)
+![Fig4](fig4_cross_domain.png)
 
 <figcaption>图 4. 跨队列落差（SYNTHETIC）。协议层必须画跨库，数值不可作运输性估计。</figcaption>
 </figure>

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-07T21:32:38.608370+00:00",
+  "generated_at": "2026-11-07T21:50:43.919980+00:00",
   "source_workspace": "E:\\Projects\\20260522-retinal-imaging",
   "layout": "flat (single directory, no sub-directories)",
   "n_files": 353,
-  "total_bytes": 45814175,
+  "total_bytes": 45813823,
   "rewrites": {
     "python_imports": "package-qualified -> flat module names",
     "root_computation": "parents[1] -> parent",
@@ -973,7 +973,7 @@
     {
       "name": "FLAT_FILE_INDEX.md",
       "bytes": 24700,
-      "sha256": "e328379531d1c1dd8e4e4cfaa224d467f1481b0168c7e021506fb9aeaa5d55b7",
+      "sha256": "cb06ead9e83ebfa06739c9f81c003a33ab40ad9111817aa34aacf22b6b6ecf18",
       "origin": "generated"
     },
     {
@@ -1140,8 +1140,8 @@
     },
     {
       "name": "manuscript_zh.md",
-      "bytes": 108159,
-      "sha256": "42e522397e8c3f206b034f236a472f5a97eeb6555f77ea65a3d2b22dea5bf256",
+      "bytes": 107871,
+      "sha256": "c1aea1c472b4a6a1b335ec84ce3c8bac434cae0efe41278e11a4b366568c6943",
       "origin": "docs/paper/manuscript_zh_v2.md"
     },
     {
@@ -1500,8 +1500,8 @@
     },
     {
       "name": "report.md",
-      "bytes": 10580,
-      "sha256": "e96f350258d9072d4252776b22fc689cffd46c392e8696deec166027d88162aa",
+      "bytes": 10516,
+      "sha256": "12abb3184016af4aa461d27e679c4b522109241db1a8f7fc5a13e147b030a953",
       "origin": "docs/report/report.md"
     },
     {
